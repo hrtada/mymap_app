@@ -1,17 +1,33 @@
 <template>
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
+    <button @click="drive()">アクセル</button>
+    <button>ブレーキ</button>
   </div>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Car from './sample/Car'
 
 export default {
   name: 'app',
-  components: {
-    HelloWorld
+  data () {
+    return {
+      car: null,
+      intervalId: 0
+    }
+  },
+  created() {
+    this.car = new Car()
+    this.intervalId = setInterval(this.car.monitorStatus, 1000)
+  },
+  methods: {
+    drive () {
+      clearInterval(this.intervalId)
+      this.car.drive()
+      this.intervalId = setInterval(this.car.monitorStatus, 1000)
+      return
+    }
   }
 }
 </script>
