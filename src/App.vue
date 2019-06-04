@@ -2,7 +2,7 @@
   <div id="app">
     <img alt="Vue logo" src="./assets/logo.png">
     <button @click="drive()">アクセル</button>
-    <button>ブレーキ</button>
+    <button @click="stop()">ブレーキ</button>
   </div>
 </template>
 
@@ -27,7 +27,13 @@ export default {
       this.car.drive()
       this.intervalId = setInterval(this.car.monitorStatus, 1000)
       return
-    }
+    },
+    stop(){
+      clearInterval(this.intervalId)
+      this.car.stop()
+      this.intervalId = setInterval(this.car.monitorStatus, 1000)
+      return
+    } 
   }
 }
 </script>
