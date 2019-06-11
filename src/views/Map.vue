@@ -6,7 +6,7 @@
       <button @click="">設定</button>
     </div>
 
-    <a href="" @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
+    <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
   </div>
 </template>
 
