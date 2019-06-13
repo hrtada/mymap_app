@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h2>新しいポイントの作成</h2>
+    <h2>ポイントの編集</h2>
     
      <form action="">
       <p>
@@ -19,6 +19,7 @@
         <img src="" alt="">
       </p>
       <button @click="chancel()">ｷｬﾝｾﾙ</button>
+      <button @click="chancel()">削除</button>
       <button @click="">作成</button>
     </form>
  </div>
@@ -43,7 +44,3 @@ export default {
   }
 }
 </script>
-
-<style>
-
-</style>
