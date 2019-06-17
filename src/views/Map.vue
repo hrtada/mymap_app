@@ -1,7 +1,11 @@
 <template>
   <div>
     <h2>MAP</h2>
-    <div id="map" style="height:500px;">aaa</div>
+    <div>
+      <button @click="">範囲指定</button> 
+      <button @click="">設定</button>
+    </div>
+    <div id="map"></div> <!--style="height:500px;"-->
     <br>
     <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
     <br>
@@ -10,27 +14,28 @@
 </template>
 
 <script>
-
-// import Point from '../model/Point'
+import Point from '../model/Point'
 export default {
   data () {
     return {
     }
   },
-  // 単なる地図の表示のみ
-  mounted() {
-    var MyLatLng = new google.maps.LatLng(35.6811673, 139.7670516);
+  created() {
+   //const point = new Point(11, 43);
+   //console.log(point.getPos());
+  },
+   mounted() {
+    const point = new Point(11, 43);
+    console.log(point.getPos());
+ 
+    var MyLatLng = new google.maps.LatLng(point.getPos());
     var Options = {
     zoom: 15,      //地図の縮尺値
     center: MyLatLng,    //地図の中心座標
     mapTypeId: 'roadmap'   //地図の種類
     };
     var map = new google.maps.Map(document.getElementById('map'), Options);
-  },
-  created() {
-    // const point = new Point(11, 43);
-    // console.log(point.getPos());
-  },
+  }, 
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
@@ -43,7 +48,7 @@ export default {
 </script>
 
 <style>
-#map { height: 100%; width: 100%}
+#map { height: 500px; width: 100%}
 </style>
 
 
