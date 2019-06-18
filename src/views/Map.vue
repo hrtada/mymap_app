@@ -5,6 +5,7 @@
       <button @click="">範囲指定</button> 
       <button @click="">設定</button>
     </div>
+    <input v-model="pVal.lng" />
     <div id="map"></div> <!--style="height:500px;"-->
     <br>
     <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
@@ -18,17 +19,16 @@ import Point from '../model/Point'
 export default {
   data () {
     return {
+      pVal : null
     }
   },
   created() {
-   //const point = new Point(11, 43);
-   //console.log(point.getPos());
-  },
-   mounted() {
     const point = new Point(11, 43);
-    console.log(point.getPos());
- 
-    var MyLatLng = new google.maps.LatLng(point.getPos());
+    this.pVal = point.getPos();
+    console.log(this.pVal);
+  },
+  mounted() {
+    var MyLatLng = new google.maps.LatLng(this.pVal.lat, this.pVal.lng);
     var Options = {
     zoom: 15,      //地図の縮尺値
     center: MyLatLng,    //地図の中心座標
