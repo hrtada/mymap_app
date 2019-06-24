@@ -27,33 +27,31 @@ export default {
     // this.pVal = point.getPos();
     // console.log(this.pVal);
    },
-  mounted: {
-    function () {
-      if (!navigator.geolocation) {
+  mounted() {
+    if (!navigator.geolocation) {
         alert('Geolocation APIに対応していません');
         return false;
     }
-    navigator.geolocation.getCurrentPosition(function(position) {
+    navigator.geolocation.getCurrentPosition((position) => {
       // 成功した場合：緯度経度の取得
       this.MylatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
       console.log(this.MylatLng);
  
       // 地図の表示
       const map = new google.maps.Map(document.getElementById('map'), {
-        center: MylatLng,
+        center: this.MylatLng,
         zoom: 15
       });
  
       // マーカーの追加
       const marker = new google.maps.Marker({
-        position: MylatLng,
+        position: this.MylatLng,
         map: map
       });
       //失敗した場合
     }, function() {
         alert('位置情報取得に失敗しました');
-    });     
-    }
+    });
   },
   methods: {
     create(){
