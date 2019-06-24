@@ -1,7 +1,7 @@
 <template>
   <div>
     <h2>LOGIN</h2>
-    <button @click="login()">login</button>
+    <button id ='login' @click="login()">login</button>
   </div>
 </template>
 
@@ -20,3 +20,11 @@ export default {
   }
 }
 </script>
+
+<style>
+#login{
+  padding: 5px 12px;
+  margin: 40px;
+}
+
+</style>

@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <h1>MyMapアプリ</h1>
-    <button @click="logout()">logout</button>
+    <button id='logout'  @click="logout()">logout</button>
     <div id='content'>
       <router-view/>
     </div>
@@ -27,5 +27,16 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+
+.h1{
+  margin: 0 auto;
+}
+
+
+#logout{
+  float: right;
+  padding: 5px 10px;
+  margin: 40px;
 }
 </style>

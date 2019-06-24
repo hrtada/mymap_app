@@ -1,55 +1,74 @@
 <template>
   <div>
-    <h2>MAP</h2>
-    <div>
-      <button @click="">範囲指定</button> 
-      <button @click="">設定</button>
+    <div id='settei'>
+      <button @click="chancel()">範囲指定</button> 
+      <button @click="chancel()">設定</button>
     </div>
-    <input v-model="pVal.lng" />
-    <div id="map"></div> <!--style="height:500px;"-->
+   <!--  <input v-model="MylatLng" /> -->
+    <div id = 'map'></div>
     <br>
     <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
     <br>
     <a @click="edit()">ﾎﾟｲﾝﾄ編集に遷移（仮）</a>
+    <br>
   </div>
 </template>
 
 <script>
-import Point from '../model/Point'
+//import Point from '../model/Point'
 export default {
   data () {
     return {
-      pVal : null
+      MylatLng : null
     }
   },
   created() {
-    const point = new Point(11, 43);
-    this.pVal = point.getPos();
-    console.log(this.pVal);
+    // const point = new Point(11, 43);
+    // this.pVal = point.getPos();
+    // console.log(this.pVal);
+   },
+  mounted: {
+    function () {
+      if (!navigator.geolocation) {
+        alert('Geolocation APIに対応していません');
+        return false;
+    }
+    navigator.geolocation.getCurrentPosition(function(position) {
+      // 成功した場合：緯度経度の取得
+      this.MylatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+      console.log(this.MylatLng);
+ 
+      // 地図の表示
+      const map = new google.maps.Map(document.getElementById('map'), {
+        center: MylatLng,
+        zoom: 15
+      });
+ 
+      // マーカーの追加
+      const marker = new google.maps.Marker({
+        position: MylatLng,
+        map: map
+      });
+      //失敗した場合
+    }, function() {
+        alert('位置情報取得に失敗しました');
+    });     
+    }
   },
-  mounted() {
-    var MyLatLng = new google.maps.LatLng(this.pVal.lat, this.pVal.lng);
-    var Options = {
-    zoom: 15,      //地図の縮尺値
-    center: MyLatLng,    //地図の中心座標
-    mapTypeId: 'roadmap'   //地図の種類
-    };
-    var map = new google.maps.Map(document.getElementById('map'), Options);
-  }, 
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
     },
     edit(){
-      this.$router.push({ path: "/pointedit"})
+      this.$router.push({ path: "/pointedit"});
     }
   }
 }
 </script>
 
 <style>
-#map { height: 500px; width: 100%}
+ #settei{float: right;}
+ #map{ height: 500px;}
+
 </style>
-
-
 

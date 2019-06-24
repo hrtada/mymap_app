@@ -14,12 +14,12 @@
       </p>
       <p>
         写真：
-        <button @click="">カメラ</button>
+        <button @click="chancel()">カメラ</button>
         <button @click="open()">選択</button>
         <img src="" alt="">
       </p>
       <button @click="chancel()">ｷｬﾝｾﾙ</button>
-      <button @click="">作成</button>
+      <button @click="chancel()">作成</button>
     </form>
  </div>
 
