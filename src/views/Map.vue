@@ -16,6 +16,10 @@
 
 <script>
 //import Point from '../model/Point'
+import * as firebase from "firebase/app";
+import "firebase/firestore";
+let database = null;
+let collection = null;
 export default {
   data () {
     return {
@@ -26,6 +30,24 @@ export default {
     // const point = new Point(11, 43);
     // this.pVal = point.getPos();
     // console.log(this.pVal);
+      // Your web app's Firebase configuration
+      const firebaseConfig = {
+        apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
+        authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
+        databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
+        projectId: "mtfirebaseproject-64e86",
+        storageBucket: "mtfirebaseproject-64e86.appspot.com",
+        messagingSenderId: "969784300164",
+        appId: "1:969784300164:web:fddc0f90fc2a0916"
+      };
+      // Initialize Firebase
+      const firebaseApp = firebase.initializeApp(firebaseConfig);
+      database = firebaseApp.firestore();
+      database.collection("itamoto").get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+              console.log(`${doc.id} => ${doc.data()}`);
+          });
+      });
    },
   mounted() {
     if (!navigator.geolocation) {
@@ -38,16 +60,16 @@ export default {
       console.log(this.MylatLng);
  
       // 地図の表示
-      const map = new google.maps.Map(document.getElementById('map'), {
+      new google.maps.Map(document.getElementById('map'), {
         center: this.MylatLng,
         zoom: 15
       });
  
       // マーカーの追加
-      const marker = new google.maps.Marker({
-        position: this.MylatLng,
-        map: map
-      });
+      // const marker = new google.maps.Marker({
+      //   position: this.MylatLng,
+      //   map: map
+      // });
       //失敗した場合
     }, function() {
         alert('位置情報取得に失敗しました');
