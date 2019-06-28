@@ -41,38 +41,41 @@ export default {
       // Initialize
       const firebaseApp = firebase.initializeApp(firebaseConfig);
       db = firebaseApp.firestore();
-      
-      //コレクションitamotoの値を全取得してMypointにセットする
-      db.collection("itamoto").get().then((querySnapshot) => {
-          querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          this.Mypoint = data;
-          console.log('DBからの取得値%O', this.Mypoint);
-         });
-      });
    },
   mounted() {
     let markerLatLng;
     let marker;
     let map;
 
-     //地図表示のための緯度経度を取得
-    this.MylatLng = new google.maps.LatLng({lat:this.Mypoint[0]['lat'],lng:this.Mypoint[0]['lng']});
-    console.log('地図表示　%O', this.MylatLng);
-    //地図を表示
-    new google.maps.Map(document.getElementById('map'), {
-      center: this.MylatLng,
-      zoom: 15
-      });
+    //コレクションitamotoの値を全取得してMypointにセットする
+    db.collection("itamoto").get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        this.Mypoint = data;
+        console.log('DBからの取得値%O', this.Mypoint);
 
-    // マーカーを表示する
-    for (let i = 0; i < this.MylatLng.length; i++) {
-      markerLatLng = new google.maps.LatLng({lat: this.MylatLng[i]['lat'], lng: this.MylatLng[i]['lng']}); // 緯度経度のデータ作成
-      marker[i] = new google.maps.Marker({ // マーカーの追加
-        position: markerLatLng, // マーカーを立てる位置を指定
-        map: map // マーカーを立てる地図を指定
-       });
-      }
+        //地図表示のための緯度経度を取得
+        this.MylatLng = new google.maps.LatLng(this.Mypoint['lat'], this.Mypoint['lng']);
+        // this.MylatLng = new google.maps.LatLng(44, 11);
+        console.log('地図表示　%O', this.MylatLng);
+        //地図を表示
+        new google.maps.Map(document.getElementById('map'), {
+          center: this.MylatLng,
+          zoom: 15
+        });
+
+        // マーカーを表示する
+        for (let i = 0; i < this.MylatLng.length; i++) {
+          markerLatLng = new google.maps.LatLng({lat: this.MylatLng[i]['lat'], lng: this.MylatLng[i]['lng']}); // 緯度経度のデータ作成
+          marker[i] = new google.maps.Marker({ // マーカーの追加
+            position: markerLatLng, // マーカーを立てる位置を指定
+            map: map // マーカーを立てる地図を指定
+          });
+        }
+      });
+    });
+
+
   },
 
   methods: {
