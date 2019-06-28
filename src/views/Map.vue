@@ -4,8 +4,8 @@
       <button @click="chancel()">範囲指定</button> 
       <button @click="chancel()">設定</button>
     </div>
-   <!--  <input v-model="MylatLng" /> -->
-    <div id = 'map'></div>
+<!--     <input v-model="Mypoint" /> -->
+    <div id ='map'></div>
     <br>
     <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
     <br>
@@ -15,22 +15,20 @@
 </template>
 
 <script>
-//import Point from '../model/Point'
+/* eslint-disable no-console */
+
 import * as firebase from "firebase/app";
 import "firebase/firestore";
-let database = null;
-let collection = null;
+let db = null;
+
 export default {
   data () {
     return {
-      MylatLng : null
+      MylatLng : null,
+      Mypoint : null,
     }
   },
   created() {
-    // const point = new Point(11, 43);
-    // this.pVal = point.getPos();
-    // console.log(this.pVal);
-      // Your web app's Firebase configuration
       const firebaseConfig = {
         apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
         authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
@@ -40,41 +38,43 @@ export default {
         messagingSenderId: "969784300164",
         appId: "1:969784300164:web:fddc0f90fc2a0916"
       };
-      // Initialize Firebase
+      // Initialize
       const firebaseApp = firebase.initializeApp(firebaseConfig);
-      database = firebaseApp.firestore();
-      database.collection("itamoto").get().then((querySnapshot) => {
+      db = firebaseApp.firestore();
+      
+      //コレクションitamotoの値を全取得してMypointにセットする
+      db.collection("itamoto").get().then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
-              console.log(`${doc.id} => ${doc.data()}`);
-          });
+          const data = doc.data();
+          this.Mypoint = data;
+          console.log('DBからの取得値%O', this.Mypoint);
+         });
       });
    },
   mounted() {
-    if (!navigator.geolocation) {
-        alert('Geolocation APIに対応していません');
-        return false;
-    }
-    navigator.geolocation.getCurrentPosition((position) => {
-      // 成功した場合：緯度経度の取得
-      this.MylatLng = new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
-      console.log(this.MylatLng);
- 
-      // 地図の表示
-      new google.maps.Map(document.getElementById('map'), {
-        center: this.MylatLng,
-        zoom: 15
+    let markerLatLng;
+    let marker;
+    let map;
+
+     //地図表示のための緯度経度を取得
+    this.MylatLng = new google.maps.LatLng({lat:this.Mypoint[0]['lat'],lng:this.Mypoint[0]['lng']});
+    console.log('地図表示　%O', this.MylatLng);
+    //地図を表示
+    new google.maps.Map(document.getElementById('map'), {
+      center: this.MylatLng,
+      zoom: 15
       });
- 
-      // マーカーの追加
-      // const marker = new google.maps.Marker({
-      //   position: this.MylatLng,
-      //   map: map
-      // });
-      //失敗した場合
-    }, function() {
-        alert('位置情報取得に失敗しました');
-    });
+
+    // マーカーを表示する
+    for (let i = 0; i < this.MylatLng.length; i++) {
+      markerLatLng = new google.maps.LatLng({lat: this.MylatLng[i]['lat'], lng: this.MylatLng[i]['lng']}); // 緯度経度のデータ作成
+      marker[i] = new google.maps.Marker({ // マーカーの追加
+        position: markerLatLng, // マーカーを立てる位置を指定
+        map: map // マーカーを立てる地図を指定
+       });
+      }
   },
+
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
