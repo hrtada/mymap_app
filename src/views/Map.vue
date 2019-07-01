@@ -16,10 +16,13 @@
 
 <script>
 /* eslint-disable no-console */
-
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 let db = null;
+import gmap from '@google/maps';
+const googleMapsClient = gmap.createClient({
+  key: 'AIzaSyDZtGF2N7VY8u4TVx504yOmLu860NTkot8'
+});
 
 export default {
   data () {
@@ -46,6 +49,15 @@ export default {
     let markerLatLng;
     let marker;
     let map;
+
+    // node.js のgoogleMap API呼び出しサンプル
+    googleMapsClient.geocode({
+      address: '1600 Amphitheatre Parkway, Mountain View, CA'
+    }, function(err, response) {
+      if (!err) {
+        console.log(response.json.results);
+      }
+    });
 
     //コレクションitamotoの値を全取得してMypointにセットする
     db.collection("itamoto").get().then((querySnapshot) => {
