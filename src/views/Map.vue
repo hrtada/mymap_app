@@ -27,8 +27,7 @@ const googleMapsClient = gmap.createClient({
 export default {
   data () {
     return {
-      MylatLng : null,
-      Mypoint : null,
+      Mypoints : [],
     }
   },
   created() {
@@ -59,33 +58,42 @@ export default {
       }
     });
 
+    //地図を表示
+    const MylatLng = new google.maps.LatLng(35.708194, 139.808565);
+    map = new google.maps.Map(document.getElementById('map'), {
+      center: MylatLng,
+      zoom: 15
+    });
+
+    const displayGmap = (lat, lng)=>{
+      const latLng = new google.maps.LatLng(lat, lng);
+      new google.maps.Marker({ // マーカーの追加
+        position: latLng, // マーカーを立てる位置を指定
+        map: map // マーカーを立てる地図を指定
+      });
+    }
+
     //コレクションitamotoの値を全取得してMypointにセットする
     db.collection("itamoto").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        this.Mypoint = data;
-        console.log('DBからの取得値%O', this.Mypoint);
+        this.Mypoints.push(data);
+        console.log('DBからの取得値%O', this.Mypoints);
+        displayGmap(data['lat'], data['lng']);
+        // //地図表示のための緯度経度を取得
+        // const MylatLng = new google.maps.LatLng(this.Mypoint['lat'], this.Mypoint['lng']);
+        // // this.MylatLng = new google.maps.LatLng(44, 11);
+        // console.log('地図表示　%O', MylatLng);
 
-        //地図表示のための緯度経度を取得
-        this.MylatLng = new google.maps.LatLng(this.Mypoint['lat'], this.Mypoint['lng']);
-        // this.MylatLng = new google.maps.LatLng(44, 11);
-        console.log('地図表示　%O', this.MylatLng);
-        //地図を表示
-        new google.maps.Map(document.getElementById('map'), {
-          center: this.MylatLng,
-          zoom: 15
-        });
 
-        // マーカーを表示する
-        for (let i = 0; i < this.MylatLng.length; i++) {
-          markerLatLng = new google.maps.LatLng({lat: this.MylatLng[i]['lat'], lng: this.MylatLng[i]['lng']}); // 緯度経度のデータ作成
-          marker[i] = new google.maps.Marker({ // マーカーの追加
-            position: markerLatLng, // マーカーを立てる位置を指定
-            map: map // マーカーを立てる地図を指定
-          });
-        }
+        // // マーカーを表示する
+        // new google.maps.Marker({ // マーカーの追加
+        //   position: MylatLng, // マーカーを立てる位置を指定
+        //   map: map // マーカーを立てる地図を指定
+        // });
       });
     });
+
 
 
   },
