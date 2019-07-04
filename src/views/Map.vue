@@ -16,18 +16,16 @@
 
 <script>
 /* eslint-disable no-console */
+/*globals google */
 import * as firebase from "firebase/app";
 import "firebase/firestore";
+
 let db = null;
-import gmap from '@google/maps';
-const googleMapsClient = gmap.createClient({
-  key: 'AIzaSyDZtGF2N7VY8u4TVx504yOmLu860NTkot8'
-});
 
 export default {
   data () {
     return {
-      Mypoints : [],
+      //Mypoints : [],
     }
   },
   created() {
@@ -45,57 +43,47 @@ export default {
       db = firebaseApp.firestore();
    },
   mounted() {
-    let markerLatLng;
-    let marker;
     let map;
 
-    // node.js のgoogleMap API呼び出しサンプル
-    googleMapsClient.geocode({
-      address: '1600 Amphitheatre Parkway, Mountain View, CA'
-    }, function(err, response) {
-      if (!err) {
-        console.log(response.json.results);
-      }
-    });
-
-    //地図を表示
-    const MylatLng = new google.maps.LatLng(35.708194, 139.808565);
+    //地図を表示（下のforEach内にいれないこと）
+    const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
     map = new google.maps.Map(document.getElementById('map'), {
-      center: MylatLng,
+      center: initiallatLng,
       zoom: 15
     });
 
-    const displayGmap = (lat, lng)=>{
+    //マーカーを表示する関数を作成
+    const makeMaker = (lat, lng)=>{
       const latLng = new google.maps.LatLng(lat, lng);
       new google.maps.Marker({ // マーカーの追加
-        position: latLng, // マーカーを立てる位置を指定
-        map: map // マーカーを立てる地図を指定
+        position: latLng, // マーカーを立てる位置
+        map: map // マーカーを立てる地図
       });
     }
 
-    //コレクションitamotoの値を全取得してMypointにセットする
-    db.collection("itamoto").get().then((querySnapshot) => {
+    //コレクションitamotoの値を全取得しマーカーを表示
+    db.collection("user1").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
-        this.Mypoints.push(data);
-        console.log('DBからの取得値%O', this.Mypoints);
-        displayGmap(data['lat'], data['lng']);
-        // //地図表示のための緯度経度を取得
-        // const MylatLng = new google.maps.LatLng(this.Mypoint['lat'], this.Mypoint['lng']);
-        // // this.MylatLng = new google.maps.LatLng(44, 11);
-        // console.log('地図表示　%O', MylatLng);
-
-
-        // // マーカーを表示する
-        // new google.maps.Marker({ // マーカーの追加
-        //   position: MylatLng, // マーカーを立てる位置を指定
-        //   map: map // マーカーを立てる地図を指定
-        // });
+        console.log('DBからの取得値%O', data);
+        makeMaker(data['lat'], data['lng']);
       });
     });
 
-
-
+    //マップをクリック時、マーカー表示&firebaseに座標を登録する
+        map.addListener('click', (e) => {//クリック時のイベント設定
+        new google.maps.Marker({//マーカーを表示する
+          position: e.latLng,
+          map: map,
+          title: e.latLng.toString(),
+          animation: google.maps.Animation.DROP
+        });
+        console.log('クリック地点の座標',e.latLng.lat(),e.latLng.lng());
+        db.collection("user1").add({//firebaseに座標を登録する
+          lat: e.latLng.lat(),
+          lng: e.latLng.lng()
+        })
+      });
   },
 
   methods: {
