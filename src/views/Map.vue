@@ -44,7 +44,6 @@ export default {
    },
   mounted() {
     let map;
-    let marker;
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -54,11 +53,32 @@ export default {
     });
 
     //マーカーを表示する関数を作成
-    const makeMaker = (lat, lng)=>{
+    const makeMaker = (lat, lng, name)=>{
       const latLng = new google.maps.LatLng(lat, lng);
-      new google.maps.Marker({ // マーカーの追加
-        position: latLng, // マーカーを立てる位置
-        map: map // マーカーを立てる地図
+      const marker = new google.maps.Marker({
+        position: latLng,
+        map: map,
+        title: name,
+        animation: google.maps.Animation.DROP
+      });
+
+      //マーカーをクリック時したら削除
+      marker.addListener('click', () => {
+        //クリックしたマーカーの座標を取得
+        const dellatlng = marker.getPosition();
+        console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
+        //firebaseのdataと照合し、座標が一致したデータのidを返す
+        db.collection("user1").where("lat","==",dellatlng.lat()).where("lng","==",dellatlng.lng())
+          .get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const doc_id = doc.id;
+              console.log('削除対象のID',doc_id);
+              db.collection("user1").doc(doc_id).delete().then(() => {//該当データを削除
+                console.log("削除成功");
+              });
+              marker.setMap(null);//マーカーを削除
+            });          
+          });            
       });
     }
 
@@ -67,44 +87,22 @@ export default {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         //console.log('DBからの取得値%O', data);
-        makeMaker(data['lat'], data['lng']);
-      
+        makeMaker(data['lat'], data['lng'], 'pointName');
       });
     });
 
     //マップをクリック時、マーカー表示&firebaseに座標を登録する
-      map.addListener('click', (e) => {//クリック時のイベント設定
-        marker = new google.maps.Marker({//マーカーを表示する
-        position: e.latLng,
-        map: map,
-        title: e.latLng.toString(),
-        animation: google.maps.Animation.DROP
-        });
-        console.log('クリック地点の座標',e.latLng.lat(),e.latLng.lng());
-        db.collection("user1").add({//firebaseに座標を登録する
-          lat: e.latLng.lat(),
-          lng: e.latLng.lng(),
-        })
+    //クリック時のイベント設定
+    map.addListener('click', (e) => {
+      //マーカーを表示する
+      makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
 
-        //マーカーをクリック時したら削除
-        marker.addListener('click', () => {
-          //クリックしたマーカーの座標を取得
-          const dellatlng = marker.getPosition();
-          console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
-          //firebaseのdataと照合し、座標が一致したデータのidを返す
-          db.collection("user1").where("lat","==",dellatlng.lat()).where("lng","==",dellatlng.lng())
-            .get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                const doc_id = doc.id;
-                console.log('削除対象のID',doc_id);
-                db.collection("user1").doc(doc_id).delete().then(() => {//該当データを削除
-                  console.log("削除成功");
-                });
-                marker.setMap(null);//マーカーを削除
-              });          
-            });            
-        });
-      });
+      console.log('クリック地点の座標',e.latLng.lat(),e.latLng.lng());
+      db.collection("user1").add({//firebaseに座標を登録する
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng(),
+      })
+    });
   },
 
   methods: {
