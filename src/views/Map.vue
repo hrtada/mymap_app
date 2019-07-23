@@ -3,6 +3,7 @@
     <div id='settei'>
       <button @click="chancel()">範囲指定</button> 
       <button @click="chancel()">設定</button>
+      <input type="text" :value="message" />
     </div>
 <!--     <input v-model="Mypoint" /> -->
     <div id ='map'></div>
@@ -44,6 +45,7 @@ export default {
    },
   mounted() {
     let map;
+    let marker = [];
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -55,7 +57,7 @@ export default {
     //マーカーを表示する関数を作成
     const makeMaker = (lat, lng, name)=>{
       const latLng = new google.maps.LatLng(lat, lng);
-      const marker = new google.maps.Marker({
+      marker = new google.maps.Marker({
         position: latLng,
         map: map,
         title: name,
@@ -104,7 +106,11 @@ export default {
       })
     });
   },
-
+  computed:{
+    message(){
+      return this.$store.getters.message
+    }
+  },
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
