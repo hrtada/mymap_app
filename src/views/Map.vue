@@ -1,17 +1,53 @@
 <template>
-  <div>
-    <div id='settei'>
-      <button @click="chancel()">範囲指定</button> 
-      <button @click="chancel()">設定</button>
-    </div>
-<!--     <input v-model="Mypoint" /> -->
-    <div id ='map'></div>
+<div>
+  <div class="hero is-primary">
+    <div class="hero-header">
+      <div class="container">
+        <div class="field is-grouped">
+          <div class="control">
+            <label for="trigger1">条件指定</label>
+          </div>
+          <div class="control">
+            <label for="trigger2">設定</label>
+          </div>
+        </div> 
+      </div>
+    </div> 
+  </div>
+
+  <div id ='map'></div>
+    <!--後で削除画面遷移確認のための仮リンク-->
     <br>
     <a @click="create()">ﾎﾟｲﾝﾄ作成画面に遷移（仮）</a>
     <br>
     <a @click="edit()">ﾎﾟｲﾝﾄ編集に遷移（仮）</a>
-    <br>
-  </div>
+
+  <!--modal1-->
+    <div class="modal_wrap">
+      <input type="checkbox" id="trigger1">
+        <div class="modal_overlay">
+        <div class="modal_content">
+            <label for="trigger1" class="close_button">✖️</label>
+            <h1 class="has-text-weight-bold">条件指定</h1>
+            <p>＜ラベルの選択＞</p>
+            <ul>
+              <li v-for="item in labels" v-bind:key="item.id">  {{item.name}}</li>
+            </ul>
+        </div>
+        </div>
+    </div>
+    <!--modal2-->
+    <div class="modal_wrap">
+      <input type="checkbox" id="trigger2">
+        <div class="modal_overlay">
+        <div class="modal_content">
+            <label for="trigger2" class="close_button">✖️</label>
+            <h1 class="has-text-weight-bold">設定</h1>
+            <p>ラベルの管理…</p>
+        </div>
+        </div>
+    </div>
+</div>
 </template>
 
 <script>
@@ -19,14 +55,20 @@
 /*globals google */
 import * as firebase from "firebase/app";
 import "firebase/firestore";
+import 'bulma/css/bulma.css';//CSSフレームワーク
 
 let db = null;
 
 export default {
-  data () {
+   data () {
     return {
-      //Mypoints : [],
-    }
+    labels: [//最終的にfirestoreから取得するようにする
+      { id:1, name:'パン屋'},
+      { id:2, name:'駐輪場'},
+      { id:2, name:'ラーメン屋'}
+    ]
+}
+    
   },
   created() {
       const firebaseConfig = {
@@ -42,6 +84,7 @@ export default {
       const firebaseApp = firebase.initializeApp(firebaseConfig);
       db = firebaseApp.firestore();
    },
+
   mounted() {
     let map;
 
@@ -49,7 +92,10 @@ export default {
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
     map = new google.maps.Map(document.getElementById('map'), {
       center: initiallatLng,
-      zoom: 15
+      zoom: 14,
+      streetViewControl: false,
+      mapTypeControl: false,
+      fullscreenControl: false
     });
 
     //マーカーを表示する関数を作成
@@ -111,14 +157,62 @@ export default {
     },
     edit(){
       this.$router.push({ path: "/pointedit"});
-    }
+    },
   }
 }
 </script>
 
 <style>
- #settei{float: right;}
+ /* #settei{float: right;} */
  #map{ height: 500px;}
+
+/*モーダル*/
+.modal_wrap input{
+    display: none;
+}
+
+.modal_overlay{
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    opacity: 0;
+    transition: opacity 0.5s, transform 0s 0.5s;
+    transform: scale(0);
+} 
+
+.modal_content{
+    position: relative;
+    align-self: center;
+    width: 40%;
+    max-width: 600px;
+    padding: 30px 30px 15px;
+    box-sizing: border-box;
+    background: #fff;
+    line-height: 1.4em;
+    transition: 0.5s;
+}
+
+.close_button{
+    position: absolute;
+    top: 14px;
+    right: 16px;
+    font-size: 20px;
+    cursor: pointer;
+}
+
+.modal_wrap input:checked ~ .modal_overlay{
+    opacity: 1;/*透明度*/
+    transform: scale(1);
+    transition: opacity 0.5s;
+}
+
 
 </style>
 

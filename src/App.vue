@@ -1,7 +1,15 @@
 <template>
   <div id="app">
-    <h1>MyMapアプリ</h1>
-    <button id='logout'  @click="logout()">logout</button>
+  <header class="hero is-primary">
+  <div class="hero-header">
+    <div class="container">
+    <h1 class="title">MyMapアプリ</h1>
+    <div class=level-right>
+    <button class="button is-outlined"  id='logout'  @click="logout()">logout</button>
+    </div>
+    </div>
+    </div>
+  </header>
     <div id='content'>
       <router-view/>
     </div>
@@ -9,6 +17,7 @@
 </template>
 
 <script>
+import 'bulma/css/bulma.css';//CSSフレームワーク
 export default {
   name: 'app',
   methods: {
@@ -20,23 +29,5 @@ export default {
 </script>
 
 <style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
 
-.h1{
-  margin: 0 auto;
-}
-
-
-#logout{
-  float: right;
-  padding: 5px 10px;
-  margin: 40px;
-}
 </style>

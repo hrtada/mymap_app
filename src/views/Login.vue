@@ -1,11 +1,38 @@
 <template>
-  <div>
-    <h2>LOGIN</h2>
-    <button id ='login' @click="login()">login</button>
-  </div>
+<div id="app">
+<body class="layout-default">
+  <section class="hero is-fullheight is-medium is-primary">
+        <div class="hero-body">
+          <div class="container">
+            <div class="columns is-centered">
+              <article class="card is-rounded">
+                <div class="card-content">
+                  <h1 class="is-size-4 has-text-weight-bold"> Login</h1>
+                    <input class="input" type="email" placeholder="Email">
+                    <input class="input" type="password" placeholder="Password">
+                  <p class="control">
+                    <label class="checkbox">
+                      <input type="checkbox">
+                      Remember me
+                    </label>
+                  </p>
+                  <p class="control">
+                    <button id ='login' @click="login()" class="button is-primary is-medium is-fullwidth">
+                      Login
+                    </button>
+                  </p>
+                </div>
+              </article>
+            </div>
+          </div>
+    </div>
+  </section>
+</body>
+</div>
 </template>
 
 <script>
+import 'bulma/css/bulma.css';//CSSフレームワーク
 export default {
   data () {
     return {
@@ -22,9 +49,5 @@ export default {
 </script>
 
 <style>
-#login{
-  padding: 5px 12px;
-  margin: 40px;
-}
 
 </style>
