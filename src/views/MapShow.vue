@@ -11,13 +11,12 @@
             <label for="trigger2">設定</label>
           </div>
         </div> 
+        <div class="button is-outlined" @click="mapNew()">新規登録画面へ戻る</div>
       </div>
     </div> 
   </div>
 
   <div id ='map'></div>
-    <!--後で削除画面遷移確認のための仮リンク-->
-    <a @click="edit()">ﾎﾟｲﾝﾄ編集に遷移（仮）</a>
 
   <!--modal1-->
     <div class="modal_wrap">
@@ -30,7 +29,6 @@
             <ul>
               <li v-for="item in labels" v-bind:key="item.id">  {{item.name}}</li>
             </ul>
-            <button @click="show()">表示</button>
         </div>
         </div>
     </div>
@@ -45,36 +43,31 @@
         </div>
         </div>
     </div>
-
-    <!--情報ウィンドウ※-->
-    <div id="iw_wrapper">
-      <div id="infowindw">
-        <button @click="create()">新規登録</button>
-      </div>
-    </div>
 </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
 /*globals google */
+import * as firebase from "firebase/app";
+import "firebase/firestore"; 
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-export default {
+let db = null;
 
+export default {
    data () {
     return {
-      labels: [//最終的にfirestoreから取得するようにする
-        { id:1, name:'パン屋'},
-        { id:2, name:'駐輪場'},
-        { id:2, name:'ラーメン屋'}
-      ]
-    } 
+    labels: [//最終的にfirestoreから取得するようにする
+      { id:1, name:'パン屋'},
+      { id:2, name:'駐輪場'},
+      { id:2, name:'ラーメン屋'}
+    ]
+}
+    
   },
-
   created() {
-//★2019/07/25
-/*       const firebaseConfig = {
+       const firebaseConfig = {
         apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
         authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
         databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
@@ -85,12 +78,11 @@ export default {
       };
       // Initialize
       const firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebaseApp.firestore(); */
+      db = firebaseApp.firestore(); 
    },
 
   mounted() {
     let map;
-    let createPos;
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -111,25 +103,17 @@ export default {
         animation: google.maps.Animation.DROP
       });
 
-/*       //マーカーをクリック時したら削除
-      marker.addListener('click', () => {
-        marker.setMap(null);a
-      }); */
-
-      // マーカークリックで情報ウィンドウを表示
+      // マーカークリックで情報ダイアログ表示
       let info = new google.maps.InfoWindow({
-        content:document.getElementById('infowindw')
-      }); 
-      
+        content:'<input type=button id=newCreate value="修正">'
+      });
       marker.addListener('click', ()=> {
         info.open(map, marker);
-        createPos = marker.getPosition();
-        console.log(createPos);
-      });    
-
-//★2019/07/25登録画面追加のためここでは登録しないため削除もなし
+      });
+    
+    //★2019/07/25最終的には別画面で削除できるように変更する
       //マーカーをクリック時したら削除
-/*       marker.addListener('click', () => {
+      marker.addListener('click', () => {
         //クリックしたマーカーの座標を取得
         const dellatlng = marker.getPosition();
         console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
@@ -145,49 +129,26 @@ export default {
               marker.setMap(null);//マーカーを削除
             });          
           });            
-      }); */
+      }); 
     }    
-
-//★2019/07/25条件設定でフィルタするため、最初に表示しない
+//★条件指定によって表示内容を変更
     //コレクションitamotoの値を全取得しマーカーを表示
-/*     db.collection("user1").get().then((querySnapshot) => {
+     db.collection("user1").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
         //console.log('DBからの取得値%O', data);
         makeMaker(data['lat'], data['lng'], 'pointName');
       });
-    }); */
+    }); 
 
-    //マップをクリック時、マーカー表示する
-    map.addListener('click', (e) => {
-      //マーカーを表示する
-      makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
-    });
-
-//★2019/07/25登録画面追加のためここでは登録しない
-/*     //マップをクリック時、マーカー表示&firebaseに座標を登録する
-    //クリック時のイベント設定
-    map.addListener('click', (e) => {
-      //マーカーを表示する
-      makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
-
-      console.log('クリック地点の座標',e.latLng.lat(),e.latLng.lng());
-      db.collection("user1").add({//firebaseに座標を登録する
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng(),
-      })
-    }); */
   },
 
   methods: {
-    create(){
-      this.$router.push({ path: "/pointcreate" });     
+    mapNew(){
+      this.$router.push({ path: "/map" });     
     },
     edit(){
       this.$router.push({ path: "/pointedit"});
-    },
-    show(){
-      this.$router.push({ path: "/mapshow"});
     },
   }
 }
@@ -244,8 +205,6 @@ export default {
     transition: opacity 0.5s;
 }
 
-#iw_wrapper {
-  display: none;
-}
+
 </style>
 
