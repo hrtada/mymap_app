@@ -73,19 +73,6 @@ export default {
   },
 
   created() {
-//★2019/07/25
-/*       const firebaseConfig = {
-        apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
-        authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
-        databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
-        projectId: "mtfirebaseproject-64e86",
-        storageBucket: "mtfirebaseproject-64e86.appspot.com",
-        messagingSenderId: "969784300164",
-        appId: "1:969784300164:web:fddc0f90fc2a0916"
-      };
-      // Initialize
-      const firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebaseApp.firestore(); */
    },
 
   mounted() {
@@ -96,12 +83,20 @@ export default {
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
     map = new google.maps.Map(document.getElementById('map'), {
       center: initiallatLng,
-      zoom: 14,
+      zoom: 15,
       streetViewControl: false,
       mapTypeControl: false,
       fullscreenControl: false
+    }); 
+    //現在地を取得し、地図中央で再表示
+    navigator.geolocation.getCurrentPosition((position)=> {
+      const pos = {
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
+      };
+      map.setCenter(pos);
     });
-
+  
     //マーカーを表示する関数を作成
     const makeMaker = (lat, lng)=>{
       const latLng = new google.maps.LatLng(lat, lng);
@@ -127,7 +122,7 @@ export default {
         console.log(createPos);
       });    
 
-//★2019/07/25登録画面追加のためここでは登録しないため削除もなし
+//★2019/07/25MapShow.vueへ移動する
       //マーカーをクリック時したら削除
 /*       marker.addListener('click', () => {
         //クリックしたマーカーの座標を取得
@@ -148,7 +143,7 @@ export default {
       }); */
     }    
 
-//★2019/07/25条件設定でフィルタするため、最初に表示しない
+//★2019/07/25MapShow.vueへ移動する。条件設定でフィルタするため、最初に表示しない。
     //コレクションitamotoの値を全取得しマーカーを表示
 /*     db.collection("user1").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -163,20 +158,6 @@ export default {
       //マーカーを表示する
       makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
     });
-
-//★2019/07/25登録画面追加のためここでは登録しない
-/*     //マップをクリック時、マーカー表示&firebaseに座標を登録する
-    //クリック時のイベント設定
-    map.addListener('click', (e) => {
-      //マーカーを表示する
-      makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
-
-      console.log('クリック地点の座標',e.latLng.lat(),e.latLng.lng());
-      db.collection("user1").add({//firebaseに座標を登録する
-        lat: e.latLng.lat(),
-        lng: e.latLng.lng(),
-      })
-    }); */
   },
 
   methods: {
