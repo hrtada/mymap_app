@@ -1,5 +1,6 @@
 <template>
   <div>
+    <UserInfo :screenName="screen"></UserInfo>
     <div id='settei'>
       <button @click="chancel()">範囲指定</button> 
       <button @click="chancel()">設定</button>
@@ -20,13 +21,14 @@
 /*globals google */
 import * as firebase from "firebase/app";
 import "firebase/firestore";
+import UserInfo from './UserInfo'
 
 let db = null;
 
 export default {
   data () {
     return {
-      //Mypoints : [],
+      screen: "map"
     }
   },
   created() {
@@ -42,7 +44,8 @@ export default {
       // Initialize
       const firebaseApp = firebase.initializeApp(firebaseConfig);
       db = firebaseApp.firestore();
-   },
+  },
+  components: { UserInfo },
   mounted() {
     let map;
     let marker = [];

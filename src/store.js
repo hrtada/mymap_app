@@ -7,6 +7,7 @@ const store = new Vuex.Store({
 
   //state:コンポーネントでいうdata
   state: {
+    loginUser: '',
     message: 'テストstoreメッセージ'
   },
 
