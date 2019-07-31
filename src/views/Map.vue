@@ -16,8 +16,6 @@
   </div>
 
   <div id ='map'></div>
-    <!--後で削除画面遷移確認のための仮リンク-->
-    <a @click="edit()">ﾎﾟｲﾝﾄ編集に遷移（仮）</a>
 
   <!--modal1-->
     <div class="modal_wrap">
@@ -28,7 +26,7 @@
             <h1 class="has-text-weight-bold">条件指定</h1>
             <p>＜ラベルの選択＞</p>
             <ul>
-              <li v-for="item in labels" v-bind:key="item.id">  {{item.name}}</li>
+             <li v-for="item in labels" :key="item.index"> {{item.name}}</li>
             </ul>
             <button @click="show()">表示</button>
         </div>
@@ -65,9 +63,9 @@ export default {
    data () {
     return {
       labels: [//最終的にfirestoreから取得するようにする
-        { id:1, name:'パン屋'},
-        { id:2, name:'駐輪場'},
-        { id:2, name:'ラーメン屋'}
+        { name:'パン屋'},
+        { name:'駐輪場'},
+        { name:'ラーメン屋'}
       ]
     } 
   },
@@ -106,11 +104,6 @@ export default {
         animation: google.maps.Animation.DROP
       });
 
-/*       //マーカーをクリック時したら削除
-      marker.addListener('click', () => {
-        marker.setMap(null);a
-      }); */
-
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
         content:document.getElementById('infowindw')
@@ -121,38 +114,7 @@ export default {
         createPos = marker.getPosition();
         console.log(createPos);
       });    
-
-//★2019/07/25MapShow.vueへ移動する
-      //マーカーをクリック時したら削除
-/*       marker.addListener('click', () => {
-        //クリックしたマーカーの座標を取得
-        const dellatlng = marker.getPosition();
-        console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
-        //firebaseのdataと照合し、座標が一致したデータのidを返す
-        db.collection("user1").where("lat","==",dellatlng.lat()).where("lng","==",dellatlng.lng())
-          .get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const doc_id = doc.id;
-              console.log('削除対象のID',doc_id);
-              db.collection("user1").doc(doc_id).delete().then(() => {//該当データを削除
-                console.log("削除成功");
-              });
-              marker.setMap(null);//マーカーを削除
-            });          
-          });            
-      }); */
     }    
-
-//★2019/07/25MapShow.vueへ移動する。条件設定でフィルタするため、最初に表示しない。
-    //コレクションitamotoの値を全取得しマーカーを表示
-/*     db.collection("user1").get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        //console.log('DBからの取得値%O', data);
-        makeMaker(data['lat'], data['lng'], 'pointName');
-      });
-    }); */
-
     //マップをクリック時、マーカー表示する
     map.addListener('click', (e) => {
       //マーカーを表示する
@@ -163,9 +125,6 @@ export default {
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
-    },
-    edit(){
-      this.$router.push({ path: "/pointedit"});
     },
     show(){
       this.$router.push({ path: "/mapshow"});

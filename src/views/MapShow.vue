@@ -11,7 +11,7 @@
             <label for="trigger2">設定</label>
           </div>
         </div> 
-        <div class="button is-outlined" @click="mapNew()">新規登録画面へ戻る</div>
+        <div class="button is-text" @click="mapNew()">新規登録画面へ戻る</div>
       </div>
     </div> 
   </div>
@@ -27,8 +27,9 @@
             <h1 class="has-text-weight-bold">条件指定</h1>
             <p>＜ラベルの選択＞</p>
             <ul>
-              <li v-for="item in labels" v-bind:key="item.id">  {{item.name}}</li>
+              <li v-for="item in labels" v-bind:key="item.index">  {{item.name}}</li>
             </ul>
+            <button @click="filter()">表示</button>
         </div>
         </div>
     </div>
@@ -42,6 +43,13 @@
             <p>ラベルの管理…</p>
         </div>
         </div>
+    </div>
+
+    <!--情報ウィンドウ※-->
+    <div id="iw_wrapper">
+      <div id="infowindw">
+        <button @click="edit()">詳細表示</button>
+      </div>
     </div>
 </div>
 </template>
@@ -67,7 +75,7 @@ export default {
     
   },
   created() {
-       const firebaseConfig = {
+      const firebaseConfig = {
         apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
         authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
         databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
@@ -76,13 +84,16 @@ export default {
         messagingSenderId: "969784300164",
         appId: "1:969784300164:web:fddc0f90fc2a0916"
       };
-      // Initialize
-      const firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebaseApp.firestore(); 
+      // firebaseのInitialize
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+      }
+    db = firebase.firestore();
    },
 
   mounted() {
     let map;
+    let createPos;
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -103,36 +114,19 @@ export default {
         animation: google.maps.Animation.DROP
       });
 
-      // マーカークリックで情報ダイアログ表示
+      // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
-        content:'<input type=button id=newCreate value="修正">'
-      });
-      marker.addListener('click', ()=> {
-        info.open(map, marker);
-      });
-    
-    //★2019/07/25最終的には別画面で削除できるように変更する
-      //マーカーをクリック時したら削除
-      marker.addListener('click', () => {
-        //クリックしたマーカーの座標を取得
-        const dellatlng = marker.getPosition();
-        console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
-        //firebaseのdataと照合し、座標が一致したデータのidを返す
-        db.collection("user1").where("lat","==",dellatlng.lat()).where("lng","==",dellatlng.lng())
-          .get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const doc_id = doc.id;
-              console.log('削除対象のID',doc_id);
-              db.collection("user1").doc(doc_id).delete().then(() => {//該当データを削除
-                console.log("削除成功");
-              });
-              marker.setMap(null);//マーカーを削除
-            });          
-          });            
+        content:document.getElementById('infowindw')
       }); 
-    }    
-//★条件指定によって表示内容を変更
-    //コレクションitamotoの値を全取得しマーカーを表示
+
+        marker.addListener('click', ()=> {
+        info.open(map, marker);
+        createPos = marker.getPosition();
+        console.log(createPos);
+      });  
+    
+    //★条件指定によって表示内容を変更できるようにする
+    //コレクションuser１の値を全取得しマーカーを表示
      db.collection("user1").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const data = doc.data();
@@ -150,6 +144,9 @@ export default {
     edit(){
       this.$router.push({ path: "/pointedit"});
     },
+    filter(){//条件指定での表示に変更予定
+    
+    }
   }
 }
 </script>
@@ -205,6 +202,9 @@ export default {
     transition: opacity 0.5s;
 }
 
+#iw_wrapper {
+  display: none;
+}
 
 </style>
 
