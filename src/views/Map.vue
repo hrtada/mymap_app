@@ -111,7 +111,8 @@ export default {
       marker.addListener('click', ()=> {
         info.open(map, marker);
         const getPos = marker.getPosition();//緯度経度情報を渡す
-
+        console.log(getPos);
+        this.$store.commit('setPos', {createPos: getPos});
 /*         this.$store.state.createPos = marker.getPosition();//緯度経度情報を渡す
         console.log(this.$store.state.createPos); */
       });    

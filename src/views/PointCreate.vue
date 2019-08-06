@@ -67,6 +67,7 @@ export default {
     }
   },
   created() {
+    console.log(this.$store.state.createPos);
   },
   methods: {
     open(){
