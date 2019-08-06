@@ -10,8 +10,11 @@
           <div class="control">
             <label for="trigger2">設定</label>
           </div>
+          <div class="control">
+            <label @click="mapNew()">新規登録画面へ戻る</label>
+          </div>
         </div> 
-        <div class="button is-text" @click="mapNew()">新規登録画面へ戻る</div>
+
       </div>
     </div> 
   </div>
@@ -27,7 +30,7 @@
             <h1 class="has-text-weight-bold">条件指定</h1>
             <p>＜ラベルの選択＞</p>
             <ul>
-              <li v-for="item in labels" v-bind:key="item.index">  {{item.name}}</li>
+              <li v-for="item in $store.state.tag" :key="item.index" > {{item}}</li>            
             </ul>
             <button @click="filter()">表示</button>
         </div>
@@ -57,43 +60,26 @@
 <script>
 /* eslint-disable no-console */
 /*globals google */
-import * as firebase from "firebase/app";
-import "firebase/firestore"; 
+import db from '../firestore';
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-let db = null;
+//let db = null;
 
 export default {
    data () {
-    return {
-    labels: [//最終的にfirestoreから取得するようにする
-      { id:1, name:'パン屋'},
-      { id:2, name:'駐輪場'},
-      { id:2, name:'ラーメン屋'}
-    ]
-}
-    
+     return{}
   },
+
   created() {
-      const firebaseConfig = {
-        apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
-        authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
-        databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
-        projectId: "mtfirebaseproject-64e86",
-        storageBucket: "mtfirebaseproject-64e86.appspot.com",
-        messagingSenderId: "969784300164",
-        appId: "1:969784300164:web:fddc0f90fc2a0916"
-      };
-      // firebaseのInitialize
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-      }
-    db = firebase.firestore();
-   },
+  },
 
   mounted() {
     let map;
-    let createPos;
+
+     //ラベル情報を取得
+    db.collection("user1").doc("label").get().then((doc)=>{
+          this.$store.state.tag = doc.data();
+      });
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -121,11 +107,11 @@ export default {
 
         marker.addListener('click', ()=> {
         info.open(map, marker);
-        createPos = marker.getPosition();
-        console.log(createPos);
+        this.$store.state.editPos = marker.getPosition();//緯度経度情報を渡す
+        console.log(this.$store.state.editPos);
       });  
-    
-    //★条件指定によって表示内容を変更できるようにする
+    }
+    //★条件指定（filter）によって表示内容を変更できるようにする
     //コレクションuser１の値を全取得しマーカーを表示
      db.collection("user1").get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -134,7 +120,7 @@ export default {
         makeMaker(data['lat'], data['lng'], 'pointName');
       });
     }); 
-
+  
   },
 
   methods: {

@@ -17,6 +17,7 @@
 </template>
 
 <script>
+/* eslint-disable no-console */
 import 'bulma/css/bulma.css';//CSSフレームワーク
 export default {
   name: 'app',
@@ -24,7 +25,7 @@ export default {
     logout () {
       this.$router.push({ path: "/" });
     }
-  }
+  },
 }
 </script>
 

@@ -86,14 +86,13 @@ export default {
       //       });          
       //     });            
       // }); 
-    }    
-  },
+    },
   methods: {
     open(){
       this.$router.push({ path: "/picture" });     
     },
     chancel(){
-      this.$router.push({ path: "/map" });  
+      this.$router.push({ path: "/mapshow" });  
     }
   }
 }

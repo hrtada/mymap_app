@@ -26,7 +26,7 @@
             <h1 class="has-text-weight-bold">条件指定</h1>
             <p>＜ラベルの選択＞</p>
             <ul>
-             <li v-for="item in labels" :key="item.index"> {{item.name}}</li>
+              <li v-for="item in $store.state.tag" :key="item.index" > {{item}}</li>
             </ul>
             <button @click="show()">表示</button>
         </div>
@@ -57,25 +57,24 @@
 /* eslint-disable no-console */
 /*globals google */
 import 'bulma/css/bulma.css';//CSSフレームワーク
+import db from '../firestore';
 
 export default {
-
    data () {
-    return {
-      labels: [//最終的にfirestoreから取得するようにする
-        { name:'パン屋'},
-        { name:'駐輪場'},
-        { name:'ラーメン屋'}
-      ]
-    } 
+     return{}
   },
 
-  created() {
-   },
+  computed:{
+    createPos(){return this.$store.getters.createPos}
+  },
 
   mounted() {
-    let map;
-    let createPos;
+  let map;
+
+    //ラベル情報を取得
+    db.collection("user1").doc("label").get().then((doc)=>{
+          this.$store.state.tag = doc.data();
+      });
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -108,11 +107,13 @@ export default {
       let info = new google.maps.InfoWindow({
         content:document.getElementById('infowindw')
       }); 
-      
+    
       marker.addListener('click', ()=> {
         info.open(map, marker);
-        createPos = marker.getPosition();
-        console.log(createPos);
+        const getPos = marker.getPosition();//緯度経度情報を渡す
+
+/*         this.$store.state.createPos = marker.getPosition();//緯度経度情報を渡す
+        console.log(this.$store.state.createPos); */
       });    
     }    
     //マップをクリック時、マーカー表示する
@@ -120,6 +121,9 @@ export default {
       //マーカーを表示する
       makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
     });
+  },
+
+  created(){
   },
 
   methods: {

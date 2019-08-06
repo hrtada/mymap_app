@@ -46,55 +46,40 @@
         </div>
       </div>
     </div>
+ 
   </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
-import * as firebase from "firebase/app";
-import "firebase/firestore";
+import db from '../firestore';
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-let db = null;
-
 export default {
+  
   data () {
     return {
       label: null,
       date: null,
       memo: null,
+      newlat: null,
+      newlng: null,
     }
   },
   created() {
-    const firebaseConfig = {
-      apiKey: "AIzaSyAGOB6BSOtrSwkcAr8uA4HeIlZk29AdYsU",
-      authDomain: "mtfirebaseproject-64e86.firebaseapp.com",
-      databaseURL: "https://mtfirebaseproject-64e86.firebaseio.com",
-      projectId: "mtfirebaseproject-64e86",
-      storageBucket: "mtfirebaseproject-64e86.appspot.com",
-      messagingSenderId: "969784300164",
-      appId: "1:969784300164:web:fddc0f90fc2a0916"
-    };
-    // firebaseのInitialize
-    if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
-      }
-    db = firebase.firestore();
-/*       // Initialize
-      const firebaseApp = firebase.initializeApp(firebaseConfig);
-      db = firebaseApp.firestore(); */ 
   },
   methods: {
     open(){
       this.$router.push({ path: "/picture" });     
+
     },
     chancel(){
       this.$router.push({ path: "/map" });  
     },
     entry(){
-        db.collection("user1").add({//firebaseに座標を登録する
-          //lat: e.latLng.lat(),//緯度経度はvuex関連で後回し
-          //lng: e.latLng.lng(),
+        db.collection("user1").add({//firebaseに登録する
+          lat:this.newlat,
+          lng:this.newlng,
           label: this.label,
           date: this.date,
           memo: this.memo
