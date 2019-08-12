@@ -8,8 +8,8 @@
             <div class="control">
               <div class="select">
                 <select v-model="label">
-                  <option>パン屋</option><!--暫定の表示ラベル情報は共通で使えるようにする-->
-                  <option>駐輪場</option>
+                  <option v-for="item in $store.state.label" :key="item.index"> {{item.name}}
+                  </option>
                 </select>
               </div>
             </div>
@@ -43,6 +43,9 @@
           <div class="control">
             <button @click="chancel()" class="button is-link">ｷｬﾝｾﾙ</button>
           </div>
+          <div class="control">
+            <button @click="del()" class="button is-link">削除</button>
+          </div>
         </div>
       </div>
     </div>
@@ -51,49 +54,64 @@
 
 <script>
 /* eslint-disable no-console */
-import * as firebase from "firebase/app";
-import "firebase/firestore";
+import db from '../firestore';
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-let db = null;
+let docId;
 
 export default {
+
   data () {
     return {
+      label: null,
+      date: null,
+      memo: null,
+      lat: null,
+      lng: null,
     }
   },
   created() {
   },
 
   mounted() {
+   //クリックしたマーカーの位置情報からデータを抽出する
+    const posRef = db.collection('user1').where("lat","==",this.$store.state.editLat).where("lng","==",this.$store.state.editLng);//座標が一致するデータのクエリ
+    posRef.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        const pos = doc.data();
+        docId = doc.id;
+        this.label = pos['label'];
+        this.memo = pos['memo'];
+        this.date = pos['date'];
+        this.lat = pos['lat'];
+        this.lng = pos['lng'];
+      })      
+    });
+  },
 
-    //★2019/07/25Mapから移動
-      //マーカーをクリック時したら削除
-      // marker.addListener('click', () => {
-      //   //クリックしたマーカーの座標を取得
-      //   const dellatlng = marker.getPosition();
-      //   console.log('削除対象の座標',dellatlng.lat(),dellatlng.lng());
-      //   //firebaseのdataと照合し、座標が一致したデータのidを返す
-      //   db.collection("user1").where("lat","==",dellatlng.lat()).where("lng","==",dellatlng.lng())
-      //     .get().then((querySnapshot) => {
-      //       querySnapshot.forEach((doc) => {
-      //         const doc_id = doc.id;
-      //         console.log('削除対象のID',doc_id);
-      //         db.collection("user1").doc(doc_id).delete().then(() => {//該当データを削除
-      //           console.log("削除成功");
-      //         });
-      //         marker.setMap(null);//マーカーを削除
-      //       });          
-      //     });            
-      // }); 
-    },
   methods: {
     open(){
       this.$router.push({ path: "/picture" });     
     },
     chancel(){
       this.$router.push({ path: "/mapshow" });  
+    },
+    entry(){
+      db.collection('user1').doc(docId).set({//更新する
+          lat: this.lat,
+          lng: this.lng,
+          label: this.label,
+          date: this.date,
+          memo: this.memo
+      }).then(() => {
+      this.$router.push({ path: "/mapshow" });
+      })
+    },
+    del(){
+      db.collection('user1').doc(docId).delete().then(() => {//該当データを削除
+      this.$router.push({ path: "/mapshow" });
+      })
     }
-  }
+  },
 }
 </script>

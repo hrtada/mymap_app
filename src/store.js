@@ -4,65 +4,48 @@ import Vuex from 'vuex'
 Vue.use(Vuex)
 
 const store = new Vuex.Store({
- state:{
-    tag: [],
-    createPos: null,
-    editPos:[],
+state:{
+    label:null,
+    newLat:0,
+    newLng:0,
+    editLat:0,
+    editLng:0,
+    checked:null,
  },
 
- getters:{
-    createPos(state){return state.createPos}
+getters:{
+   newLat(state){return state.newLat},
+   newLng(state){return state.newLng},
+   editLat(state){return state.editLat},
+   editLng(state){return state.editLng},
+   label(state){return state.label},
+
  },
 
- mutations:{
-     setPos(state,payload){
-         state.createPos = payload.createPos
-     }
- },
+mutations:{
+  setnewLat(state,payload){
+         state.newLat = payload.newLat
+  },
+  setnewLng(state,payload){
+    state.newLng = payload.newLng
+  },
+  seteditLat(state,payload){
+    state.editLat = payload.editLat
+  },
+  seteditLng(state,payload){
+    state.editLng = payload.editLng
+  },
+  setlabel(state,payload){
+   state.label = payload.label
+  },
+  setchecked(state,payload){
+    state.checked = payload.checked
+   }
+},
 
- actions:{
-     doUpdate({commit},createPos){
-         commit('setPos',{createPos})
-     }
- }
+actions:{
+}
 
  })
 
 export default store
-
-
-/*サンプル↓↓
-/* const store = new Vuex.Store({
-
-  //state:コンポーネントでいうdata
-  state: {
-    message: 'テストstoreメッセージ'
-  },
-
-  //getters:コンポーネントでいうcomputed的なもの
-  getters:{
-    //messageを使用するgetter
-    message(state) {
-      return state.message
-    }
-  },
-
-  //mutations:コンポーネントでいうmethod（と言うかsetter）
-  //stateを唯一変更できるもの
-  mutations: {
-    //vuexでは引数をpayloadと呼ぶっぽい
-    //payloadはオブジェクトにするべき（いっぱい入れれるし）
-    setMessage(state,payload){
-      state.message = payload.message
-    }
-  },
-
-  //actionのコミットを使うことでミューテーションを呼び出す（コンポーネントには無い概念）
-  actions: {
-    doUpdate({commit}, message){
-      commit('setMessage',{message})
-    }
-  }
-}) 
-サンプル↑↑*/
-

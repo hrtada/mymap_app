@@ -8,8 +8,8 @@
             <div class="control">
               <div class="select">
                 <select v-model="label">
-                  <option>パン屋</option><!--暫定の表示ラベル情報は共通で使えるようにする-->
-                  <option>駐輪場</option>
+                  <option v-for="item in $store.state.label" :key="item.index"> {{item.name}}
+                  </option>
                 </select>
               </div>
             </div>
@@ -62,12 +62,11 @@ export default {
       label: null,
       date: null,
       memo: null,
-      newlat: null,
-      newlng: null,
     }
   },
   created() {
-    console.log(this.$store.state.createPos);
+    console.log(this.$store.state.label);
+    
   },
   methods: {
     open(){
@@ -79,13 +78,13 @@ export default {
     },
     entry(){
         db.collection("user1").add({//firebaseに登録する
-          lat:this.newlat,
-          lng:this.newlng,
+          lat: this.$store.state.newLat,
+          lng: this.$store.state.newLng,
           label: this.label,
           date: this.date,
           memo: this.memo
         }).then((docRef)=> {
-        console.log('Document written with ID: ', docRef.id);
+        console.log('Document written with ID: ', docRef.id);//登録時のdocIDを表示
         this.$router.push({ path: "/map" });//登録したら前画面に戻る
         }).catch(function (error) {
         console.error('Error adding document: ', error);

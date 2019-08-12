@@ -2,47 +2,49 @@
 <div>
   <div class="hero is-primary">
     <div class="hero-header">
-      <div class="container">
-        <div class="field is-grouped">
-          <div class="control">
-            <label for="trigger1">条件指定</label>
-          </div>
-          <div class="control">
-            <label for="trigger2">設定</label>
-          </div>
-        </div> 
+      <div class="field is-grouped">
+        <div class="control">
+        <section class="accordions">
+          <article class="accordion">
+            <div class="accordion-header toggle">
+              <label>条件指定</label>
+            </div>
+            <div class="accordion-body">
+              <div class="accordion-content">
+                <p class="has-text-weight-bold">ラベルの選択</p>
+                <ul>
+                <li v-for="item in $store.state.label" :key="item.index">
+                  <label><input type="radio" name="label" :value="item.name" v-model="checked">
+                  {{ item.name }}
+                  </label>
+                </li>
+                </ul>
+                <button @click="show()">表示</button>
+              </div>
+            </div>
+          </article>
+        </section>
+        </div>
+        <div class="control">
+        <section class="accordions">
+          <article class="accordion">
+            <div class="accordion-header toggle">
+              <label>設定</label>
+            </div>
+            <div class="accordion-body">
+
+              <div class="accordion-content">
+                <button class="button is-light" @click="labelMnt()">ラベルの設定</button>
+              </div>
+            </div>
+          </article>
+        </section>
+        </div>
       </div>
     </div> 
   </div>
 
   <div id ='map'></div>
-
-  <!--modal1-->
-    <div class="modal_wrap">
-      <input type="checkbox" id="trigger1">
-        <div class="modal_overlay">
-        <div class="modal_content">
-            <label for="trigger1" class="close_button">✖️</label>
-            <h1 class="has-text-weight-bold">条件指定</h1>
-            <p>＜ラベルの選択＞</p>
-            <ul>
-              <li v-for="item in $store.state.tag" :key="item.index" > {{item}}</li>
-            </ul>
-            <button @click="show()">表示</button>
-        </div>
-        </div>
-    </div>
-    <!--modal2-->
-    <div class="modal_wrap">
-      <input type="checkbox" id="trigger2">
-        <div class="modal_overlay">
-        <div class="modal_content">
-            <label for="trigger2" class="close_button">✖️</label>
-            <h1 class="has-text-weight-bold">設定</h1>
-            <p>ラベルの管理…</p>
-        </div>
-        </div>
-    </div>
 
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
@@ -56,25 +58,36 @@
 <script>
 /* eslint-disable no-console */
 /*globals google */
+import bulmaAccordion from 'bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js';//blumaのextenionをimport
+import 'bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 import db from '../firestore';
 
 export default {
+  name: 'cool-component',
    data () {
-     return{}
+    return{
+      accordions : [],//bulmaのアコーディオンメニューを使うために必要
+      checked :null//条件設定のラジオボタンの値
+     }
   },
 
   computed:{
-    createPos(){return this.$store.getters.createPos}
+    newLat(){return this.$store.getters.newLat},//storeのgetterと同期する
+    newLng(){return this.$store.getters.newLng},
+    label(){return this.$store.getters.label},
   },
 
   mounted() {
   let map;
+  this.accordions = bulmaAccordion.attach()//bulmaのアコーディオンメニューを使うために必要
 
-    //ラベル情報を取得
-    db.collection("user1").doc("label").get().then((doc)=>{
-          this.$store.state.tag = doc.data();
-      });
+  //ラベル情報を取得し、storeに渡す
+  const labelRef = db.collection('user1').doc('option').collection('label'); 
+  labelRef.get().then(querySnapshot => {
+  const label = querySnapshot.docs.map(doc => doc.data());
+  this.$store.commit('setlabel',{label: label});
+  });
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -110,11 +123,11 @@ export default {
     
       marker.addListener('click', ()=> {
         info.open(map, marker);
-        const getPos = marker.getPosition();//緯度経度情報を渡す
-        console.log(getPos);
-        this.$store.commit('setPos', {createPos: getPos});
-/*         this.$store.state.createPos = marker.getPosition();//緯度経度情報を渡す
-        console.log(this.$store.state.createPos); */
+        const mLat = marker.getPosition().lat();//緯度情報を渡す
+        const mLng = marker.getPosition().lng();
+        //console.log(mLat,mLng);
+        this.$store.commit('setnewLat', {newLat: mLat});//store.stateに渡す
+        this.$store.commit('setnewLng', {newLng: mLng});
       });    
     }    
     //マップをクリック時、マーカー表示する
@@ -124,73 +137,34 @@ export default {
     });
   },
 
-  created(){
-  },
-
   methods: {
     create(){
       this.$router.push({ path: "/pointcreate" });     
     },
     show(){
+      if(this.checked == null ){
+        alert("ラベルを選択してください。");
+        return false;
+      }else{     
+      this.$store.commit('setchecked',{checked: this.checked});
+      console.log(this.$store.state.checked)
       this.$router.push({ path: "/mapshow"});
+      }
+    },
+    labelMnt(){
+    this.$router.push({ path: "/labelmnt" });     
     },
   }
 }
 </script>
 
-<style>
- /* #settei{float: right;} */
- #map{ height: 500px;}
+<style> 
+ #map{ 
+   height: 500px;
+   }
+ #iw_wrapper{/*情報ウィンドウからボタンを操作するためのもの*/
+   display: none
+ }
 
-/*モーダル*/
-.modal_wrap input{
-    display: none;
-}
-
-.modal_overlay{
-    display: flex;
-    justify-content: center;
-    overflow: auto;
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 9999;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.7);
-    opacity: 0;
-    transition: opacity 0.5s, transform 0s 0.5s;
-    transform: scale(0);
-} 
-
-.modal_content{
-    position: relative;
-    align-self: center;
-    width: 40%;
-    max-width: 600px;
-    padding: 30px 30px 15px;
-    box-sizing: border-box;
-    background: #fff;
-    line-height: 1.4em;
-    transition: 0.5s;
-}
-
-.close_button{
-    position: absolute;
-    top: 14px;
-    right: 16px;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.modal_wrap input:checked ~ .modal_overlay{
-    opacity: 1;/*透明度*/
-    transform: scale(1);
-    transition: opacity 0.5s;
-}
-
-#iw_wrapper {
-  display: none;
-}
 </style>
 
