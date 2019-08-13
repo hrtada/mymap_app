@@ -86,7 +86,7 @@ export default {
   const labelRef = db.collection('user1').doc('option').collection('label'); 
   labelRef.get().then(querySnapshot => {
   const label = querySnapshot.docs.map(doc => doc.data());
-  this.$store.commit('setlabel',{label: label});
+  this.$store.commit('setLabel',{label: label});
   });
 
     //地図を表示（下のforEach内にいれないこと）
@@ -126,8 +126,8 @@ export default {
         const mLat = marker.getPosition().lat();//緯度情報を渡す
         const mLng = marker.getPosition().lng();
         //console.log(mLat,mLng);
-        this.$store.commit('setnewLat', {newLat: mLat});//store.stateに渡す
-        this.$store.commit('setnewLng', {newLng: mLng});
+        this.$store.commit('setNewLat', {newLat: mLat});//store.stateに渡す
+        this.$store.commit('setNewLng', {newLng: mLng});
       });    
     }    
     //マップをクリック時、マーカー表示する
@@ -146,7 +146,7 @@ export default {
         alert("ラベルを選択してください。");
         return false;
       }else{     
-      this.$store.commit('setchecked',{checked: this.checked});
+      this.$store.commit('setChecked',{checked: this.checked});
       console.log(this.$store.state.checked)
       this.$router.push({ path: "/mapshow"});
       }

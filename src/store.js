@@ -23,22 +23,22 @@ getters:{
  },
 
 mutations:{
-  setnewLat(state,payload){
+  setNewLat(state,payload){
          state.newLat = payload.newLat
   },
-  setnewLng(state,payload){
+  setNewLng(state,payload){
     state.newLng = payload.newLng
   },
-  seteditLat(state,payload){
+  setEditLat(state,payload){
     state.editLat = payload.editLat
   },
-  seteditLng(state,payload){
+  setEditLng(state,payload){
     state.editLng = payload.editLng
   },
-  setlabel(state,payload){
+  setLabel(state,payload){
    state.label = payload.label
   },
-  setchecked(state,payload){
+  setChecked(state,payload){
     state.checked = payload.checked
    }
 },

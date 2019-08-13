@@ -77,8 +77,8 @@ export default {
         info.open(map, marker);
         const mLat = marker.getPosition().lat();//緯度情報を渡す
         const mLng = marker.getPosition().lng();
-        this.$store.commit('seteditLat', {editLat: mLat});//store.stateに渡す
-        this.$store.commit('seteditLng', {editLng: mLng});
+        this.$store.commit('setEditLat', {editLat: mLat});//store.stateに渡す
+        this.$store.commit('setEditLng', {editLng: mLng});
       });  
 
     }

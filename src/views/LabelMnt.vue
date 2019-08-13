@@ -56,7 +56,7 @@ export default {
     const labelRef = db.collection('user1').doc('option').collection('label'); 
     labelRef.get().then(querySnapshot => {
     const label = querySnapshot.docs.map(doc => doc.data());
-    this.$store.commit('setlabel',{label: label});
+    this.$store.commit('setLabel',{label: label});
 
     this.label =  this.$store.state.label   
     });
