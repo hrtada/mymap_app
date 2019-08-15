@@ -13,7 +13,7 @@
               <div class="accordion-content">
                 <p class="has-text-weight-bold">ラベルの選択</p>
                 <ul>
-                <li v-for="item in $store.state.label" :key="item.index">
+                <li v-for="item in $store.state.label" :key="item.name">
                   <label><input type="radio" name="label" :value="item.name" v-model="checked">
                   {{ item.name }}
                   </label>
@@ -56,7 +56,7 @@
 </template>
 
 <script>
-/* eslint-disable no-console */
+/*eslint-disable no-console */
 /*globals google */
 import bulmaAccordion from 'bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js';//blumaのextenionをimport
 import 'bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css'
@@ -64,7 +64,6 @@ import 'bulma/css/bulma.css';//CSSフレームワーク
 import db from '../firestore';
 
 export default {
-  name: 'cool-component',
    data () {
     return{
       accordions : [],//bulmaのアコーディオンメニューを使うために必要
@@ -125,14 +124,13 @@ export default {
         info.open(map, marker);
         const mLat = marker.getPosition().lat();//緯度情報を渡す
         const mLng = marker.getPosition().lng();
-        //console.log(mLat,mLng);
         this.$store.commit('setnewLat', {newLat: mLat});//store.stateに渡す
         this.$store.commit('setnewLng', {newLng: mLng});
       });    
     }    
     //マップをクリック時、マーカー表示する
     map.addListener('click', (e) => {
-      //マーカーを表示する
+    //マーカーを表示する
       makeMaker(e.latLng.lat(),e.latLng.lng(), e.latLng.toString());
     });
   },
@@ -146,8 +144,7 @@ export default {
         alert("ラベルを選択してください。");
         return false;
       }else{     
-      this.$store.commit('setchecked',{checked: this.checked});
-      console.log(this.$store.state.checked)
+      this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
       this.$router.push({ path: "/mapshow"});
       }
     },

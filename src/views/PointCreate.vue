@@ -65,7 +65,6 @@ export default {
     }
   },
   created() {
-    console.log(this.$store.state.label);
     
   },
   methods: {
@@ -83,8 +82,7 @@ export default {
           label: this.label,
           date: this.date,
           memo: this.memo
-        }).then((docRef)=> {
-        console.log('Document written with ID: ', docRef.id);//登録時のdocIDを表示
+        }).then(()=> {
         this.$router.push({ path: "/map" });//登録したら前画面に戻る
         }).catch(function (error) {
         console.error('Error adding document: ', error);

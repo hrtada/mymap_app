@@ -45,6 +45,7 @@ export default {
     let map;
 
     //地図を表示（下のforEach内にいれないこと）
+    const bounds = new google.maps.LatLngBounds();
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
     map = new google.maps.Map(document.getElementById('map'), {
       center: initiallatLng,
@@ -62,11 +63,10 @@ export default {
         position: latLng,
         map: map,
         animation: google.maps.Animation.DROP
+
       });
-      //マーカーの表示領域を調整
-      let bounds = new google.maps.LatLngBounds();
+      //マーカーの表示領域を調整のための位置座標を取得
       bounds.extend (marker.position);
-      map.fitBounds (bounds);
 
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
@@ -87,9 +87,10 @@ export default {
       const posRef = db.collection('user1').where("label","==",checked);
       posRef.get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
-        let data = doc.data();
-        makeMaker(data['lat'], data['lng'], 'pointName');
+          const posData = doc.data();
+          makeMaker(posData['lat'], posData['lng'], 'pointName');
         });
+        map.fitBounds (bounds);//全マーカーが表示されるように調整
     })
 
   },
