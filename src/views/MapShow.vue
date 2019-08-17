@@ -24,9 +24,10 @@
 <script>
 /* eslint-disable no-console */
 /*globals google */
-import db from '../firestore';
 import 'bulma/css/bulma.css';//CSSフレームワーク
+import  firebaseApp from '../firebase';
 
+let db = firebaseApp.firestore()
 
 export default {
    data () {

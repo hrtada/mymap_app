@@ -34,7 +34,7 @@
             <div class="accordion-body">
 
               <div class="accordion-content">
-                <button class="button is-light" @click="labelMnt()">ラベルの設定</button>
+                <button class="button is-light" @click="labelMnt()">ラベルの設定※未完成</button>
               </div>
             </div>
           </article>
@@ -61,7 +61,9 @@
 import bulmaAccordion from 'bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js';//blumaのextenionをimport
 import 'bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css'
 import 'bulma/css/bulma.css';//CSSフレームワーク
-import db from '../firestore';
+import  firebaseApp from '../firebase';
+
+let db = firebaseApp.firestore()
 
 export default {
    data () {
