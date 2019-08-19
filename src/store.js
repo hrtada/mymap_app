@@ -11,6 +11,8 @@ state:{
     editLat:0,
     editLng:0,
     checked:null,
+    userUid:null,
+    userName:null,
  },
 
 getters:{
@@ -19,7 +21,8 @@ getters:{
    editLat(state){return state.editLat},
    editLng(state){return state.editLng},
    label(state){return state.label},
-
+/*    userUid(state){return state.userUid},
+   userName(state){return state.userName}, */
  },
 
 mutations:{
@@ -40,6 +43,12 @@ mutations:{
   },
   setchecked(state,payload){
     state.checked = payload.checked
+   },
+   setuserUid(state,payload){
+    state.userUid = payload.userUid
+   },
+   setuserName(state,payload){
+    state.userName = payload.userName
    }
 },
 

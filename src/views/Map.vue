@@ -13,8 +13,8 @@
               <div class="accordion-content">
                 <p class="has-text-weight-bold">ラベルの選択</p>
                 <ul>
-                <li v-for="item in $store.state.label" :key="item.name">
-                  <label><input type="radio" name="label" :value="item.name" v-model="checked">
+                <li v-for="item in $store.state.label" :key="item.id">
+                  <label><input type="radio" name="label" :value="item.id" v-model="checked">
                   {{ item.name }}
                   </label>
                 </li>
@@ -34,7 +34,7 @@
             <div class="accordion-body">
 
               <div class="accordion-content">
-                <button class="button is-light" @click="labelMnt()">ラベルの設定※未完成</button>
+                <button class="button is-light" @click="labelMnt()">ラベルの設定</button>
               </div>
             </div>
           </article>
@@ -84,11 +84,23 @@ export default {
   this.accordions = bulmaAccordion.attach()//bulmaのアコーディオンメニューを使うために必要
 
   //ラベル情報を取得し、storeに渡す
-  const labelRef = db.collection('user1').doc('option').collection('label'); 
+/*    const labelRef = db.collection('user1').doc('option').collection('label'); 
   labelRef.get().then(querySnapshot => {
   const label = querySnapshot.docs.map(doc => doc.data());
   this.$store.commit('setlabel',{label: label});
-  });
+  console.log(label)
+  });  */
+
+  //ラベル情報を取得し、storeに渡す
+  const labelRef = db.collection('user1').doc('option').collection('label'); 
+  let label =[];
+  labelRef.get().then((querySnapshot) => {
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      label.push({id:doc.id, name:data.name});
+      this.$store.commit('setlabel',{label: label});
+  })
+  }); 
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);

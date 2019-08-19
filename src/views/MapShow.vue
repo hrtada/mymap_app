@@ -86,10 +86,12 @@ export default {
     //コレクションuser１と条件指定で選択したラベル情報から取得しマーカー表示
       const checked = this.$store.state.checked
       const posRef = db.collection('user1').where("label","==",checked);
+    
       posRef.get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           const posData = doc.data();
-          makeMaker(posData['lat'], posData['lng'], 'pointName');
+          makeMaker(posData['lat'], posData['lng']);
+          console.log(posData)
         });
         map.fitBounds (bounds);//全マーカーが表示されるように調整
     })

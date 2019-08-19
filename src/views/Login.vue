@@ -8,19 +8,6 @@
               <article class="card is-rounded">
                 <div class="card-content">
                   <h1 class="is-size-4 has-text-weight-bold"> Login</h1>
-                    <!-- <input class="input" type="email" placeholder="Email">
-                    <input class="input" type="password" placeholder="Password">
-                  <p class="control">
-                    <label class="checkbox">
-                      <input type="checkbox">
-                      Remember me
-                    </label>
-                  </p> -->
-<!--                   <p class="control">
-                    <button id ='login' @click="login()" class="button is-primary is-medium is-fullwidth">
-                      Login
-                    </button>                   
-                  </p> -->
                   <button @click="login()"><img src="../assets/btn_google_signin.png" alt="ログインする"></button>
                 </div>
               </article>
@@ -41,34 +28,12 @@ import * as firebase from "firebase/app";
 export default {
   data () {
     return {
+      userUid:null,
+      userName:null,
     }
   },
-  created() {
-    
-/*     firebaseApp.auth().onAuthStateChanged((authUser) => {
-      if (authUser) {
-        console.log(authUser);
-      }
-    });
 
-  this.provider = new firebase.auth.GoogleAuthProvider();
-  this.provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
-
-    firebaseApp 
-      .auth()
-      .signInWithPopup(this.provider)
-      .then(result => {
-        // const token = result.credential.accessToken
-        console.log(result.user);
-        this.$router.push({ path: "/map" });
-      })
-      .catch(function(error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        // const email = error.email
-        // const credential = error.credential
-        console.log(errorCode + " : " + errorMessage);
-      }); */
+  created() {   
   },
 
   methods: {
@@ -88,7 +53,13 @@ export default {
       .signInWithPopup(this.provider)
       .then(result => {
         // const token = result.credential.accessToken
-        console.log(result.user);
+        //ログインユーザーのIDと名前を取得
+        const user = result.user;
+        const userUid = user.uid;
+        const userName = user.displayName;
+        this.$store.commit('setuserUid',{userUid:userUid});
+        this.$store.commit('setuserName',{userName:userName});
+        //console.log(this.$store.state.userName);
         this.$router.push({ path: "/map" });
       })
       .catch(function(error) {

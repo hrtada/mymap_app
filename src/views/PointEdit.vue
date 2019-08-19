@@ -8,7 +8,7 @@
             <div class="control">
               <div class="select">
                 <select v-model="label">
-                  <option v-for="item in $store.state.label" :key="item.index"> {{item.name}}
+                  <option v-for="item in $store.state.label" :key="item.id" v-bind:value="item.id"> {{item.name}}
                   </option>
                 </select>
               </div>
