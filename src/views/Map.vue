@@ -84,21 +84,17 @@ export default {
   this.accordions = bulmaAccordion.attach()//bulmaのアコーディオンメニューを使うために必要
 
   //ラベル情報を取得し、storeに渡す
-/*    const labelRef = db.collection('user1').doc('option').collection('label'); 
-  labelRef.get().then(querySnapshot => {
-  const label = querySnapshot.docs.map(doc => doc.data());
-  this.$store.commit('setlabel',{label: label});
-  console.log(label)
-  });  */
-
-  //ラベル情報を取得し、storeに渡す
-  const labelRef = db.collection('user1').doc('option').collection('label'); 
+  const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
+  labelRef.doc('0').set({//初期ラベルとして登録する※ラベル登録時に配列が存在せずエラーになるため
+    name:'初期ラベル'
+    })
   let label =[];
   labelRef.get().then((querySnapshot) => {
     querySnapshot.forEach((doc) => {
       const data = doc.data();
       label.push({id:doc.id, name:data.name});
       this.$store.commit('setlabel',{label: label});
+      console.log(data)
   })
   }); 
 
@@ -171,7 +167,8 @@ export default {
 
 <style> 
  #map{ 
-   height: 500px;
+    height: 700px;
+
    }
  #iw_wrapper{/*情報ウィンドウからボタンを操作するためのもの*/
    display: none

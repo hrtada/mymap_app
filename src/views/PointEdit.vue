@@ -76,11 +76,12 @@ export default {
 
   mounted() {
    //クリックしたマーカーの位置情報からデータを抽出する
-    const posRef = db.collection('user1').where("lat","==",this.$store.state.editLat).where("lng","==",this.$store.state.editLng);//座標が一致するデータのクエリ
+    const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("lat","==",this.$store.state.editLat).where("lng","==",this.$store.state.editLng);//座標が一致するデータのクエリ
     posRef.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const pos = doc.data();
         docId = doc.id;
+        console.log(docId);
         this.label = pos['label'];
         this.memo = pos['memo'];
         this.date = pos['date'];
@@ -98,7 +99,7 @@ export default {
       this.$router.push({ path: "/mapshow" });  
     },
     entry(){
-      db.collection('user1').doc(docId).set({//更新する
+      db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
           lat: this.lat,
           lng: this.lng,
           label: this.label,

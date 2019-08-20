@@ -59,7 +59,7 @@ export default {
         const userName = user.displayName;
         this.$store.commit('setuserUid',{userUid:userUid});
         this.$store.commit('setuserName',{userName:userName});
-        //console.log(this.$store.state.userName);
+        console.log(this.$store.state.userUid);
         this.$router.push({ path: "/map" });
       })
       .catch(function(error) {

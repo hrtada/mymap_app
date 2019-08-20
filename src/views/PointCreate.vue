@@ -78,7 +78,7 @@ export default {
       this.$router.push({ path: "/map" });  
     },
     entry(){
-        db.collection("user1").add({//firebaseに登録する
+        db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
           lat: this.$store.state.newLat,
           lng: this.$store.state.newLng,
           label: this.label,

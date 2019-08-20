@@ -58,7 +58,7 @@ export default {
 
   mounted(){
     //ラベル情報を取得し、storeに渡す
-    const labelRef = db.collection('user1').doc('option').collection('label'); 
+    const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
     let label =[];
     labelRef.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
@@ -76,33 +76,50 @@ export default {
       let maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
       let maxIdS = String(maxIdN)//stringに戻す
       console.log(maxIdS)
-       db.collection('user1').doc('option').collection('label').doc(maxIdS).set({
+       db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(maxIdS).set({
         name:this.addLabelName
         }).then(() => {
-        window.location.reload();
+          //ラベル情報を取得し、storeに渡す
+          const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
+          let label =[];
+          labelRef.get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              label.push({id:doc.id, name:data.name});
+              this.$store.commit('setlabel',{label: label});
+            })
+          }); 
         })
     },
 
     edit(index){
       this.editLabelName = this.$store.state.label[index].name; 
       this.editLabelId = this.$store.state.label[index].id;
-      //this.befoLabelName = this.label[index].name; //firestore保存時の検索のためにおいておく
     },
 
     entry(){    
-      const labelRef = db.collection('user1').doc('option').collection('label').doc(this.editLabelId);
+      const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
       labelRef.update({//更新する
         name: this.editLabelName
         }).then(() => {
-        window.location.reload();
+          //ラベル情報を取得し、storeに渡す
+          const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
+          let label =[];
+          labelRef.get().then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+              const data = doc.data();
+              label.push({id:doc.id, name:data.name});
+              this.$store.commit('setlabel',{label: label});
+            })
+          }); 
         })
     },
 
     del(){ //★未完成0819 
       //削除対象のラベルを使用したポイントデータの有無を確認
       let docId=[];
-      const posRef = db.collection('user1').where('label','==',this.editLabelId);
-      const labelRef = db.collection('user1').doc('option').collection('label').doc(this.editLabelId);
+      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where('label','==',this.editLabelId);
+      const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
       posRef.get().then((querySnapshot)=> {
         querySnapshot.forEach((doc)=> {
           docId.push([doc.id]);
@@ -114,23 +131,23 @@ export default {
           if(result){
 /*             const batch = db.batch();//★0819エラーが解決せず
             docId.forEach((docId)=>{
-              const delPosRef = db.collection('user1').doc(docId);
+              const delPosRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId);
               batch.delete(delPosRef);// ポイント情報削除
             }); */
             docId.forEach((docId)=>{//★0819エラーが解決せず
-              const delPosRef = db.collection('user1').doc(docId);
+              const delPosRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId);
               delPosRef.delete()
             });
             
             labelRef.delete().then(()=>{//ラベル情報削除
-            window.location.reload(); 
+            window.location.reload(); //変更すること
             });
           } else{
             return
           }
         }else{              
           labelRef.delete().then(()=>{//ラベル情報削除
-          window.location.reload(); 
+          window.location.reload(); //変更すること
           });
         }
       });
