@@ -13,7 +13,7 @@
               <div class="accordion-content">
                 <p class="has-text-weight-bold">ラベルの選択</p>
                 <ul>
-                <li v-for="item in $store.state.label" :key="item.id">
+                <li v-for="item in label" :key="item.id">
                   <label><input type="radio" name="label" :value="item.id" v-model="checked">
                   {{ item.name }}
                   </label>
@@ -61,9 +61,6 @@
 import bulmaAccordion from 'bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js';//blumaのextenionをimport
 import 'bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css'
 import 'bulma/css/bulma.css';//CSSフレームワーク
-import  firebaseApp from '../firebase';
-
-let db = firebaseApp.firestore()
 
 export default {
    data () {
@@ -76,27 +73,15 @@ export default {
   computed:{
     newLat(){return this.$store.getters.newLat},//storeのgetterと同期する
     newLng(){return this.$store.getters.newLng},
-    label(){return this.$store.getters.label},
+    label(){return this.$store.getters.label.filter((e) => {//初期ラベルは表示しない
+      return e.id != "0"
+      })
+    }  
   },
 
   mounted() {
   let map;
   this.accordions = bulmaAccordion.attach()//bulmaのアコーディオンメニューを使うために必要
-
-  //ラベル情報を取得し、storeに渡す
-  const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-  labelRef.doc('0').set({//初期ラベルとして登録する※ラベル登録時に配列が存在せずエラーになるため
-    name:'初期ラベル'
-    })
-  let label =[];
-  labelRef.get().then((querySnapshot) => {
-    querySnapshot.forEach((doc) => {
-      const data = doc.data();
-      label.push({id:doc.id, name:data.name});
-      this.$store.commit('setlabel',{label: label});
-      console.log(data)
-  })
-  }); 
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);

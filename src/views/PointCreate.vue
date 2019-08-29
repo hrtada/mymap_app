@@ -7,8 +7,8 @@
           <label class="label">ラベル</label>
             <div class="control">
               <div class="select">
-                <select v-model="label">
-                  <option v-for="item in $store.state.label" :key="item.id" v-bind:value="item.id"> {{item.name}}
+                <select v-model="setLabel">
+                  <option v-for="item in label" :key="item.id" v-bind:value="item.id"> {{item.name}}
                   </option>
                 </select>
               </div>
@@ -32,7 +32,8 @@
         <div class="field">
           <label class="label">写真</label>
             <div class="control">
-              <button @click="open()" class="button is-rounded">フォルダ選択</button>
+              <input type="file" id="files" accept="image/*" @change="onFileChange($event)">
+              <img :src="imageData" v-if="imageData">
             </div>
         </div>
 
@@ -61,11 +62,19 @@ export default {
   
   data () {
     return {
-      label: null,
+      setLabel: null,
       date: null,
       memo: null,
+      imageData: '',
     }
   },
+  computed:{
+    label(){return this.$store.getters.label.filter((e) => {
+      return e.id != "0"
+      })
+    },
+  },
+
   created() {
     
   },
@@ -81,15 +90,31 @@ export default {
         db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
           lat: this.$store.state.newLat,
           lng: this.$store.state.newLng,
-          label: this.label,
+          label: this.setLabel,
           date: this.date,
-          memo: this.memo
+          memo: this.memo,
+          imagePath: this.imageData,
         }).then(()=> {
         this.$router.push({ path: "/map" });//登録したら前画面に戻る
         }).catch(function (error) {
         console.error('Error adding document: ', error);
         });
+    },
+
+    onFileChange(e){
+      const files = e.target.files;
+      if(files.length > 0) {//ファイルが選択されたかチェック
+        const file = files[0];
+        const reader = new FileReader();//
+        reader.onload = (e) => {//imageDataに画像情報をセット
+          this.imageData = e.target.result;
+                  console.log(this.imageData);
+        };
+        reader.readAsDataURL(file);//画像を読み込み
+
     }
+},
+
   }
 }
 </script>

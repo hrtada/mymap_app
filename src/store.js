@@ -21,8 +21,6 @@ getters:{
    editLat(state){return state.editLat},
    editLng(state){return state.editLng},
    label(state){return state.label},
-/*    userUid(state){return state.userUid},
-   userName(state){return state.userName}, */
  },
 
 mutations:{

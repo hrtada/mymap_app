@@ -9,7 +9,7 @@
                 <input type="text" v-model="addLabelName">
                 <button @click="add()">追加</button>
                 <ul>
-                <li v-for="(item,index) in $store.state.label" :key="item.id">
+                <li v-for="(item,index) in label" :key="item.id">
                  {{ item.name}}
                 <button @click="edit(index)">選択</button>
                 </li>
@@ -53,7 +53,10 @@ export default {
   }, 
 
   computed:{
-    label(){return this.$store.getters.label},//storeのgetterと同期する
+    label(){return this.$store.getters.label.filter((e) => {
+      return e.id != "0"
+      })
+    },//storeのgetterと同期する
   },
 
   mounted(){
@@ -92,9 +95,9 @@ export default {
         })
     },
 
-    edit(index){
-      this.editLabelName = this.$store.state.label[index].name; 
-      this.editLabelId = this.$store.state.label[index].id;
+    edit(index){//選択ボタンを押したとき
+      this.editLabelName = this.label[index].name;
+      this.editLabelId =this.label[index].id; 
     },
 
     entry(){    

@@ -6,7 +6,7 @@ import MapShow from './views/MapShow'
 import PointCreate from './views/PointCreate'
 import PointEdit from './views/PointEdit'
 import LabelMnt from './views/LabelMnt'
-import Pictuer from './views/Picture'
+//import Pictuer from './views/Picture'
 
 Vue.use(Router)
 
@@ -37,11 +37,11 @@ export default new Router({
       name: 'pointedit',
       component: PointEdit
     },
-    {
-      path: '/picture',
+/*    {
+       path: '/picture',
       name: 'picture',
       component: Pictuer
-    },
+    }, */
     {
     path: '/labelmnt',
     name: 'labelmnt',

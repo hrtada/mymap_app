@@ -25,6 +25,8 @@ import 'bulma/css/bulma.css';//CSSフレームワーク
 import  firebaseApp from '../firebase';
 import * as firebase from "firebase/app";
 
+let db = firebaseApp.firestore()
+
 export default {
   data () {
     return {
@@ -45,8 +47,8 @@ export default {
       }
     });
 
-  this.provider = new firebase.auth.GoogleAuthProvider();
-  this.provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
+    this.provider = new firebase.auth.GoogleAuthProvider();
+    this.provider.addScope('https://www.googleapis.com/auth/contacts.readonly');
 
     firebaseApp 
       .auth()
@@ -60,7 +62,23 @@ export default {
         this.$store.commit('setuserUid',{userUid:userUid});
         this.$store.commit('setuserName',{userName:userName});
         console.log(this.$store.state.userUid);
+
+        //ラベル情報を取得し、storeに渡す
+        const labelRef = db.collection('mymap').doc(userUid).collection('label');
+        labelRef.doc('0').set({//初期ラベルとして登録する※ラベル登録時に配列が存在せずエラーになるため
+          name:'初期ラベル'
+          })
+        let label =[];
+        labelRef.get().then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            const data = doc.data();
+            label.push({id:doc.id, name:data.name});
+            this.$store.commit('setlabel',{label: label});
+            console.log(this.$store.state.label);
+        })
+        //map画面に移動
         this.$router.push({ path: "/map" });
+        }); 
       })
       .catch(function(error) {
         const errorCode = error.code;

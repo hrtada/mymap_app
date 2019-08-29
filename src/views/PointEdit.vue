@@ -7,8 +7,8 @@
           <label class="label">ラベル</label>
             <div class="control">
               <div class="select">
-                <select v-model="label">
-                  <option v-for="item in $store.state.label" :key="item.id" v-bind:value="item.id"> {{item.name}}
+                <select v-model="setLabel">
+                  <option v-for="item in label" :key="item.id" v-bind:value="item.id"> {{item.name}}
                   </option>
                 </select>
               </div>
@@ -64,14 +64,19 @@ export default {
 
   data () {
     return {
-      label: null,
+      setLabel: null,
+      //label: null,
       date: null,
       memo: null,
       lat: null,
       lng: null,
     }
   },
-  created() {
+  computed:{
+    label(){return this.$store.getters.label.filter((e) => {
+      return e.id != "0"
+      })
+    },
   },
 
   mounted() {
@@ -82,7 +87,7 @@ export default {
         const pos = doc.data();
         docId = doc.id;
         console.log(docId);
-        this.label = pos['label'];
+        this.setLabel = pos['label'];
         this.memo = pos['memo'];
         this.date = pos['date'];
         this.lat = pos['lat'];
@@ -102,7 +107,7 @@ export default {
       db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
           lat: this.lat,
           lng: this.lng,
-          label: this.label,
+          label: this.setLabel,
           date: this.date,
           memo: this.memo
       }).then(() => {

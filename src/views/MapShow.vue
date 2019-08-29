@@ -83,7 +83,7 @@ export default {
       });  
 
     }
-    //コレクションuser１と条件指定で選択したラベル情報から取得しマーカー表示
+    //条件指定で選択したラベル情報から取得しマーカー表示
       const checked = this.$store.state.checked
       const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);
     
