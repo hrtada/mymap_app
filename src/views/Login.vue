@@ -74,7 +74,7 @@ export default {
             const data = doc.data();
             label.push({id:doc.id, name:data.name});
             this.$store.commit('setlabel',{label: label});
-            console.log(this.$store.state.label);
+            //console.log(this.$store.state.label);
         })
         //map画面に移動
         this.$router.push({ path: "/map" });

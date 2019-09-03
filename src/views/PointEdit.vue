@@ -32,7 +32,8 @@
         <div class="field">
           <label class="label">写真</label>
             <div class="control">
-              <button @click="open()" class="button is-rounded">フォルダ選択</button>
+              <input type="file" accept="image/*" @change="onFileChange($event)">
+              <img :src="imageUrl" v-if="imageUrl">
             </div>
         </div>
 
@@ -70,6 +71,9 @@ export default {
       memo: null,
       lat: null,
       lng: null,
+      imageName:'',
+      imageUrl:'',
+      imageFile:''
     }
   },
   computed:{
@@ -86,13 +90,25 @@ export default {
       querySnapshot.forEach((doc) => {
         const pos = doc.data();
         docId = doc.id;
-        console.log(docId);
+        //console.log(docId);
         this.setLabel = pos['label'];
         this.memo = pos['memo'];
         this.date = pos['date'];
         this.lat = pos['lat'];
         this.lng = pos['lng'];
-      })      
+        this.imageUrl =pos['imageUrl']//追加2019/09/03
+      }) 
+      .then(()=>{//★ココ途中！
+        let imageRef = firebaseApp.storage().ref().child;
+        // ストレージオブジェクト作成
+        var storageRef = firebaseApp.storage().ref();
+        // ファイルのパスを設定
+        var mountainsRef = storageRef.child(`images/${this.imageName}`);
+
+
+
+
+      })     
     });
   },
 
@@ -114,7 +130,7 @@ export default {
       this.$router.push({ path: "/mapshow" });
       })
     },
-    del(){
+    del(){//★strageの画像削除が未実装
       db.collection('user1').doc(docId).delete().then(() => {//該当データを削除
       this.$router.push({ path: "/mapshow" });
       })

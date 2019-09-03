@@ -32,8 +32,8 @@
         <div class="field">
           <label class="label">写真</label>
             <div class="control">
-              <input type="file" id="files" accept="image/*" @change="onFileChange($event)">
-              <img :src="imageData" v-if="imageData">
+              <input type="file" accept="image/*" @change="onFileChange($event)">
+              <img :src="imageUrl" v-if="imageUrl">
             </div>
         </div>
 
@@ -65,7 +65,10 @@ export default {
       setLabel: null,
       date: null,
       memo: null,
-      imageData: '',
+      //imageData: '',
+      imageName:'',
+      imageUrl:'',
+      imageFile:''
     }
   },
   computed:{
@@ -87,30 +90,60 @@ export default {
       this.$router.push({ path: "/map" });  
     },
     entry(){
-        db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
-          lat: this.$store.state.newLat,
-          lng: this.$store.state.newLng,
-          label: this.setLabel,
-          date: this.date,
-          memo: this.memo,
-          imagePath: this.imageData,
-        }).then(()=> {
-        this.$router.push({ path: "/map" });//登録したら前画面に戻る
-        }).catch(function (error) {
-        console.error('Error adding document: ', error);
+      //画像をアップロード
+        // ストレージオブジェクト作成
+        var storageRef = firebaseApp.storage().ref();
+        // ファイルのパスを設定
+        var mountainsRef = storageRef.child(`images/${this.imageName}`);
+        // ファイルを適用してファイルアップロード開始
+        mountainsRef.put(this.imageFile).then(snapshot => {
+        snapshot.ref.getDownloadURL().then(downloadURL => {
+          this.imageUrl = downloadURL;
+          console.log(this.imageUrl)
+
+      //各情報をFirestoreに登録
+          db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
+            lat: this.$store.state.newLat,
+            lng: this.$store.state.newLng,
+            label: this.setLabel,
+            date: this.date,
+            memo: this.memo,
+            imageUrl:this.imageUrl,
+          }).then(()=> {
+          this.$router.push({ path: "/map" });//登録したら前画面に戻る
+          }).catch(function (error) {
+          console.error('Error adding document: ', error);
+          });
+
         });
+      });
+    
+
+
     },
 
     onFileChange(e){
-      const files = e.target.files;
-      if(files.length > 0) {//ファイルが選択されたかチェック
+/*      const files = e.target.files;
+       if(files.length > 0) {//ファイルが選択されたかチェック
         const file = files[0];
         const reader = new FileReader();//
         reader.onload = (e) => {//imageDataに画像情報をセット
-          this.imageData = e.target.result;
-                  console.log(this.imageData);
+          this.imageUrl = e.target.result;
+            console.log(this.imageUrl);
         };
         reader.readAsDataURL(file);//画像を読み込み
+
+    } */
+      const files = e.target.files;
+        if(files.length > 0) {//ファイルが選択されたかチェック
+          this.imageFile = files[0];
+          this.imageName = files[0].name;
+          const reader = new FileReader();//
+          reader.onload = (e) => {//imageDataに画像情報をセット
+            this.imageUrl = e.target.result;
+            //console.log(this.imageUrl);
+        };
+        reader.readAsDataURL(this.imageFile);//画像を読み込み
 
     }
 },
