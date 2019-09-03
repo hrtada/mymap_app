@@ -92,14 +92,14 @@ export default {
     entry(){
       //画像をアップロード
         // ストレージオブジェクト作成
-        var storageRef = firebaseApp.storage().ref();
+        let storageRef = firebaseApp.storage().ref();
         // ファイルのパスを設定
-        var mountainsRef = storageRef.child(`images/${this.imageName}`);
+        let mountainsRef = storageRef.child(`images/${this.imageName}`);
         // ファイルを適用してファイルアップロード開始
         mountainsRef.put(this.imageFile).then(snapshot => {
         snapshot.ref.getDownloadURL().then(downloadURL => {
           this.imageUrl = downloadURL;
-          console.log(this.imageUrl)
+          //console.log('name',this.imageName,'file',this.imageFile)
 
       //各情報をFirestoreに登録
           db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
@@ -108,7 +108,8 @@ export default {
             label: this.setLabel,
             date: this.date,
             memo: this.memo,
-            imageUrl:this.imageUrl,
+            imageUrl: this.imageUrl,
+            imageName: this.imageName,
           }).then(()=> {
           this.$router.push({ path: "/map" });//登録したら前画面に戻る
           }).catch(function (error) {
@@ -116,37 +117,22 @@ export default {
           });
 
         });
-      });
-    
-
-
+      });  
     },
 
     onFileChange(e){
-/*      const files = e.target.files;
-       if(files.length > 0) {//ファイルが選択されたかチェック
-        const file = files[0];
-        const reader = new FileReader();//
-        reader.onload = (e) => {//imageDataに画像情報をセット
-          this.imageUrl = e.target.result;
-            console.log(this.imageUrl);
-        };
-        reader.readAsDataURL(file);//画像を読み込み
-
-    } */
       const files = e.target.files;
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
           this.imageName = files[0].name;
           const reader = new FileReader();//
-          reader.onload = (e) => {//imageDataに画像情報をセット
+          reader.onload = (e) => {//imageUrlに画像情報をセット
             this.imageUrl = e.target.result;
             //console.log(this.imageUrl);
         };
         reader.readAsDataURL(this.imageFile);//画像を読み込み
-
-    }
-},
+        }
+    },
 
   }
 }
