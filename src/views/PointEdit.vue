@@ -66,7 +66,6 @@ export default {
   data () {
     return {
       setLabel: null,
-      //label: null,
       date: null,
       memo: null,
       lat: null,
@@ -127,7 +126,8 @@ export default {
     },
   
     entry(){
-      //画像をアップロード
+      //画像が存在したらアップロード
+      if(this.imageUrl.length>0){
         // ストレージオブジェクト作成
         let storageRef = firebaseApp.storage().ref();
         // ファイルのパスを設定
@@ -140,6 +140,10 @@ export default {
         //元画像ファイルを削除
         let delRef = storageRef.child(`images/${this.imageName_old}`);
         delRef.delete();
+        });
+      });  
+      }else{//何もしない
+      }
 
       //各情報をFirestoreに登録
           db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
@@ -155,8 +159,7 @@ export default {
           }).catch(function (error) {
           console.error('Error adding document: ', error);
           });
-        });
-      });  
+
     },
 
     del(){

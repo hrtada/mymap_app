@@ -90,16 +90,20 @@ export default {
       this.$router.push({ path: "/map" });  
     },
     entry(){
-      //画像をアップロード
+      //画像が存在したらアップロード
+      if(this.imageUrl.length>0){
         // ストレージオブジェクト作成
         let storageRef = firebaseApp.storage().ref();
         // ファイルのパスを設定
         let mountainsRef = storageRef.child(`images/${this.imageName}`);
         // ファイルを適用してファイルアップロード開始
         mountainsRef.put(this.imageFile).then(snapshot => {
-        snapshot.ref.getDownloadURL().then(downloadURL => {
-          this.imageUrl = downloadURL;
-          //console.log('name',this.imageName,'file',this.imageFile)
+          snapshot.ref.getDownloadURL().then(downloadURL => {
+            this.imageUrl = downloadURL
+          });
+        }); 
+      }else{//何もしない
+      }
 
       //各情報をFirestoreに登録
           db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
@@ -114,10 +118,7 @@ export default {
           this.$router.push({ path: "/map" });//登録したら前画面に戻る
           }).catch(function (error) {
           console.error('Error adding document: ', error);
-          });
-
-        });
-      });  
+          });     
     },
 
     onFileChange(e){

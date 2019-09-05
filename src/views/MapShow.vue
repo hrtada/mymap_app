@@ -15,7 +15,9 @@
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
       <div id="infowindw">
-        <button @click="edit()">詳細表示</button>
+        {{memo}}
+        <br>
+        <button @click="edit()">詳細表示</button>  
       </div>
      </div>
 </div>
@@ -32,6 +34,8 @@ let db = firebaseApp.firestore()
 export default {
    data () {
      return{
+      memo: null,
+      imageUrl:'',
      }
   },
 
@@ -90,6 +94,7 @@ export default {
       posRef.get().then((querySnapshot) => {
         querySnapshot.forEach((doc) => {
           const posData = doc.data();
+          this.memo = posData['memo'];
           makeMaker(posData['lat'], posData['lng']);
         });
         map.fitBounds (bounds);//全マーカーが表示されるように調整
@@ -110,7 +115,12 @@ export default {
 </script>
 
 <style>
- #map{ height: 500px;}
+  #map{ height: 500px;}
+
+  #iw_wrapper{/*情報ウィンドウからボタンを操作するためのもの*/
+   display: none
+  }
+
 
 </style>
 
