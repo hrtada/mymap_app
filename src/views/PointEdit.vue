@@ -65,11 +65,11 @@ export default {
 
   data () {
     return {
-      setLabel: null,
-      date: null,
-      memo: null,
-      lat: null,
-      lng: null,
+      setLabel: '',
+      date: '',
+      memo: '',
+      lat: '',
+      lng: '',
       imageName:'',
       imageUrl:'',
       imageFile:'',
@@ -111,7 +111,7 @@ export default {
     },
 
     onFileChange(e){
-      this.imageName_old = this.imageName;//元画像ファイル名を退避
+      //this.imageName_old = this.imageName;//元画像ファイル名を退避
       const files = e.target.files;
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
@@ -126,44 +126,55 @@ export default {
     },
   
     entry(){
+      //必須項目の未入力チェックを付ける
+      if(this.setLabel==''){
+        alert('必須項目が未入力です');
+      }
+      else if(this.date==''){
+        alert('必須項目が未入力です');
+      }
+      else{
+      //元画像ファイル名を退避
+        this.imageName_old = this.imageName;
       //画像が存在したらアップロード
-      if(this.imageUrl.length>0){
+      if(this.imageName != this.imageName_old,this.imageUrl.length>0){
         // ストレージオブジェクト作成
         let storageRef = firebaseApp.storage().ref();
         // ファイルのパスを設定
         let mountainsRef = storageRef.child(`images/${this.imageName}`);
         // ファイルを適用してファイルアップロード開始
         mountainsRef.put(this.imageFile).then(snapshot => {
-        snapshot.ref.getDownloadURL().then(downloadURL => {
-          this.imageUrl = downloadURL;
+          snapshot.ref.getDownloadURL().then(downloadURL => {
+            this.imageUrl = downloadURL;
 
-        //元画像ファイルを削除
-        let delRef = storageRef.child(`images/${this.imageName_old}`);
-        delRef.delete();
-        });
-      });  
-      }else{//何もしない
+          //元画像ファイルを削除
+          let delRef = storageRef.child(`images/${this.imageName_old}`);
+          delRef.delete();
+          });
+        });  
+      }
+      else{//何もしない
       }
 
       //各情報をFirestoreに登録
-          db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
-              lat: this.lat,
-              lng: this.lng,
-              label: this.setLabel,
-              date: this.date,
-              memo: this.memo,
-              imageUrl:this.imageUrl,
-              imageName: this.imageName,
-          }).then(() => {
+        db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
+            lat: this.lat,
+            lng: this.lng,
+            label: this.setLabel,
+            date: this.date,
+            memo: this.memo,
+            imageUrl:this.imageUrl,
+            imageName: this.imageName,
+        }).then(() => {
           this.$router.push({ path: "/mapshow" });
           }).catch(function (error) {
           console.error('Error adding document: ', error);
           });
-
+      }
     },
 
     del(){
-      db.collection('user1').doc(docId).delete().then(() => {//pointデータを削除
+      db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
         //strageの画像ファイルを削除
         let storageRef = firebaseApp.storage().ref();
         let delRef = storageRef.child(`images/${this.imageName}`);

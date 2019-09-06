@@ -18,6 +18,15 @@
             </div>
               
             <label class="label">ラベルの編集・削除</label>
+              <div class="field is-grouped">
+                <input class="input" type="text" placeholder="選択したラベル名を表示します" v-model="editLabelName">
+                <div class="control">
+                  <button @click="entry()" class="button is-link" >変更</button>
+                </div>
+                <div class="control">
+                  <button @click="del()" class="button is-link">削除</button>
+                </div>
+              </div>
                 <ul>
                 <li v-for="(item,index) in label" :key="item.id">
                  {{ item.name}}
@@ -25,15 +34,7 @@
                 </li>
                 </ul>
 
-        <div class="field is-grouped">
-          <input class="input" type="text" placeholder="選択したラベル名を表示します" v-model="editLabelName">
-          <div class="control">
-            <button @click="entry()" class="button is-link" >変更</button>
-          </div>
-          <div class="control">
-            <button @click="del()" class="button is-link">削除</button>
-          </div>
-        </div>
+
        </div>
     </div>
 
@@ -51,9 +52,9 @@ export default {
   
   data () {
     return {
-      editLabelName: null,
-      editLabelId:null,
-      addLabelName:null,
+      editLabelName:'',
+      editLabelId:'',
+      addLabelName:'',
     }
   }, 
 
@@ -79,14 +80,18 @@ export default {
 
   methods: {
     add(){
+      if(this.addLabelName==''){//空欄の時は何もしない
+        return
+      }else{
       let labelListS = (this.$store.state.label).map((value) => value.id)//labelのIDのみの配列作成
       let labelListN = labelListS.map((value) => Number(value))//stringの配列なのでNumberに変換
       let maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
       let maxIdS = String(maxIdN)//stringに戻す
-      //console.log(maxIdS)
+      //firestoreにラベルを登録
        db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(maxIdS).set({
         name:this.addLabelName
         }).then(() => {
+          this.addLabelName ='';//入力内容のクリア
           //ラベル情報を取得し、storeに渡す
           const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
           let label =[];
@@ -97,7 +102,8 @@ export default {
               this.$store.commit('setlabel',{label: label});
             })
           }); 
-        })
+        });
+      }
     },
 
     edit(index){//選択ボタンを押したとき
@@ -110,6 +116,7 @@ export default {
       labelRef.update({//更新する
         name: this.editLabelName
         }).then(() => {
+          this.editLabelName ='';//入力内容のクリア
           //ラベル情報を取得し、storeに渡す
           const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
           let label =[];
@@ -148,6 +155,7 @@ export default {
                 });
                 labelRef.delete();//labelデータ削除
               }).then(() => {
+                this.editLabelName ='';//入力内容のクリア
                 //ラベル情報を取得しstoreに渡す※1他でも使ってるので共通化したい
                 const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
                 let label =[];
@@ -164,6 +172,7 @@ export default {
             }
         }else{
           labelRef.delete().then(() => {
+            this.editLabelName ='';//入力内容のクリア
             //ラベル情報を取得しstoreに渡す※1他でも使ってるので共通化したい
             const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
             let label =[];

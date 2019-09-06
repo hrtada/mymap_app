@@ -15,8 +15,6 @@
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
       <div id="infowindw">
-        {{memo}}
-        <br>
         <button @click="edit()">詳細表示</button>  
       </div>
      </div>
@@ -34,8 +32,6 @@ let db = firebaseApp.firestore()
 export default {
    data () {
      return{
-      memo: null,
-      imageUrl:'',
      }
   },
 
@@ -88,19 +84,27 @@ export default {
 
     }
     //条件指定で選択したラベル情報から取得しマーカー表示
-      const checked = this.$store.state.checked
-      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);
-    
-      posRef.get().then((querySnapshot) => {
-        querySnapshot.forEach((doc) => {
-          const posData = doc.data();
-          this.memo = posData['memo'];
-          makeMaker(posData['lat'], posData['lng']);
-        });
-        map.fitBounds (bounds);//全マーカーが表示されるように調整
-    })
+      const checked = this.$store.state.checked;
+      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);    
 
-  },
+      posRef.get().then(qs => {
+        qs.forEach(doc => {
+          let posData = doc.data();
+          //this.memo = posData['memo'];
+            makeMaker(posData['lat'], posData['lng']);     
+        });
+        if(bounds.ja.g==180,bounds.ja.h==-180){
+          alert('表示するデータがありません');
+          this.$router.push({ path: "/map" }); 
+        }else{
+        map.fitBounds (bounds);//全マーカーが表示されるように調整
+        }
+      });
+        
+        
+    },
+
+  
 
   methods: {
     mapNew(){
