@@ -88,10 +88,13 @@ export default {
 
     },
     onFileChange(e){//ファイル選択の画面を開く
+      const date = new Date();
+      const ISO = date.toISOString();//ファイル名を日付にする
       const files = e.target.files;
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
-          this.imageName = files[0].name;
+          //this.imageName = files[0].name;
+          this.imageName = ISO;
           const reader = new FileReader();//
           reader.onload = (e) => {//imageUrlに画像情報をセット
             this.imageUrl = e.target.result;
@@ -101,6 +104,24 @@ export default {
     },
 
     entry(){
+/*       let check = function(){//★20190909上手くいかなかったので別の方法
+        //登録済ポイントに選択した画像が使われているか確認のクエリ作成
+        let posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where('imageName','==',this.imageName);
+        let doc_id;
+        posRef.get().then((qs)=>{
+          qs.forEach((doc)=> {
+            doc_id = doc.id;
+            console.log(doc_id);
+          })
+        }).then(()=>{
+            if(doc_id){//docidが存在する（画像が登録済）
+              return  false;
+            }else {
+              return true;
+            }
+          })
+      } */
+
       //必須項目の未入力チェックを付ける
       if(this.setLabel==''){
         alert('必須項目が未入力です');
@@ -108,13 +129,16 @@ export default {
       else if(this.date==''){
         alert('必須項目が未入力です');
       }
+/*       else if(check == false){
+        alert('選択した画像は使われています。\n他の画像を選択してください。')
+      } */
       else{
         //画像のアップロード
         if(this.imageUrl.length>0){
           // ストレージオブジェクト作成
           let storageRef = firebaseApp.storage().ref();
           // ファイルのパスを設定
-          let mountainsRef = storageRef.child(`images/${this.imageName}`);
+          let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
           // ファイルを適用してファイルアップロード開始
           mountainsRef.put(this.imageFile).then(snapshot => {
             snapshot.ref.getDownloadURL().then(downloadURL => {

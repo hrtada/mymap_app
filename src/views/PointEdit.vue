@@ -97,7 +97,9 @@ export default {
         this.lat = pos['lat'];
         this.lng = pos['lng'];
         this.imageUrl = pos['imageUrl']//追加2019/09/03
+        this.imageUrl_old = pos['imageUrl']//追加2019/09/09
         this.imageName = pos['imageName'] //追加2019/09/03
+        this.imageName_old = pos['imageName'] //元画像ファイル名を退避
       }) 
     });
   },
@@ -111,15 +113,15 @@ export default {
     },
 
     onFileChange(e){
-      //this.imageName_old = this.imageName;//元画像ファイル名を退避
       const files = e.target.files;
+      const date = new Date();
+      const ISO = date.toISOString();//ファイル名を日付にする
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
-          this.imageName = files[0].name;
+          this.imageName = ISO;
           const reader = new FileReader();//
           reader.onload = (e) => {//imageDataに画像情報をセット
             this.imageUrl = e.target.result;
-            //console.log('URL',this.imageUrl);
         };
         reader.readAsDataURL(this.imageFile);//画像を読み込み
         }
@@ -134,21 +136,19 @@ export default {
         alert('必須項目が未入力です');
       }
       else{
-      //元画像ファイル名を退避
-        this.imageName_old = this.imageName;
-      //画像が存在したらアップロード
-      if(this.imageName != this.imageName_old,this.imageUrl.length>0){
+      //画像アップロード
+      if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
         // ストレージオブジェクト作成
         let storageRef = firebaseApp.storage().ref();
         // ファイルのパスを設定
-        let mountainsRef = storageRef.child(`images/${this.imageName}`);
+        let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
         // ファイルを適用してファイルアップロード開始
         mountainsRef.put(this.imageFile).then(snapshot => {
           snapshot.ref.getDownloadURL().then(downloadURL => {
             this.imageUrl = downloadURL;
 
           //元画像ファイルを削除
-          let delRef = storageRef.child(`images/${this.imageName_old}`);
+          let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName_old}`);
           delRef.delete();
           });
         });  
@@ -177,7 +177,7 @@ export default {
       db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
         //strageの画像ファイルを削除
         let storageRef = firebaseApp.storage().ref();
-        let delRef = storageRef.child(`images/${this.imageName}`);
+        let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
         delRef.delete().then(() => {
           this.$router.push({ path: "/mapshow" });//全画面に戻る
         })
