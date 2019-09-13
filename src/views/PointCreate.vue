@@ -98,7 +98,7 @@ export default {
         }
     },
 
-    entry(){
+    async entry(){
       //必須項目の未入力チェックを付ける
       if(this.setLabel==''){
         alert('必須項目が未入力です');
@@ -108,20 +108,20 @@ export default {
       }
       else{
         //画像のアップロード
-        if(this.imageUrl.length>0){
-          // ストレージオブジェクト作成
-          let storageRef = firebaseApp.storage().ref();
-          // ファイルのパスを設定
-          let mountainsRef = storageRef.child(`images/${this.imageName}`);
-          // ファイルを適用してファイルアップロード開始
-          mountainsRef.put(this.imageFile).then(snapshot => {
-            snapshot.ref.getDownloadURL().then(downloadURL => {
-              this.imageUrl = downloadURL
-            });
-          }); 
-        } 
-        else {//何もしない
-        }
+        // if(this.imageUrl.length>0){
+        //   // ストレージオブジェクト作成
+        //   let storageRef = firebaseApp.storage().ref();
+        //   // ファイルのパスを設定
+        //   let mountainsRef = storageRef.child(`images/${this.imageName}`);
+        //   // ファイルを適用してファイルアップロード開始
+        //   mountainsRef.put(this.imageFile).then(snapshot => {
+        //     snapshot.ref.getDownloadURL().then(downloadURL => {
+        //       this.imageUrl = downloadURL
+        //     });
+        //   }); 
+        // } 
+        // else {//何もしない
+        // }
         //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         // db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
@@ -137,7 +137,8 @@ export default {
         //   }).catch(function (error) {
         //   console.error('Error adding document: ', error);
         //   });
-        mapPoint.create(this.$store.state.userUid);
+        await mapPoint.create(this.$store.state.userUid);
+        console.log("create end");
       }
     }
 
