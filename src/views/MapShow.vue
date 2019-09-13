@@ -25,9 +25,7 @@
 /* eslint-disable no-console */
 /*globals google */
 import 'bulma/css/bulma.css';//CSSフレームワーク
-import  firebaseApp from '../firebase';
-
-let db = firebaseApp.firestore()
+import MymapPointService from '../database/firestore/service/MymapPointService'
 
 export default {
    data () {
@@ -74,7 +72,7 @@ export default {
         content:document.getElementById('infowindw')
       }); 
 
-        marker.addListener('click', ()=> {
+      marker.addListener('click', ()=> {
         info.open(map, marker);
         const mLat = marker.getPosition().lat();//緯度情報を渡す
         const mLng = marker.getPosition().lng();
@@ -85,21 +83,28 @@ export default {
     }
     //条件指定で選択したラベル情報から取得しマーカー表示
       const checked = this.$store.state.checked;
-      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);    
 
-      posRef.get().then(qs => {
-        qs.forEach(doc => {
-          let posData = doc.data();
-          //this.memo = posData['memo'];
-            makeMaker(posData['lat'], posData['lng']);     
-        });
-        if(bounds.ja.g==180,bounds.ja.h==-180){
-          alert('表示するデータがありません');
-          this.$router.push({ path: "/map" }); 
-        }else{
-        map.fitBounds (bounds);//全マーカーが表示されるように調整
-        }
-      });
+      const getMapPointList = async()=>{
+        const mymapPointService = new MymapPointService();
+        const list = await mymapPointService.searchByLabel(this.$store.state.userUid, checked);
+        console.log(list);
+      };
+      getMapPointList();
+      // const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);    
+
+      // posRef.get().then(qs => {
+      //   qs.forEach(doc => {
+      //     let posData = doc.data();
+      //     //this.memo = posData['memo'];
+      //       makeMaker(posData['lat'], posData['lng']);     
+      //   });
+      //   if(bounds.ja.g==180,bounds.ja.h==-180){
+      //     alert('表示するデータがありません');
+      //     this.$router.push({ path: "/map" }); 
+      //   }else{
+      //   map.fitBounds (bounds);//全マーカーが表示されるように調整
+      //   }
+      // });
         
         
     },

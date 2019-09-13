@@ -54,6 +54,7 @@
 <script>
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
+import  MymapPointService from '../database/firestore/service/MymapPointService';
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 export default {
@@ -124,20 +125,9 @@ export default {
         // }
         //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
-        // db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
-        //     lat: this.$store.state.newLat,
-        //     lng: this.$store.state.newLng,
-        //     label: this.setLabel,
-        //     date: this.date,
-        //     memo: this.memo,
-        //     imageUrl: this.imageUrl,
-        //     imageName: this.imageName,
-        //   }).then(()=> {
-        //   this.$router.push({ path: "/map" });//登録したら前画面に戻る
-        //   }).catch(function (error) {
-        //   console.error('Error adding document: ', error);
-        //   });
-        await mapPoint.create(this.$store.state.userUid);
+        // await mapPoint.create(this.$store.state.userUid);
+
+        await new MymapPointService().create(this.$store.state.userUid, mapPoint);
         console.log("create end");
       }
     }
