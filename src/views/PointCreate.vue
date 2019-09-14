@@ -55,6 +55,7 @@
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
 import 'bulma/css/bulma.css';//CSSフレームワーク
+import firebaseApp from '../firebase';//★classに移行できたら削除
 
 export default {
   
@@ -87,7 +88,7 @@ export default {
     },
     onFileChange(e){//ファイル選択の画面を開く
       const date = new Date();
-      const ISO = date.toISOString();//ファイル名を日付にする
+      const ISO = date.toISOString();//ファイル名を日付にするために取得
       const files = e.target.files;
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
@@ -102,24 +103,6 @@ export default {
     },
 
     entry(){
-/*       let check = function(){//★20190909上手くいかなかったので別の方法
-        //登録済ポイントに選択した画像が使われているか確認のクエリ作成
-        let posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where('imageName','==',this.imageName);
-        let doc_id;
-        posRef.get().then((qs)=>{
-          qs.forEach((doc)=> {
-            doc_id = doc.id;
-            console.log(doc_id);
-          })
-        }).then(()=>{
-            if(doc_id){//docidが存在する（画像が登録済）
-              return  false;
-            }else {
-              return true;
-            }
-          })
-      } */
-
       //必須項目の未入力チェックを付ける
       if(this.setLabel==''){
         alert('必須項目が未入力です');
@@ -127,9 +110,6 @@ export default {
       else if(this.date==''){
         alert('必須項目が未入力です');
       }
-/*       else if(check == false){
-        alert('選択した画像は使われています。\n他の画像を選択してください。')
-      } */
       else{
         //画像のアップロード
         if(this.imageUrl.length>0){
@@ -161,12 +141,26 @@ export default {
         //   }).catch(function (error) {
         //   console.error('Error adding document: ', error);
         //   });
-        mapPoint.create(this.$store.state.userUid);
+
+//★20190913後で書き直す
+/*          let entryPoint = async() => {
+          let result = await mapPoint.create(this.$store.state.userUid);//①
+          console.log('結果',result);//②
+          if(result == true){//③
+             this.$router.push({ path: "/map" });//前画面に戻る 
+          }
+        }
+        entryPoint();  */
+      
+
+
       }
-    }
+    }  
 
   }
 }
+
+
 </script>
 
 <style>

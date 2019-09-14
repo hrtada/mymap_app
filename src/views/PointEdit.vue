@@ -55,7 +55,8 @@
 
 <script>
 /* eslint-disable no-console */
-import firebaseApp from '../firebase';
+import  MymapPoint from '../database/firestore/model/MymapPoint';
+import firebaseApp from '../firebase';//最終的に不要
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 let db = firebaseApp.firestore();
@@ -155,9 +156,9 @@ export default {
       }
       else{//何もしない
       }
-
-      //各情報をFirestoreに登録
-        db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
+      //ポイント情報をFirestoreに登録
+      const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+/*         db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
             lat: this.lat,
             lng: this.lng,
             label: this.setLabel,
@@ -169,19 +170,24 @@ export default {
           this.$router.push({ path: "/mapshow" });
           }).catch(function (error) {
           console.error('Error adding document: ', error);
-          });
+          }); 
+          this.$router.push({ path: "/map" });//前画面に戻る*/
+      mapPoint.create(this.$store.state.userUid.docId);
+        
       }
     },
 
     del(){
-      db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
+      //db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
+        const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        mapPoint.del(this.$store.state.userUid,docId)
         //strageの画像ファイルを削除
-        let storageRef = firebaseApp.storage().ref();
+/*         let storageRef = firebaseApp.storage().ref();
         let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
         delRef.delete().then(() => {
-          this.$router.push({ path: "/mapshow" });//全画面に戻る
-        })
-      })
+        this.$router.push({ path: "/mapshow" });//全画面に戻る 
+        })*/
+      //})
     }
   },
 }

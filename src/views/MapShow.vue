@@ -25,9 +25,10 @@
 /* eslint-disable no-console */
 /*globals google */
 import 'bulma/css/bulma.css';//CSSフレームワーク
-import  firebaseApp from '../firebase';
+import  MymapPoint from '../database/firestore/model/MymapPoint';//★0912追加
+import  firebaseApp from '../firebase';//★0912使わなくなる予定
 
-let db = firebaseApp.firestore()
+let db = firebaseApp.firestore()//★0912使わなくなる予定
 
 export default {
    data () {
@@ -84,13 +85,13 @@ export default {
 
     }
     //条件指定で選択したラベル情報から取得しマーカー表示
-      const checked = this.$store.state.checked;
-      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);    
-
+      const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",this.$store.state.checked);    
+      //const mapPoint = new MymapPoint();★0912上手くいかなかった。仕掛中
+      //mapPoint.reference(this.$store.state.userUid,this.$store.state.checked);
+      //mapPoint.reference.get().then(qs => {
       posRef.get().then(qs => {
         qs.forEach(doc => {
           let posData = doc.data();
-          //this.memo = posData['memo'];
             makeMaker(posData['lat'], posData['lng']);     
         });
         if(bounds.ja.g==180,bounds.ja.h==-180){
