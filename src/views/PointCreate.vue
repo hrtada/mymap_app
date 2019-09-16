@@ -143,14 +143,16 @@ export default {
         //   });
 
 //★20190913後で書き直す
-/*          let entryPoint = async() => {
+          let entryPoint = async() => {
           let result = await mapPoint.create(this.$store.state.userUid);//①
           console.log('結果',result);//②
           if(result == true){//③
              this.$router.push({ path: "/map" });//前画面に戻る 
+          }else{
+            alert('登録できませんでした');
           }
         }
-        entryPoint();  */
+        entryPoint(); 
       
 
 

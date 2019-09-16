@@ -18,23 +18,27 @@ export default class MymapPoint {
     }
 
     create(userId) {
-      const firestore = firebaseApp.firestore();
-      firestore.collection(pCollectionName).doc(userId).collection(collectionName).add({
-        lat: this.lat,
-        lng: this.lng,
-        label: this.label,
-        date: this.date,
-        memo: this.memo,
-        imageUrl: this.imageUrl,
-        imageName: this.imageName,
-      }).then(()=> {
-        console.log('success create MymapPoint');
-        return true;
+      return new Promise((resolve, reject) => {
+        const firestore = firebaseApp.firestore();
+        firestore.collection(pCollectionName).doc(userId).collection(collectionName).add({
+          lat: this.lat,
+          lng: this.lng,
+          label: this.label,
+          date: this.date,
+          memo: this.memo,
+          imageUrl: this.imageUrl,
+          imageName: this.imageName,
+        }).then(()=> {
+          console.log('success create MymapPoint');
+          //return true;
+          resolve(true);
 
-      }).catch(function (error) {
-        console.error('Error adding document: ', error);
-        throw error;
-      }); 
+        }).catch(function (error) {
+          console.error('Error adding document: ', error);
+          //throw error;
+          reject();
+        }); 
+      });
     }
 
     del(userId,docId){
