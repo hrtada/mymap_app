@@ -45,7 +45,7 @@
             <button @click="chancel()" class="button is-link">ｷｬﾝｾﾙ</button>
           </div>
           <div class="control">
-            <button @click="del()" class="button is-link">削除</button>
+            <button @click="dell()" class="button is-link">削除</button>
           </div>
         </div>
       </div>
@@ -56,17 +56,18 @@
 <script>
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
-import firebaseApp from '../firebase';//最終的に不要
+import MymapPointService from '../database/firestore/service/MymapPointService'
+//import firebaseApp from '../firebase';//★最終的に不要
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-let db = firebaseApp.firestore();
-let docId;
+//let db = firebaseApp.firestore();//★最終的に不要
+//let docId;//★最終的に不要
 
 export default {
 
   data () {
     return {
-      setLabel: '',
+      setLabel:'',
       date: '',
       memo: '',
       lat: '',
@@ -75,6 +76,7 @@ export default {
       imageUrl:'',
       imageFile:'',
       imageName_old:'',
+      id:'',
     }
   },
   computed:{
@@ -85,13 +87,30 @@ export default {
   },
 
   mounted() {
-   //クリックしたマーカーの位置情報からデータを抽出する
+        const getMapPointDetail = async()=>{
+          const mymapPointService = new MymapPointService();
+          const lists = await mymapPointService.showPointDetail(this.$store.state.userUid,this.$store.state.editLat,this.$store.state.editLng );//ポイント情報を取得
+        
+          //画面上の各項目に表示
+          this.setLabel = lists[0].label;
+          this.memo = lists[0].memo;
+          this.date =lists[0].date;
+          this.lat = lists[0].lat;
+          this.lng = lists[0].lng;
+          this.imageUrl = lists[0].imageUrl
+          this.imageUrl_old =lists[0].imageUrl
+          this.imageName = lists[0].imageName
+          this.imageName_old = lists[0].imageName
+          this.id = lists[0].id
+        }
+        getMapPointDetail(); 
+
+  /*  //クリックしたマーカーの位置情報からデータを抽出する
     const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("lat","==",this.$store.state.editLat).where("lng","==",this.$store.state.editLng);//座標が一致するデータのクエリ
     posRef.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         const pos = doc.data();
         docId = doc.id;
-        //console.log(docId);
         this.setLabel = pos['label'];
         this.memo = pos['memo'];
         this.date = pos['date'];
@@ -102,7 +121,7 @@ export default {
         this.imageName = pos['imageName'] //追加2019/09/03
         this.imageName_old = pos['imageName'] //元画像ファイル名を退避
       }) 
-    });
+    }); */
   },
 
   methods: {
@@ -125,10 +144,14 @@ export default {
             this.imageUrl = e.target.result;
         };
         reader.readAsDataURL(this.imageFile);//画像を読み込み
+        }else{          
+          this.imageName = '';
+          this.imageUrl = '';
+          this.imageFile = '';
         }
     },
   
-    entry(){
+    async entry(){
       //必須項目の未入力チェックを付ける
       if(this.setLabel==''){
         alert('必須項目が未入力です');
@@ -138,26 +161,42 @@ export default {
       }
       else{
       //画像アップロード
-      if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
-        // ストレージオブジェクト作成
-        let storageRef = firebaseApp.storage().ref();
-        // ファイルのパスを設定
-        let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
-        // ファイルを適用してファイルアップロード開始
-        mountainsRef.put(this.imageFile).then(snapshot => {
-          snapshot.ref.getDownloadURL().then(downloadURL => {
-            this.imageUrl = downloadURL;
+      // if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
+      //   // ストレージオブジェクト作成
+      //   let storageRef = firebaseApp.storage().ref();
 
-          //元画像ファイルを削除
-          let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName_old}`);
-          delRef.delete();
-          });
-        });  
+      //   // ファイルのパスを設定
+      //   let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
+      //   // ファイルを適用してファイルアップロード開始
+      //   mountainsRef.put(this.imageFile).then(snapshot => {
+      //     snapshot.ref.getDownloadURL().then(downloadURL => {
+      //       this.imageUrl = downloadURL;
+
+      //     //元画像ファイルを削除
+      //     let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName_old}`);
+      //     delRef.delete();
+      //     });
+      //   });  
+      // }
+         const mymapPointService = new MymapPointService();
+        
+        //画像をアップロード＆変更前画像の削除
+        if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
+          const getImageUrl = await mymapPointService.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
+          this.imageUrl = getImageUrl
+          mymapPointService.deleteImage(this.$store.state.userUid,this.imageName_old)
+        }
+
+        //ポイント情報をFirestoreに登録
+        const mapPoint = new MymapPoint(this.id, this.lat,this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        const editMapPoint = await mymapPointService.edit(this.$store.state.userUid, mapPoint);
+
+        if(editMapPoint == 'true'){
+          this.$router.push({ path: "/mapshow" });//前画面に戻る 
+        }else{
+          alert('登録できませんでした');
+        }
       }
-      else{//何もしない
-      }
-      //ポイント情報をFirestoreに登録
-      const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
 /*         db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
             lat: this.lat,
             lng: this.lng,
@@ -172,15 +211,23 @@ export default {
           console.error('Error adding document: ', error);
           }); 
           this.$router.push({ path: "/map" });//前画面に戻る*/
-      mapPoint.create(this.$store.state.userUid.docId);
-        
-      }
+
     },
 
-    del(){
+    async dell(){
+      //const mymapPointService = new MymapPointService();
+      const mymapPointService = new MymapPointService();
+      const dellMapPoint = await mymapPointService.dell(this.$store.state.userUid, this.id);
+      mymapPointService.deleteImage(this.$store.state.userUid,this.imageName);//画像の削除
+      
+      if(dellMapPoint == 'true'){
+          this.$router.push({ path: "/mapshow" });//前画面に戻る 
+      }else{
+          alert('削除できませんでした');
+      }
+
+
       //db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
-        const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
-        mapPoint.del(this.$store.state.userUid,docId)
         //strageの画像ファイルを削除
 /*         let storageRef = firebaseApp.storage().ref();
         let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);

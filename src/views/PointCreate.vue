@@ -54,8 +54,8 @@
 <script>
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
+import  MymapPointService from '../database/firestore/service/MymapPointService';
 import 'bulma/css/bulma.css';//CSSフレームワーク
-import firebaseApp from '../firebase';//★classに移行できたら削除
 
 export default {
   
@@ -86,23 +86,26 @@ export default {
       this.$router.push({ path: "/map" }); 
 
     },
-    onFileChange(e){//ファイル選択の画面を開く
+   onFileChange(e){//ファイル選択の画面を開く
       const date = new Date();
       const ISO = date.toISOString();//ファイル名を日付にするために取得
-      const files = e.target.files;
+      const files = e.target.files;   
         if(files.length > 0) {//ファイルが選択されたかチェック
           this.imageFile = files[0];
-          //this.imageName = files[0].name;
           this.imageName = ISO;
           const reader = new FileReader();//
-          reader.onload = (e) => {//imageUrlに画像情報をセット
+          reader.onload = (e) => {//imageUrlに画像情報をセット 
             this.imageUrl = e.target.result;
         };
         reader.readAsDataURL(this.imageFile);//画像を読み込み
+        }else{          
+          this.imageName = '';
+          this.imageUrl = '';
+          this.imageFile = '';
         }
     },
 
-    entry(){
+    async entry(){
       //必須項目の未入力チェックを付ける
       if(this.setLabel==''){
         alert('必須項目が未入力です');
@@ -111,57 +114,46 @@ export default {
         alert('必須項目が未入力です');
       }
       else{
-        //画像のアップロード
+
+        // //画像のアップロード
+        // if(this.imageUrl.length>0){
+        //   // ストレージオブジェクト作成
+        //   let storageRef = firebaseApp.storage().ref();
+        //   // ファイルのパスを設定
+        //   let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
+        //   // ファイルを適用してファイルアップロード開始
+        //   mountainsRef.put(this.imageFile).then(snapshot => {
+        //     snapshot.ref.getDownloadURL().then(downloadURL => {
+        //       this.imageUrl = downloadURL
+        //     });
+        //   }); 
+        // } 
+        // else {//何もしない
+        // }
+
+        const mymapPointService = new MymapPointService();
+        //画像をアップロード
         if(this.imageUrl.length>0){
-          // ストレージオブジェクト作成
-          let storageRef = firebaseApp.storage().ref();
-          // ファイルのパスを設定
-          let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
-          // ファイルを適用してファイルアップロード開始
-          mountainsRef.put(this.imageFile).then(snapshot => {
-            snapshot.ref.getDownloadURL().then(downloadURL => {
-              this.imageUrl = downloadURL
-            });
-          }); 
-        } 
-        else {//何もしない
-        }
+          const getImageUrl = await mymapPointService.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
+          this.imageUrl = getImageUrl
+        }      
+
         //ポイント情報をFirestoreに登録
-        const mapPoint = new MymapPoint(this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
-        // db.collection('mymap').doc(this.$store.state.userUid).collection('point').add({//firebaseに登録する
-        //     lat: this.$store.state.newLat,
-        //     lng: this.$store.state.newLng,
-        //     label: this.setLabel,
-        //     date: this.date,
-        //     memo: this.memo,
-        //     imageUrl: this.imageUrl,
-        //     imageName: this.imageName,
-        //   }).then(()=> {
-        //   this.$router.push({ path: "/map" });//登録したら前画面に戻る
-        //   }).catch(function (error) {
-        //   console.error('Error adding document: ', error);
-        //   });
+        const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        const createMapPoint = await mymapPointService.create(this.$store.state.userUid, mapPoint);
 
-//★20190913後で書き直す
-          let entryPoint = async() => {
-          let result = await mapPoint.create(this.$store.state.userUid);//①
-          console.log('結果',result);//②
-          if(result == true){//③
-             this.$router.push({ path: "/map" });//前画面に戻る 
-          }else{
-            alert('登録できませんでした');
-          }
+        if(createMapPoint == 'true'){
+          this.$router.push({ path: "/map" });//前画面に戻る 
+        }else{
+          alert('登録できませんでした');
         }
-        entryPoint(); 
+
+        }
       
-
-
       }
-    }  
+    }
 
   }
-}
-
 
 </script>
 
