@@ -50,7 +50,7 @@ export default class MymapPointService {
             resolve('true');
           }).catch(function (error) {
             console.error('Error edit document: ', error);
-            reject('false');
+            reject();
           }); 
         });
       }
@@ -68,11 +68,12 @@ export default class MymapPointService {
                         const mapPoint = new MymapPoint(pId,pData.lat, pData.lng, pData.label, pData.date, pData.memo, pData.imageUrl, pData.imageName);
                         mapPoints.push(mapPoint);
                     });
-                    console.log(mapPoints);
+                    //console.log(mapPoints);
                     resolve(mapPoints);
                 });
-            } catch (error) {
-              reject(console.log('serch error'));
+            } catch(error) {
+              console.log('serch error',error)
+              reject();
             }
         });
       }
@@ -93,7 +94,8 @@ export default class MymapPointService {
               resolve(mapPoints);
             });
         } catch (error) {
-          reject(console.log('show error'));
+          console.log('getPointDetail error',error)
+          reject();
         }
         });
       }
@@ -128,11 +130,49 @@ export default class MymapPointService {
           console.log('success delete MymapPoint');
           resolve('true');
         }).catch(() =>{
-          console.error('Error delete document');
-          reject('false');
+          console.error('Error delete MymapPoint');
+          alert('削除に失敗しました');
+          reject();
         })
         });      
       }
+
+    //ラベル削除時のポイント削除
+    dellPoint(userId,label){
+      const posRef = this.db.collection(pCollectionName).doc(userId).collection(collectionName).where('label','==',label);
+      const storageRef = firebaseApp.storage().ref();
+      const doc_id = [];
+
+      return new Promise((resolve, reject) => {
+        try {
+          posRef.get().then((qs)=> {
+            qs.forEach((doc)=> {
+              doc_id.push([doc.id]);//削除対象データのdocIdを取得
+            });
+          }).then(() => {
+            if(doc_id.length>0){//ポイント情報が存在するときはアラートを出して削除
+              let result = confirm('このラベルを使用したポイント情報が存在します。\n削除してもよろしいですか。');
+              if(result){
+                posRef.get().then((qs)=> {
+                  qs.forEach((doc)=> {//選択ラベルを使用したpointデータ取得
+                    const delPosRef = this.db.collection(pCollectionName).doc(userId).collection(collectionName).doc(doc.id);
+                    delPosRef.delete();//pointデータ削除
+                    const delImageRef = storageRef.child(`${userId}/${doc.get('imageName')}`);//画像データ取得
+                    delImageRef.delete();//画像データ削除
+                  });
+                });
+              } else {
+                return
+              }
+            }
+            resolve('true');
+          });        
+        } catch(error){
+          console.log('label delete error',error)
+          reject();
+        }
+      });
+    }
 
     //starageへ画像をアップロード
     uploadImage(userId,imageName,imageFile){
@@ -156,6 +196,7 @@ export default class MymapPointService {
       })
     }
 
+    //画像の削除
     deleteImage(userId,imageName){
       try {
         const storageRef = firebaseApp.storage().ref();
@@ -169,6 +210,5 @@ export default class MymapPointService {
     }
 
     
-
 }
 

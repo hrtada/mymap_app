@@ -43,10 +43,12 @@
 
 <script>
 /* eslint-disable no-console */
-import  firebaseApp from '../firebase';
+//import  firebaseApp from '../firebase';
+import MymapLabelService from '../database/firestore/service/MymapLabelService'
+import  MymapPointService from '../database/firestore/service/MymapPointService';
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
-let db = firebaseApp.firestore()
+//let db = firebaseApp.firestore()
 
 export default {
   
@@ -66,29 +68,55 @@ export default {
   },
 
   mounted(){
-    //ラベル情報を取得しstoreに渡す※1他でも使ってるので共通化したい
-    const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-    let label =[];
-    labelRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const data = doc.data();
-        label.push({id:doc.id, name:data.name});
-        this.$store.commit('setlabel',{label: label});
-      })
-    }); 
+    //ラベル情報を取得しstoreに渡す
+      const mymapLabelService = new MymapLabelService();
+      const label = mymapLabelService.getLabel(this.$store.state.userUid);
+      this.$store.commit('setlabel',{label: label});
+
+    // const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
+    // let label =[];
+    // labelRef.get().then((querySnapshot) => {
+    //   querySnapshot.forEach((doc) => {
+    //     const data = doc.data();
+    //     label.push({id:doc.id, name:data.name});
+    //     this.$store.commit('setlabel',{label: label});
+    //   })
+    // }); 
   },
 
   methods: {
-    add(){
+    async add(){
       if(this.addLabelName==''){//空欄の時は何もしない
         return
       }else{
+      //★20190925この処理不要かも。idは自動取得でOKなはず。見直し予定
       let labelListS = (this.$store.state.label).map((value) => value.id)//labelのIDのみの配列作成
       let labelListN = labelListS.map((value) => Number(value))//stringの配列なのでNumberに変換
-      let maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
+      let maxIdN = 0;
+      if(labelListN.length == 0){
+        maxIdN = 1
+      }else{
+        maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
+      }
       let maxIdS = String(maxIdN)//stringに戻す
+
       //firestoreにラベルを登録
-       db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(maxIdS).set({
+      const mymapLabelService = new MymapLabelService();
+      const resultUpdate = await mymapLabelService.addLabel(this.$store.state.userUid,maxIdS,this.addLabelName);
+
+        if(resultUpdate == 'true'){
+          //ラベル情報を取得し、storeに渡す
+          const label = mymapLabelService.getLabel(this.$store.state.userUid);
+          this.$store.commit('setlabel',{label: label});
+          //入力内容のクリア
+          this.addLabelName ='';
+        }else {
+          alert('登録できませんでした');
+        }
+
+
+      //firestoreにラベルを登録
+/*        db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(maxIdS).set({
         name:this.addLabelName
         }).then(() => {
           this.addLabelName ='';//入力内容のクリア
@@ -102,7 +130,7 @@ export default {
               this.$store.commit('setlabel',{label: label});
             })
           }); 
-        });
+        }); */
       }
     },
 
@@ -111,8 +139,21 @@ export default {
       this.editLabelId =this.label[index].id; 
     },
 
-    entry(){    
-      const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
+    async entry(){
+        const mymapLabelService = new MymapLabelService();
+        const update = await mymapLabelService.updateLabel(this.$store.state.userUid,this.editLabelId,this.editLabelName);
+
+        if(update == 'true'){
+          //ラベル情報を取得し、storeに渡す
+          const label = mymapLabelService.getLabel(this.$store.state.userUid);
+          this.$store.commit('setlabel',{label: label});
+          //入力内容のクリア
+          this.editLabelName ='';
+        }else {
+          alert('登録できませんでした');
+        }
+      
+/*       const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
       labelRef.update({//更新する
         name: this.editLabelName
         }).then(() => {
@@ -127,10 +168,26 @@ export default {
               this.$store.commit('setlabel',{label: label});
             })
           }); 
-        })
+        }) */
     },
 
-    del(){    
+    async del(){
+      const mymapLabelService = new MymapLabelService();
+      const mymapPointService = new MymapPointService();
+      //削除ラベルを使ったポイントを探して削除
+      const resultdelete = await mymapPointService.dellPoint(this.$store.state.userUid,this.editLabelId);
+
+      if(resultdelete == 'true'){
+        //ラベルの削除
+        await mymapLabelService.dellLabel(this.$store.state.userUid,this.editLabelId);
+        //ラベル情報を取得し、storeに渡す
+        const label = mymapLabelService.getLabel(this.$store.state.userUid);
+        this.$store.commit('setlabel',{label: label});
+        //入力内容のクリア
+        this.editLabelName ='';
+      }
+
+/*     del(){    
       let posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where('label','==',this.editLabelId);
       let labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
       let storageRef = firebaseApp.storage().ref();
@@ -186,6 +243,7 @@ export default {
           });
         }
       })
+    }, */
     },
 
     chancel(){
