@@ -4,6 +4,7 @@
     <div class="hero-header">
       <div class="field is-grouped">
         <div class="control">
+          <!-- <button @click="test()">test</button> -->
         <section class="accordions">
           <article class="accordion">
             <div class="accordion-header toggle">
@@ -73,10 +74,11 @@ export default {
   computed:{
     newLat(){return this.$store.getters.newLat},//storeのgetterと同期する
     newLng(){return this.$store.getters.newLng},
-    label(){return this.$store.getters.label.filter((e) => {//初期ラベルは表示しない
+/*     label(){return this.$store.getters.label.filter((e) => {//初期ラベルは表示しない
       return e.id != "0"
       })
-    }  
+    } */
+    label(){return this.$store.getters.label},
   },
 
   mounted() {
@@ -146,6 +148,13 @@ export default {
     labelMnt(){
     this.$router.push({ path: "/labelmnt" });     
     },
+
+/*     test(){
+        const mymapLabelService = new MymapLabelServiceMysql();
+        const label = mymapLabelService.getLabel();
+        this.$store.commit('setlabel',{label: label});
+        console.log(label);
+    } */
   }
 }
 </script>

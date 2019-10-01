@@ -24,7 +24,8 @@
 import 'bulma/css/bulma.css';//CSSフレームワーク
 import  firebaseApp from '../firebase';
 import * as firebase from "firebase/app";
-import MymapLabelService from '../database/firestore/service/MymapLabelService'
+//import MymapLabelService from '../database/firestore/service/MymapLabelService'
+import MymapLabelServiceMysql from '../database/firestore/service/MymapLabelserviceMysql'
 
 //let db = firebaseApp.firestore()
 
@@ -58,23 +59,29 @@ export default {
         this.$store.commit('setuserUid',{userUid:userUid});
         this.$store.commit('setuserName',{userName:userName});
         console.log(this.$store.state.userUid);
-
-        // //ラベル情報を取得し、storeに渡す
-        // const labelRef = db.collection('mymap').doc(userUid).collection('label');
-        // labelRef.doc('0').set({//初期ラベルとして登録する※ラベル登録時に配列が存在せずエラーになるため
-        //   name:'初期ラベル'
-        //   })
-        // let label =[];
-        // labelRef.get().then((querySnapshot) => {
-        //   querySnapshot.forEach((doc) => {
-        //     const data = doc.data();
-        //     label.push({id:doc.id, name:data.name});
-        //}) 
-        //});     
+   
         //ラベル情報を取得し、storeに渡す
-        const mymapLabelService = new MymapLabelService();
+/*         const mymapLabelService = new MymapLabelService();
         const label = mymapLabelService.getLabel(userUid);
+        this.$store.commit('setlabel',{label: label}); */
+
+        //ユーザー情報を渡す
+        //new MymapUserService.setUserId();
+        const request = require('request');
+          const option = {
+              url: 'https://airy-quicksand.glitch.me/',
+              method: 'POST',
+              body: {
+                'userId': userUid
+              }
+          }
+          request.post(option, function(error, response, body){});      
+
+        //ラベル情報を取得し、storeに渡す(MySQL)
+        const mymapLabelService = new MymapLabelServiceMysql();
+        const label = mymapLabelService.getLabel();
         this.$store.commit('setlabel',{label: label});
+        console.log(label);
 
         //map画面に移動
         this.$router.push({ path: "/map" });
