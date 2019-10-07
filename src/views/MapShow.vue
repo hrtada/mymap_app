@@ -26,6 +26,7 @@
 /*globals google */
 import 'bulma/css/bulma.css';//CSSフレームワーク
 import MymapPointService from '../database/firestore/service/MymapPointService'
+import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 
 export default {
    data () {
@@ -82,16 +83,22 @@ export default {
     //条件指定で選択したラベル情報から取得しマーカー表示
       const checked = this.$store.state.checked;
 
-      const getMapPointList = async()=>{
+/*       const getMapPointList = async()=>{
         const mymapPointService = new MymapPointService();
-        const lists = await mymapPointService.searchByLabel(this.$store.state.userUid, checked);//ポイント情報を取得
+        const lists = await mymapPointService.searchByLabel(this.$store.state.userUid, checked);//ポイント情報を取得 
+        console.log(lists);*/
+
+
+      const getMapPointList = async()=>{
+        const mymapPointService = new MymapPointServiceMysql();
+        const lists = await mymapPointService.searchByLabel();
+        console.log('ポイント情報',lists);
 
         //マーカーを表示
         for(let i=0; i<lists.length; i++){
-          makeMaker(lists[i].lat,lists[i].lng);
+         makeMaker(lists[i].lat,lists[i].lng);
           }
         //表示データの有無をチェック
-          //console.log(lists);
         if(lists.length == 0){
           alert('表示するデータがありません');
           this.$router.push({ path: "/map" });
@@ -100,22 +107,7 @@ export default {
         map.fitBounds (bounds);
         }     
       };
-      getMapPointList();
-
-      // const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("label","==",checked);    
-      // posRef.get().then(qs => {
-      //   qs.forEach(doc => {
-      //     let posData = doc.data();
-      //     //this.memo = posData['memo'];
-      //       makeMaker(posData['lat'], posData['lng']);     
-      //   });
-      //   if(bounds.ja.g==180,bounds.ja.h==-180){
-      //     alert('表示するデータがありません');
-      //     this.$router.push({ path: "/map" }); 
-      //   }else{
-      //   map.fitBounds (bounds);//全マーカーが表示されるように調整
-      //   }
-      // });     
+      getMapPointList();  
         
     },  
 
@@ -126,6 +118,7 @@ export default {
     edit(){
       this.$router.push({ path: "/pointedit"});
     },
+
    
   }
 }

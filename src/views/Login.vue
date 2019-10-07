@@ -13,7 +13,7 @@
                       src="../assets/btn_google_signin.png"
                       alt="ログインする"
                     ></button>
-                  <button @click="requestTest('testuser')">test</button>
+                  <!-- <button @click="requestTest('testuser')">test</button> -->
                 </div>
               </article>
             </div>
@@ -91,7 +91,7 @@ export default {
           console.log(errorCode + " : " + errorMessage);
         });
     },
-
+    //ユーザー情報をServerに送る
     requestTest(userUid) {
       const request = require("request");
       const options = {

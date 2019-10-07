@@ -12,7 +12,7 @@ export default class MymapPointService {
         this.storage = firebaseApp.storage();
     }
     //ポイントの新規登録
-    create(userId, point) {
+/*     create(userId, point) {
         return new Promise((resolve, reject) => {
           //const firestore = firebaseApp.firestore();
           this.db.collection(pCollectionName).doc(userId).collection(collectionName).add({
@@ -31,7 +31,7 @@ export default class MymapPointService {
             reject('false');
           }); 
         });
-      }
+      } */
 
       //ポイントの修正登録
       edit(userId,point) {
@@ -51,32 +51,32 @@ export default class MymapPointService {
           }).catch(function (error) {
             console.error('Error edit document: ', error);
             reject();
-          }); 
+          });
         });
       }
  
-      //ポイントの検索
-      searchByLabel(userId, label) {
-        return new Promise((resolve, reject) => {
-            const mapPoints = [];
-            const posRef = this.db.collection(pCollectionName).doc(userId).collection(collectionName).where("label", "==", label);
-            try {
-                posRef.get().then(qs => {
-                    qs.forEach(doc => {
-                        let pData = doc.data();
-                        let pId = doc.id
-                        const mapPoint = new MymapPoint(pId,pData.lat, pData.lng, pData.label, pData.date, pData.memo, pData.imageUrl, pData.imageName);
-                        mapPoints.push(mapPoint);
-                    });
-                    //console.log(mapPoints);
-                    resolve(mapPoints);
-                });
-            } catch(error) {
-              console.log('serch error',error)
-              reject();
-            }
-        });
-      }
+      // //ポイントの検索
+      // searchByLabel(userId, label) {
+      //   return new Promise((resolve, reject) => {
+      //       const mapPoints = [];
+      //       const posRef = this.db.collection(pCollectionName).doc(userId).collection(collectionName).where("label", "==", label);
+      //       try {
+      //           posRef.get().then(qs => {
+      //               qs.forEach(doc => {
+      //                   let pData = doc.data();
+      //                   let pId = doc.id
+      //                   const mapPoint = new MymapPoint(pId,pData.lat, pData.lng, pData.label, pData.date, pData.memo, pData.imageUrl, pData.imageName);
+      //                   mapPoints.push(mapPoint);
+      //               });
+      //               //console.log(mapPoints);
+      //               resolve(mapPoints);
+      //           });
+      //       } catch(error) {
+      //         console.log('serch error',error)
+      //         reject();
+      //       }
+      //   });
+      // }
 
       //クリックしたマーカーの詳細の表示
       showPointDetail(userId,lat,lng){
@@ -100,7 +100,7 @@ export default class MymapPointService {
         });
       }
 
-    //ポイントの上書登録
+    //ポイントの上書登録※使ってない？？
     update(userId, point) {
       return new Promise((resolve, reject) => {
         //const firestore = firebaseApp.firestore();

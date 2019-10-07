@@ -57,11 +57,7 @@
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
 import MymapPointService from '../database/firestore/service/MymapPointService'
-//import firebaseApp from '../firebase';//★最終的に不要
 import 'bulma/css/bulma.css';//CSSフレームワーク
-
-//let db = firebaseApp.firestore();//★最終的に不要
-//let docId;//★最終的に不要
 
 export default {
 
@@ -105,23 +101,6 @@ export default {
         }
         getMapPointDetail(); 
 
-  /*  //クリックしたマーカーの位置情報からデータを抽出する
-    const posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where("lat","==",this.$store.state.editLat).where("lng","==",this.$store.state.editLng);//座標が一致するデータのクエリ
-    posRef.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        const pos = doc.data();
-        docId = doc.id;
-        this.setLabel = pos['label'];
-        this.memo = pos['memo'];
-        this.date = pos['date'];
-        this.lat = pos['lat'];
-        this.lng = pos['lng'];
-        this.imageUrl = pos['imageUrl']//追加2019/09/03
-        this.imageUrl_old = pos['imageUrl']//追加2019/09/09
-        this.imageName = pos['imageName'] //追加2019/09/03
-        this.imageName_old = pos['imageName'] //元画像ファイル名を退避
-      }) 
-    }); */
   },
 
   methods: {
@@ -160,24 +139,7 @@ export default {
         alert('必須項目が未入力です');
       }
       else{
-      //画像アップロード
-      // if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
-      //   // ストレージオブジェクト作成
-      //   let storageRef = firebaseApp.storage().ref();
 
-      //   // ファイルのパスを設定
-      //   let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
-      //   // ファイルを適用してファイルアップロード開始
-      //   mountainsRef.put(this.imageFile).then(snapshot => {
-      //     snapshot.ref.getDownloadURL().then(downloadURL => {
-      //       this.imageUrl = downloadURL;
-
-      //     //元画像ファイルを削除
-      //     let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName_old}`);
-      //     delRef.delete();
-      //     });
-      //   });  
-      // }
          const mymapPointService = new MymapPointService();
         
         //画像をアップロード＆変更前画像の削除
@@ -197,20 +159,6 @@ export default {
           alert('登録できませんでした');
         }
       }
-/*         db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).set({//更新する
-            lat: this.lat,
-            lng: this.lng,
-            label: this.setLabel,
-            date: this.date,
-            memo: this.memo,
-            imageUrl:this.imageUrl,
-            imageName: this.imageName,
-        }).then(() => {
-          this.$router.push({ path: "/mapshow" });
-          }).catch(function (error) {
-          console.error('Error adding document: ', error);
-          }); 
-          this.$router.push({ path: "/map" });//前画面に戻る*/
 
     },
 
@@ -226,15 +174,6 @@ export default {
           alert('削除できませんでした');
       }
 
-
-      //db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(docId).delete().then(() => {//pointデータを削除
-        //strageの画像ファイルを削除
-/*         let storageRef = firebaseApp.storage().ref();
-        let delRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
-        delRef.delete().then(() => {
-        this.$router.push({ path: "/mapshow" });//全画面に戻る 
-        })*/
-      //})
     }
   },
 }

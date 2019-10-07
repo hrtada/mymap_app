@@ -4,7 +4,7 @@
     <div class="hero-header">
       <div class="field is-grouped">
         <div class="control">
-          <!-- <button @click="test()">test</button> -->
+          <button @click="test()">test</button>
         <section class="accordions">
           <article class="accordion">
             <div class="accordion-header toggle">
@@ -62,6 +62,7 @@
 import bulmaAccordion from 'bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js';//blumaのextenionをimport
 import 'bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css'
 import 'bulma/css/bulma.css';//CSSフレームワーク
+import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 
 export default {
    data () {
@@ -93,7 +94,7 @@ export default {
       streetViewControl: false,
       mapTypeControl: false,
       fullscreenControl: false
-    }); 
+    });
     //現在地を取得し、地図中央で再表示
     navigator.geolocation.getCurrentPosition((position)=> {
       const pos = {
@@ -141,7 +142,9 @@ export default {
         alert("ラベルを選択してください。");
         return false;
       }else{     
-      this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
+      //this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
+      const mymapPointService = new MymapPointServiceMysql();
+      mymapPointService.sendtoLabel(this.checked);
       this.$router.push({ path: "/mapshow"});
       }
     },
@@ -149,12 +152,13 @@ export default {
     this.$router.push({ path: "/labelmnt" });     
     },
 
-/*     test(){
-        const mymapLabelService = new MymapLabelServiceMysql();
-        const label = mymapLabelService.getLabel();
-        this.$store.commit('setlabel',{label: label});
-        console.log(label);
-    } */
+    test(){
+/*         const mymapPointService = new MymapPointServiceMysql();
+        const mapPoints = await mymapPointService.searchByLabel();
+        await console.log(mapPoints); */
+        this.$router.push({ path: "/mapshow"}); 
+
+    }
   }
 }
 </script>

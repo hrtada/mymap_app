@@ -8,7 +8,7 @@ export default class MymapLabelService {
 getLabel(){
     let mapLabels = [];
     const option = {
-        url: 'https://airy-quicksand.glitch.me/getLabel',
+        url: 'https://airy-quicksand.glitch.me/label',
         method: 'GET',
         json: true
     }

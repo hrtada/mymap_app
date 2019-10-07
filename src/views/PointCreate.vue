@@ -55,6 +55,7 @@
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
 import  MymapPointService from '../database/firestore/service/MymapPointService';
+import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 export default {
@@ -114,23 +115,6 @@ export default {
         alert('必須項目が未入力です');
       }
       else{
-
-        // //画像のアップロード
-        // if(this.imageUrl.length>0){
-        //   // ストレージオブジェクト作成
-        //   let storageRef = firebaseApp.storage().ref();
-        //   // ファイルのパスを設定
-        //   let mountainsRef = storageRef.child(`${this.$store.state.userUid}/${this.imageName}`);
-        //   // ファイルを適用してファイルアップロード開始
-        //   mountainsRef.put(this.imageFile).then(snapshot => {
-        //     snapshot.ref.getDownloadURL().then(downloadURL => {
-        //       this.imageUrl = downloadURL
-        //     });
-        //   }); 
-        // } 
-        // else {//何もしない
-        // }
-
         const mymapPointService = new MymapPointService();
         //画像をアップロード
         if(this.imageUrl.length>0){
@@ -138,7 +122,13 @@ export default {
           this.imageUrl = getImageUrl
         }      
 
-        //ポイント情報をFirestoreに登録
+        //ポイント情報をMysqlに登録
+        const mymapPointServiceMysql = new MymapPointServiceMysql();
+        const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
+
+
+/*      //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         const createMapPoint = await mymapPointService.create(this.$store.state.userUid, mapPoint);
 
@@ -146,7 +136,7 @@ export default {
           this.$router.push({ path: "/map" });//前画面に戻る 
         }else{
           alert('登録できませんでした');
-        }
+        } */
 
         }
       
