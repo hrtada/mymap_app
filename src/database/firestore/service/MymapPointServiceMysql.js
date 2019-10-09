@@ -13,7 +13,7 @@ create(userId, point)  {
       form: {
         lat: point.lat,
         lng: point.lng,
-        label: point.label,
+        labelId: point.label,
         date: point.date,
         memo: point.memo,
         imageUrl: point.imageUrl,
