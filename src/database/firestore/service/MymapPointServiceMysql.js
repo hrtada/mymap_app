@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import  MymapPoint from '../model/MymapPoint';
+// import  MymapPoint from '../model/MymapPoint';
 const request = require('request');
 
 export default class MymapPointServiceMysql {
