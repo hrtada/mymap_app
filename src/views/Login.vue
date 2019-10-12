@@ -31,7 +31,7 @@ import firebaseApp from "../firebase";
 import * as firebase from "firebase/app";
 //import MymapLabelService from '../database/firestore/service/MymapLabelService'
 import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
-import MymapUserServiceMysql from "../database/firestore/service/MymapUserServiceMysql";
+//import MymapUserServiceMysql from "../database/firestore/service/MymapUserServiceMysql";
 
 //let db = firebaseApp.firestore()
 
@@ -72,10 +72,9 @@ export default {
         this.$store.commit('setlabel',{label: label}); */
 
           //ユーザー情報を渡す
-          //new MymapUserService.setUserId();
-          const mymapUserServiceMysql = new MymapUserServiceMysql();
-          mymapUserServiceMysql.requestTest(userUid);
-          //this.requestTest(userUid);
+          //const mymapUserServiceMysql = new MymapUserServiceMysql();
+          //mymapUserServiceMysql.requestTest(userUid);
+          this.requestTest(userUid);
 
           //ラベル情報を取得し、storeに渡す(MySQL)
           const mymapLabelServiceMysql = new MymapLabelServiceMysql();
@@ -95,10 +94,10 @@ export default {
         });
     },
     //ユーザー情報をServerに送る
-    /*     requestTest(userUid) {
+      requestTest(userUid) {
       const request = require("request");
       const options = {
-        url: "https://airy-quicksand.glitch.me/",
+        url: "http://192.168.56.1:8000/",
         method: "POST",
         timeout: 5000,
         form: { userUid: userUid }
@@ -108,7 +107,7 @@ export default {
         console.log(response);
         console.log(body);
       });
-    } */
+    } 
   }
 }
 </script>

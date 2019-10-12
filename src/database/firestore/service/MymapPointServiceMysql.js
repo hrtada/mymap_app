@@ -7,7 +7,7 @@ export default class MymapPointServiceMysql {
 //ポイントの新規登録
 create(userId, point)  {
     const options = {
-      url: "https://airy-quicksand.glitch.me/pointcreate",
+      url: "http://192.168.56.1:8000/pointcreate",
       method: "POST",
       timeout: 5000,
       form: {
@@ -31,9 +31,9 @@ create(userId, point)  {
 
 //ポイントの検索
     //選択したラベル情報を送る
-    sendtoLabel(checkedLabel) {
+     sendtoLabel(checkedLabel) {
       const options = {
-        url: "https://airy-quicksand.glitch.me/point",
+        url: "http://192.168.56.1:8000/pointserch",
         method: "POST",
         timeout: 5000,
         form: { checkedLabel: checkedLabel }
@@ -45,13 +45,13 @@ create(userId, point)  {
       });
     }
 
-
     //ポイント情報の取得
     searchByLabel(){
         return new Promise((resolve, reject) => {
+
         const mapPoints = [];
         const option = {
-            url: 'https://airy-quicksand.glitch.me/point',
+            url: 'http://192.168.56.1:8000/pointserch',
             method: 'GET',
             json: true
         }

@@ -126,7 +126,7 @@ export default {
         const mymapPointServiceMysql = new MymapPointServiceMysql();
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
-
+        this.$router.push({ path: "/map" });//前画面に戻る 
 
 /*      //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
