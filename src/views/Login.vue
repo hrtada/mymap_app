@@ -77,10 +77,7 @@ export default {
           this.requestTest(userUid);
 
           //ラベル情報を取得し、storeに渡す(MySQL)
-          const mymapLabelServiceMysql = new MymapLabelServiceMysql();
-          const label = mymapLabelServiceMysql.getLabel();
-          this.$store.commit("setlabel", { label: label });
-          console.log(label);
+          this.getLabellist();
 
           //map画面に移動
           this.$router.push({ path: "/map" });
@@ -93,6 +90,7 @@ export default {
           console.log(errorCode + " : " + errorMessage);
         });
     },
+
     //ユーザー情報をServerに送る
       requestTest(userUid) {
       const request = require("request");
@@ -107,7 +105,15 @@ export default {
         console.log(response);
         console.log(body);
       });
-    } 
+    },
+
+    //ラベル情報を取得し、storeに渡す(MySQL)
+      async getLabellist(){
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const label = await mymapLabelServiceMysql.getLabel();
+        this.$store.commit("setlabel", { label: label });
+        console.log(label);
+      }
   }
 }
 </script>
