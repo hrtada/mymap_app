@@ -1,5 +1,4 @@
 /* eslint-disable no-console */
-
 const request = require('request');
 
 export default class MymapLabelService {
@@ -18,7 +17,7 @@ export default class MymapLabelService {
                     for(let i=0; i<body.length; i++){
                         mapLabels.push({id:body[i].labelId, name:body[i].labelName});
                     }
-                    resolve(mapLabels); 
+                    resolve(mapLabels);
                 });
             } catch (error) {
                 reject();

@@ -142,9 +142,10 @@ export default {
         alert("ラベルを選択してください。");
         return false;
       }else{     
-      //this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
-      const mymapPointService = new MymapPointServiceMysql();
-      mymapPointService.sendtoLabel(this.checked);
+      this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
+      //console.log(this.$store.state.checked);
+/*       const mymapPointService = new MymapPointServiceMysql();
+      mymapPointService.sendtoLabel(this.checked); */
       this.$router.push({ path: "/mapshow"});
       }
     },
@@ -156,7 +157,7 @@ export default {
 /*         const mymapPointService = new MymapPointServiceMysql();
         const mapPoints = await mymapPointService.searchByLabel();
         await console.log(mapPoints); */
-        this.$router.push({ path: "/mapshow"}); 
+        //this.$router.push({ path: "/mapshow"}); 
 
     }
   }

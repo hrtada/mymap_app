@@ -31,7 +31,7 @@ import firebaseApp from "../firebase";
 import * as firebase from "firebase/app";
 //import MymapLabelService from '../database/firestore/service/MymapLabelService'
 import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
-//import MymapUserServiceMysql from "../database/firestore/service/MymapUserServiceMysql";
+import MymapUserServiceMysql from "../database/firestore/service/MymapUserServiceMysql";
 
 //let db = firebaseApp.firestore()
 
@@ -66,15 +66,10 @@ export default {
           this.$store.commit("setuserName", { userName: userName });
           console.log(this.$store.state.userUid);
 
-          //ラベル情報を取得し、storeに渡す
-          /*         const mymapLabelService = new MymapLabelService();
-        const label = mymapLabelService.getLabel(userUid);
-        this.$store.commit('setlabel',{label: label}); */
-
           //ユーザー情報を渡す
-          //const mymapUserServiceMysql = new MymapUserServiceMysql();
-          //mymapUserServiceMysql.requestTest(userUid);
-          this.requestTest(userUid);
+          const mymapUserServiceMysql = new MymapUserServiceMysql();
+          mymapUserServiceMysql.sendtoUser(userUid);
+          //this.requestTest(userUid);
 
           //ラベル情報を取得し、storeに渡す(MySQL)
           this.getLabellist();
@@ -91,8 +86,15 @@ export default {
         });
     },
 
+    //ラベル情報を取得し、storeに渡す(MySQL)
+      async getLabellist(){
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const label = await mymapLabelServiceMysql.getLabel();
+        this.$store.commit("setlabel", { label: label });
+        console.log(label);
+      }
     //ユーザー情報をServerに送る
-      requestTest(userUid) {
+/*       requestTest(userUid) {
       const request = require("request");
       const options = {
         url: "http://192.168.56.1:8000/",
@@ -105,15 +107,8 @@ export default {
         console.log(response);
         console.log(body);
       });
-    },
+    }, */
 
-    //ラベル情報を取得し、storeに渡す(MySQL)
-      async getLabellist(){
-        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
-        const label = await mymapLabelServiceMysql.getLabel();
-        this.$store.commit("setlabel", { label: label });
-        console.log(label);
-      }
   }
 }
 </script>
