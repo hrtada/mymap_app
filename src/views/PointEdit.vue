@@ -77,10 +77,13 @@ export default {
     }
   },
   computed:{
-    label(){return this.$store.getters.label.filter((e) => {
+      label(){
+        return this.$store.getters.label
+        }
+/*     label(){return this.$store.getters.label.filter((e) => {
       return e.id != "0"
       })
-    },
+    }, */
   },
 
   mounted() {
@@ -91,7 +94,7 @@ export default {
           const lists = await mymapPointService.showPointDetail(this.$store.state.userUid,this.$store.state.editLat,this.$store.state.editLng ); */
           const getMapPointDetail = async() =>{
             const mymapPointServiceMysql = new MymapPointServiceMysql();
-            await mymapPointServiceMysql.sendtoLatlng(this.$store.state.userUid,this.$store.state.editLat,this.$store.state.editLng);
+            await mymapPointServiceMysql.sendtoLatlng(this.$store.state.userUid,this.$store.state.lat,this.$store.state.lng);
             const lists = await mymapPointServiceMysql.showPointDetail();
             console.log('リスト',lists);
 
@@ -116,7 +119,7 @@ export default {
       this.$router.push({ path: "/picture" });     
     },
     chancel(){
-      this.$router.push({ path: "/mapshow" });  
+      this.$router.push({ path: "/map" });  
     },
 
     onFileChange(e){
@@ -161,7 +164,7 @@ export default {
         const mymapPointServiceMysql = new MymapPointServiceMysql();
         const mapPoint = new MymapPoint(this.id, this.lat, this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.update(this.$store.state.userUid, mapPoint);
-        this.$router.push({ path: "/mapshow" });//前画面に戻る 
+        this.$router.push({ path: "/map" });//前画面に戻る 
 
         // const mapPoint = new MymapPoint(this.id, this.lat,this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         // const editMapPoint = await mymapPointService.edit(this.$store.state.userUid, mapPoint);
@@ -178,7 +181,7 @@ export default {
     async dell(){
       const mymapPointServiceMysql = new MymapPointServiceMysql();
       await mymapPointServiceMysql.delete(this.id);
-      this.$router.push({ path: "/mapshow" });//前画面に戻る 
+      this.$router.push({ path: "/map" });//前画面に戻る 
 
       //const mymapPointService = new MymapPointService();
       //mymapPointService.deleteImage(this.$store.state.userUid,this.imageName);//★画像の削除。エラーが起こるので一時的にコメントアウト。
