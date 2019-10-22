@@ -4,18 +4,17 @@
       <div class="hero-header">
         <div class="field is-grouped">
           <div class="control">
-            <button @click="test()">test</button>
-            <section class="accordions">
-              <article class="accordion">
-                <div class="accordion-header toggle">
+            <section class="">
+              <article class="">
+                <div class="toggle">
                   <label>条件指定</label>
                 </div>
-                <div class="accordion-body">
-                  <div class="accordion-content">
+                <div class="">
+                  <div class="">
                     <p class="has-text-weight-bold">ラベルの選択</p>
                     <ul>
                       <li
-                        v-for="item in label"
+                        v-for="item in myLabel"
                         :key="item.id"
                       >
                         <label><input
@@ -43,10 +42,9 @@
                 <div class="accordion-body">
 
                   <div class="accordion-content">
-                    <button
-                      class="button is-light"
-                      @click="labelMnt()"
-                    >ラベルの設定</button>
+
+
+                    <label-mnt></label-mnt>
                   </div>
                 </div>
               </article>
@@ -74,16 +72,19 @@ import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accor
 import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
-
+import LabelMnt from "./LabelMnt.vue";
 export default {
   data() {
     return {
       map: null,
       accordions: [], //bulmaのアコーディオンメニューを使うために必要
+      myLabel: [{id:1,name:'aa'},{id:2,name:'bb'}],//this.$store.getters.label,
       checked: null //条件設定のラジオボタンの値
     };
   },
-
+  components: {
+    LabelMnt
+  },
   computed: {
     newLat() {
       return this.$store.getters.newLat;
@@ -91,13 +92,6 @@ export default {
     newLng() {
       return this.$store.getters.newLng;
     },
-    /*     label(){return this.$store.getters.label.filter((e) => {//初期ラベルは表示しない
-      return e.id != "0"
-      })
-    } */
-    label() {
-      return this.$store.getters.label;
-    }
   },
 
   mounted() {
@@ -127,7 +121,6 @@ export default {
       this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     });
   },
-
   methods: {
     create() {
       this.$router.push({ path: "/pointcreate" });
@@ -174,12 +167,6 @@ export default {
     },
     labelMnt() {
       this.$router.push({ path: "/labelmnt" });
-    },
-    test() {
-      /*         const mymapPointService = new MymapPointServiceMysql();
-        const mapPoints = await mymapPointService.searchByLabel();
-        await console.log(mapPoints); */
-      this.$router.push({ path: "/mapshow" });
     }
   }
 };

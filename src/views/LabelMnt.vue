@@ -51,7 +51,7 @@ import 'bulma/css/bulma.css';//CSSフレームワーク
 //let db = firebaseApp.firestore()
 
 export default {
-  
+  name: 'label-mnt',
   data () {
     return {
       editLabelName:'',
@@ -59,13 +59,12 @@ export default {
       addLabelName:'',
     }
   }, 
-
-  computed:{
-    label(){return this.$store.getters.label.filter((e) => {
-      return e.id != "0"
-      })
-    },//storeのgetterと同期する
-  },
+  // computed:{
+  //   label(){return this.$store.getters.label.filter((e) => {
+  //     return e.id != "0"
+  //     })
+  //   },//storeのgetterと同期する
+  // },
 
   mounted(){
     //ラベル情報を取得しstoreに渡す
