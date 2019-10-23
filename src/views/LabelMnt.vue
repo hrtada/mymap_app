@@ -33,8 +33,6 @@
                 <button class="button is-small is-rounded is-outlined" @click="edit(index)">選択</button>
                 </li>
                 </ul>
-
-
        </div>
     </div>
 
@@ -90,50 +88,43 @@ export default {
 
     async add(){
       if(this.addLabelName==''){//空欄の時は何もしない
-        return
+        alert('名前を入力してください');
       }else{
-      //★20190925この処理不要かも。idは自動取得でOKなはず。見直し予定
-      let labelListS = (this.$store.state.label).map((value) => value.id)//labelのIDのみの配列作成
-      let labelListN = labelListS.map((value) => Number(value))//stringの配列なのでNumberに変換
-      let maxIdN = 0;
-      if(labelListN.length == 0){
-        maxIdN = 1
-      }else{
-        maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
-      }
-      let maxIdS = String(maxIdN)//stringに戻す
-
-      //firestoreにラベルを登録
-      const mymapLabelService = new MymapLabelService();
-      const resultUpdate = await mymapLabelService.addLabel(this.$store.state.userUid,maxIdS,this.addLabelName);
-
-        if(resultUpdate == 'true'){
+        //SQLiteにラベルを登録
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const addLabel = await mymapLabelServiceMysql.addLabel(this.addLabelName,this.$store.state.userUid);
+        if(addLabel == true){
           //ラベル情報を取得し、storeに渡す
-          const label = mymapLabelService.getLabel(this.$store.state.userUid);
-          this.$store.commit('setlabel',{label: label});
+          this.getLabellist();
           //入力内容のクリア
           this.addLabelName ='';
         }else {
           alert('登録できませんでした');
         }
+      //  //★20190925この処理不要かも。idは自動取得でOKなはず。見直し予定
+      // let labelListS = (this.$store.state.label).map((value) => value.id)//labelのIDのみの配列作成
+      // let labelListN = labelListS.map((value) => Number(value))//stringの配列なのでNumberに変換
+      // let maxIdN = 0;
+      // if(labelListN.length == 0){
+      //   maxIdN = 1
+      // }else{
+      //   maxIdN = (Math.max.apply(null,labelListN))+1//labelIdの最大値+1取得
+      // }
+      // let maxIdS = String(maxIdN)//stringに戻す 
 
+      // const mymapLabelService = new MymapLabelService();
+      // const resultUpdate = await mymapLabelService.addLabel(this.$store.state.userUid,maxIdS,this.addLabelName);
 
-      //firestoreにラベルを登録
-/*        db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(maxIdS).set({
-        name:this.addLabelName
-        }).then(() => {
-          this.addLabelName ='';//入力内容のクリア
-          //ラベル情報を取得し、storeに渡す
-          const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-          let label =[];
-          labelRef.get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              label.push({id:doc.id, name:data.name});
-              this.$store.commit('setlabel',{label: label});
-            })
-          }); 
-        }); */
+        // if(resultUpdate == 'true'){
+        //   //ラベル情報を取得し、storeに渡す
+        //   const label = mymapLabelService.getLabel(this.$store.state.userUid);
+        //   this.$store.commit('setlabel',{label: label});
+        //   //入力内容のクリア
+        //   this.addLabelName ='';
+        // }else {
+        //   alert('登録できませんでした');
+        // }
+
       }
     },
 
@@ -143,35 +134,34 @@ export default {
     },
 
     async entry(){
-        const mymapLabelService = new MymapLabelService();
-        const update = await mymapLabelService.updateLabel(this.$store.state.userUid,this.editLabelId,this.editLabelName);
-
-        if(update == 'true'){
+      if(this.editLabelName == ''){//空欄の時は何もしない
+        alert('名前を入力してください');
+      }else{
+        //SQLiteにラベルを登録
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const updateLabel = await mymapLabelServiceMysql.updateLabel(this.editLabelId,this.editLabelName);
+        if(updateLabel == true){
           //ラベル情報を取得し、storeに渡す
-          const label = mymapLabelService.getLabel(this.$store.state.userUid);
-          this.$store.commit('setlabel',{label: label});
+          this.getLabellist();
           //入力内容のクリア
           this.editLabelName ='';
         }else {
           alert('登録できませんでした');
         }
+      }
+        // const mymapLabelService = new MymapLabelService();
+        // const update = await mymapLabelService.updateLabel(this.$store.state.userUid,this.editLabelId,this.editLabelName);
+
+        // if(update == 'true'){
+        //   //ラベル情報を取得し、storeに渡す
+        //   const label = mymapLabelService.getLabel(this.$store.state.userUid);
+        //   this.$store.commit('setlabel',{label: label});
+        //   //入力内容のクリア
+        //   this.editLabelName ='';
+        // }else {
+        //   alert('登録できませんでした');
+        // }
       
-/*       const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
-      labelRef.update({//更新する
-        name: this.editLabelName
-        }).then(() => {
-          this.editLabelName ='';//入力内容のクリア
-          //ラベル情報を取得し、storeに渡す
-          const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-          let label =[];
-          labelRef.get().then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              const data = doc.data();
-              label.push({id:doc.id, name:data.name});
-              this.$store.commit('setlabel',{label: label});
-            })
-          }); 
-        }) */
     },
 
     async del(){
