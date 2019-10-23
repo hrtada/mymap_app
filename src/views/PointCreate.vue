@@ -7,7 +7,7 @@
           <label class="label">ラベル<span class="has-text-danger is-size-7"> 必須</span></label>
             <div class="control">
               <div class="select">
-                <select required v-model="setLabel">
+                <select v-model="setLabel">
                   <option v-for="item in label" :key="item.id" v-bind:value="item.id"> {{item.name}}
                   </option>
                 </select>
@@ -71,10 +71,13 @@ export default {
     }
   },
   computed:{
-    label(){return this.$store.getters.label.filter((e) => {
-      return e.id != "0"
-      })
-    },
+    label(){
+      return this.$store.getters.label
+      }
+    // label(){return this.$store.getters.label.filter((e) => {
+    //   return e.id != "0"
+    //   })
+    // },
   },
 
   methods: {
@@ -124,9 +127,9 @@ export default {
 
         //ポイント情報をMysqlに登録
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        const mapPoint = new MymapPoint(0,this.$store.state.lat, this.$store.state.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
-
+        this.$router.push({ path: "/map" });//前画面に戻る 
 
 /*      //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);

@@ -66,22 +66,13 @@ export default {
           this.$store.commit("setuserName", { userName: userName });
           console.log(this.$store.state.userUid);
 
-          //ラベル情報を取得し、storeに渡す
-          /*         const mymapLabelService = new MymapLabelService();
-        const label = mymapLabelService.getLabel(userUid);
-        this.$store.commit('setlabel',{label: label}); */
-
           //ユーザー情報を渡す
-          //new MymapUserService.setUserId();
           const mymapUserServiceMysql = new MymapUserServiceMysql();
-          mymapUserServiceMysql.requestTest(userUid);
+          mymapUserServiceMysql.sendtoUser(userUid);
           //this.requestTest(userUid);
 
           //ラベル情報を取得し、storeに渡す(MySQL)
-          const mymapLabelServiceMysql = new MymapLabelServiceMysql();
-          const label = mymapLabelServiceMysql.getLabel();
-          this.$store.commit("setlabel", { label: label });
-          console.log(label);
+          this.getLabellist();
 
           //map画面に移動
           this.$router.push({ path: "/map" });
@@ -94,11 +85,19 @@ export default {
           console.log(errorCode + " : " + errorMessage);
         });
     },
+
+    //ラベル情報を取得し、storeに渡す(MySQL)
+      async getLabellist(){
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const label = await mymapLabelServiceMysql.getLabel();
+        this.$store.commit("setlabel", { label: label });
+        console.log(label);
+      }
     //ユーザー情報をServerに送る
-    /*     requestTest(userUid) {
+/*       requestTest(userUid) {
       const request = require("request");
       const options = {
-        url: "https://airy-quicksand.glitch.me/",
+        url: "http://192.168.56.1:8000/",
         method: "POST",
         timeout: 5000,
         form: { userUid: userUid }
@@ -108,7 +107,8 @@ export default {
         console.log(response);
         console.log(body);
       });
-    } */
+    }, */
+
   }
 }
 </script>

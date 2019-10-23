@@ -25,7 +25,7 @@
 /* eslint-disable no-console */
 /*globals google */
 import 'bulma/css/bulma.css';//CSSフレームワーク
-// import MymapPointService from '../database/firestore/service/MymapPointService'
+//himport MymapPointService from '../database/firestore/service/MymapPointService'
 import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 
 export default {
@@ -81,7 +81,7 @@ export default {
 
     }
     //条件指定で選択したラベル情報から取得しマーカー表示
-      // const checked = this.$store.state.checked;
+      //const checked = this.$store.state.checked;
 
 /*       const getMapPointList = async()=>{
         const mymapPointService = new MymapPointService();
@@ -90,8 +90,10 @@ export default {
 
 
       const getMapPointList = async()=>{
-        const mymapPointService = new MymapPointServiceMysql();
-        const lists = await mymapPointService.searchByLabel();
+        //const check = this.$store.state.checked;
+        const mymapPointServiceMysql = new MymapPointServiceMysql();
+        await mymapPointServiceMysql.sendtoLabel(this.$store.state.checked,this.$store.state.userUid); 
+        const lists = await mymapPointServiceMysql.searchByLabel();
         console.log('ポイント情報',lists);
 
         //マーカーを表示

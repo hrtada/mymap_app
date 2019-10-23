@@ -4,7 +4,7 @@
       <div class="hero-header">
         <div class="field is-grouped">
           <div class="control">
-            <button @click="test()">test</button>
+            <!-- <button @click="test()">test</button> -->
             <section class="accordions">
               <article class="accordion">
                 <div class="accordion-header toggle">
@@ -60,10 +60,15 @@
 
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
-      <div id="infowindw">
+      <div id="infowindw_new">
         <button @click="create()">新規登録</button>
       </div>
+      <div id="infowindw_get">
+        <button @click="edit()">詳細表示</button>
+      </div>
     </div>
+
+    
   </div>
 </template>
 
@@ -79,22 +84,20 @@ export default {
   data() {
     return {
       map: null,
+      bounds: null,
+      //marker: null,
       accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null //条件設定のラジオボタンの値
     };
   },
 
   computed: {
-    newLat() {
-      return this.$store.getters.newLat;
+    lat() {
+      return this.$store.getters.lat;
     }, //storeのgetterと同期する
-    newLng() {
-      return this.$store.getters.newLng;
+    lng() {
+      return this.$store.getters.lng;
     },
-    /*     label(){return this.$store.getters.label.filter((e) => {//初期ラベルは表示しない
-      return e.id != "0"
-      })
-    } */
     label() {
       return this.$store.getters.label;
     }
@@ -108,10 +111,16 @@ export default {
     this.map = new google.maps.Map(document.getElementById("map"), {
       center: initiallatLng,
       zoom: 15,
+      maxZoom: 15,
       streetViewControl: false,
       mapTypeControl: false,
       fullscreenControl: false
     });
+    this.bounds = new google.maps.LatLngBounds();
+    // this.maker = new google.maps.Marker({
+    //   map: this.map
+    // });
+
     //現在地を取得し、地図中央で再表示
     navigator.geolocation.getCurrentPosition(position => {
       const pos = {
@@ -124,7 +133,9 @@ export default {
     //マップをクリック時、マーカー表示する
     this.map.addListener("click", e => {
       //マーカーを表示する
-      this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      const newMaker = this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
+      this.markerClick(newMaker,'infowindw_new');
+      //this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     });
   },
 
@@ -132,24 +143,40 @@ export default {
     create() {
       this.$router.push({ path: "/pointcreate" });
     },
-    async show() {
-      // if (this.checked == null) {
-      //   alert("ラベルを選択してください。");
-      //   return false;
-      // } else {
-      //this.$store.commit('setchecked',{checked: this.checked});//条件指定のチェックした値を渡す
-
-      const mymapPointService = new MymapPointServiceMysql();
-      // mymapPointService.sendtoLabel(this.checked);
-      // this.$router.push({ path: "/mapshow" });
-      const points = await mymapPointService.searchByLabel();
-
-      for (let i = 0; i < points.length; i++) {
-        console.log(points[i].lat + "  " + points[i].lng);
-        this.makeMaker({ lat: points[i].lat, lng: points[i].lng });
-      }
-      // }
+    
+    edit(){
+      this.$router.push({ path: "/pointedit"});
     },
+
+    async show() {
+      if (this.checked == null) {
+        alert("ラベルを選択してください。");
+        return false;
+      } else {
+        //DBからポイント情報を取得する
+        const mymapPointServiceMysql = new MymapPointServiceMysql();
+        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid); //チェックしたラベルを渡す
+        const lists = await mymapPointServiceMysql.searchByLabel();//queryした結果を受け取る
+        //console.log('ポイント情報',lists);
+
+        //表示データの有無をチェック
+        if(lists.length == 0){
+          alert('表示するデータがありません');
+          //this.$router.push({ path: "/map" });
+        }else{
+          //マーカーをクリア
+
+          //マーカーを表示
+          for(let i=0; i<lists.length; i++){
+          const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
+          this.markerClick (getMaker,'infowindw_get');
+          }
+          //全マーカーが表示されるように調整
+          this.map.fitBounds (this.bounds);
+        }       
+      }
+    },
+
     //マーカーを表示する関数を作成
     makeMaker({ lat, lng }) {
       const latLng = new google.maps.LatLng(lat, lng);
@@ -158,23 +185,34 @@ export default {
         map: this.map,
         animation: google.maps.Animation.DROP
       });
+      //マーカーの表示領域を調整のための位置座標を取得
+      this.bounds.extend (marker.position);
+      return marker;
+    },
 
+    //マーカーを画面から削除
+
+
+    //マーカークリック時の関数を作成
+    markerClick(marker,infowindw){
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
-        content: document.getElementById("infowindw")
+      content: document.getElementById(infowindw)
       });
 
       marker.addListener("click", () => {
         info.open(this.map, marker);
         const mLat = marker.getPosition().lat(); //緯度情報を渡す
         const mLng = marker.getPosition().lng();
-        this.$store.commit("setnewLat", { newLat: mLat }); //store.stateに渡す
-        this.$store.commit("setnewLng", { newLng: mLng });
+        this.$store.commit("setlat", { lat: mLat }); //store.stateに渡す
+        this.$store.commit("setlng", { lng: mLng });
       });
     },
+
     labelMnt() {
       this.$router.push({ path: "/labelmnt" });
     },
+
     test() {
       /*         const mymapPointService = new MymapPointServiceMysql();
         const mapPoints = await mymapPointService.searchByLabel();

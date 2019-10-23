@@ -57,6 +57,7 @@
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
 import MymapPointService from '../database/firestore/service/MymapPointService'
+import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 export default {
@@ -76,16 +77,27 @@ export default {
     }
   },
   computed:{
-    label(){return this.$store.getters.label.filter((e) => {
+      label(){
+        return this.$store.getters.label
+        }
+/*     label(){return this.$store.getters.label.filter((e) => {
       return e.id != "0"
       })
-    },
+    }, */
   },
 
   mounted() {
-        const getMapPointDetail = async()=>{
+        //ポイント情報を取得
+
+/*         const getMapPointDetail = async()=>{
           const mymapPointService = new MymapPointService();
-          const lists = await mymapPointService.showPointDetail(this.$store.state.userUid,this.$store.state.editLat,this.$store.state.editLng );//ポイント情報を取得
+          const lists = await mymapPointService.showPointDetail(this.$store.state.userUid,this.$store.state.editLat,this.$store.state.editLng ); */
+          const getMapPointDetail = async() =>{
+            const mymapPointServiceMysql = new MymapPointServiceMysql();
+            await mymapPointServiceMysql.sendtoLatlng(this.$store.state.userUid,this.$store.state.lat,this.$store.state.lng);
+            const lists = await mymapPointServiceMysql.showPointDetail();
+            console.log('リスト',lists);
+
         
           //画面上の各項目に表示
           this.setLabel = lists[0].label;
@@ -98,9 +110,8 @@ export default {
           this.imageName = lists[0].imageName
           this.imageName_old = lists[0].imageName
           this.id = lists[0].id
-        }
+          }
         getMapPointDetail(); 
-
   },
 
   methods: {
@@ -108,7 +119,7 @@ export default {
       this.$router.push({ path: "/picture" });     
     },
     chancel(){
-      this.$router.push({ path: "/mapshow" });  
+      this.$router.push({ path: "/map" });  
     },
 
     onFileChange(e){
@@ -149,21 +160,33 @@ export default {
           mymapPointService.deleteImage(this.$store.state.userUid,this.imageName_old)
         }
 
-        //ポイント情報をFirestoreに登録
-        const mapPoint = new MymapPoint(this.id, this.lat,this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
-        const editMapPoint = await mymapPointService.edit(this.$store.state.userUid, mapPoint);
+        //ポイント情報をSQLiteに登録
+        const mymapPointServiceMysql = new MymapPointServiceMysql();
+        const mapPoint = new MymapPoint(this.id, this.lat, this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        mymapPointServiceMysql.update(this.$store.state.userUid, mapPoint);
+        this.$router.push({ path: "/map" });//前画面に戻る 
 
-        if(editMapPoint == 'true'){
-          this.$router.push({ path: "/mapshow" });//前画面に戻る 
-        }else{
-          alert('登録できませんでした');
-        }
+        // const mapPoint = new MymapPoint(this.id, this.lat,this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        // const editMapPoint = await mymapPointService.edit(this.$store.state.userUid, mapPoint);
+
+        // if(editMapPoint == 'true'){
+        //   this.$router.push({ path: "/mapshow" });//前画面に戻る 
+        // }else{
+        //   alert('登録できませんでした');
+        // }
       }
 
     },
 
     async dell(){
+      const mymapPointServiceMysql = new MymapPointServiceMysql();
+      await mymapPointServiceMysql.delete(this.id);
+      this.$router.push({ path: "/map" });//前画面に戻る 
+
       //const mymapPointService = new MymapPointService();
+      //mymapPointService.deleteImage(this.$store.state.userUid,this.imageName);//★画像の削除。エラーが起こるので一時的にコメントアウト。
+
+/*       //const mymapPointService = new MymapPointService();
       const mymapPointService = new MymapPointService();
       const dellMapPoint = await mymapPointService.dell(this.$store.state.userUid, this.id);
       mymapPointService.deleteImage(this.$store.state.userUid,this.imageName);//画像の削除
@@ -172,7 +195,7 @@ export default {
           this.$router.push({ path: "/mapshow" });//前画面に戻る 
       }else{
           alert('削除できませんでした');
-      }
+      } */
 
     }
   },
