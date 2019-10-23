@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 
 import  firebaseApp from '../../../firebase';
-import  MymapPoint from '../model/MymapPoint';
+//import  MymapPoint from '../model/MymapPoint';
 // 定数を使えばfirestore側のデータ移行をしたときでも変更箇所をここだけにできる
 const pCollectionName = 'mymap';
 const collectionName = 'point';

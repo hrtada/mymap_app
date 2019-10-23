@@ -85,7 +85,7 @@ export default {
     return {
       map: null,
       bounds: null,
-      //marker: null,
+      Makers: [],
       accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null //条件設定のラジオボタンの値
     };
@@ -117,9 +117,6 @@ export default {
       fullscreenControl: false
     });
     this.bounds = new google.maps.LatLngBounds();
-    // this.maker = new google.maps.Marker({
-    //   map: this.map
-    // });
 
     //現在地を取得し、地図中央で再表示
     navigator.geolocation.getCurrentPosition(position => {
@@ -135,7 +132,6 @@ export default {
       //マーカーを表示する
       const newMaker = this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
       this.markerClick(newMaker,'infowindw_new');
-      //this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     });
   },
 
@@ -157,7 +153,6 @@ export default {
         const mymapPointServiceMysql = new MymapPointServiceMysql();
         await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel();//queryした結果を受け取る
-        //console.log('ポイント情報',lists);
 
         //表示データの有無をチェック
         if(lists.length == 0){
@@ -165,14 +160,22 @@ export default {
           //this.$router.push({ path: "/map" });
         }else{
           //マーカーをクリア
+          if(this.Makers.length > 0){
+            for(let i=0; i < this.Makers.length; i++){
+               this.Makers[i].setMap(null);
+            } 
+            this.Makers = [];
+          }
 
           //マーカーを表示
           for(let i=0; i<lists.length; i++){
-          const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
-          this.markerClick (getMaker,'infowindw_get');
+            const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
+            this.markerClick (getMaker,'infowindw_get');
+            //マーカークリアのため保存
+            this.Makers.push(getMaker);
+            //全マーカーが表示されるように調整
+            this.map.fitBounds (this.bounds);
           }
-          //全マーカーが表示されるように調整
-          this.map.fitBounds (this.bounds);
         }       
       }
     },
@@ -189,9 +192,6 @@ export default {
       this.bounds.extend (marker.position);
       return marker;
     },
-
-    //マーカーを画面から削除
-
 
     //マーカークリック時の関数を作成
     markerClick(marker,infowindw){
@@ -213,12 +213,6 @@ export default {
       this.$router.push({ path: "/labelmnt" });
     },
 
-    test() {
-      /*         const mymapPointService = new MymapPointServiceMysql();
-        const mapPoints = await mymapPointService.searchByLabel();
-        await console.log(mapPoints); */
-      this.$router.push({ path: "/mapshow" });
-    }
   }
 };
 </script>

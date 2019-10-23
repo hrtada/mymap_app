@@ -45,7 +45,9 @@
 /* eslint-disable no-console */
 //import  firebaseApp from '../firebase';
 import MymapLabelService from '../database/firestore/service/MymapLabelService'
-import  MymapPointService from '../database/firestore/service/MymapPointService';
+import MymapPointService from '../database/firestore/service/MymapPointService';
+import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 //let db = firebaseApp.firestore()
@@ -61,30 +63,31 @@ export default {
   }, 
 
   computed:{
-    label(){return this.$store.getters.label.filter((e) => {
-      return e.id != "0"
-      })
+    label() {
+      return this.$store.getters.label;
     },//storeのgetterと同期する
   },
 
   mounted(){
-    //ラベル情報を取得しstoreに渡す
-      const mymapLabelService = new MymapLabelService();
-      const label = mymapLabelService.getLabel(this.$store.state.userUid);
-      this.$store.commit('setlabel',{label: label});
+    //ラベル情報を取得し、storeに渡す(MySQL)
+    this.getLabellist();
 
-    // const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-    // let label =[];
-    // labelRef.get().then((querySnapshot) => {
-    //   querySnapshot.forEach((doc) => {
-    //     const data = doc.data();
-    //     label.push({id:doc.id, name:data.name});
-    //     this.$store.commit('setlabel',{label: label});
-    //   })
-    // }); 
+    //ラベル情報を取得しstoreに渡す
+      // const mymapLabelService = new MymapLabelService();
+      // const label = mymapLabelService.getLabel(this.$store.state.userUid);
+      // this.$store.commit('setlabel',{label: label});
+
   },
 
   methods: {
+    //ラベル情報を取得し、storeに渡す(MySQL)
+      async getLabellist(){
+        const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+        const label = await mymapLabelServiceMysql.getLabel();
+        this.$store.commit("setlabel", { label: label });
+        console.log(label);
+      },
+
     async add(){
       if(this.addLabelName==''){//空欄の時は何もしない
         return

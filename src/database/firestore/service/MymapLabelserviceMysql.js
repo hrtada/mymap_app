@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 const request = require('request');
 
-export default class MymapLabelService {
+export default class MymapLabelServiceMysql{
 
 //ラベルの取得
     getLabel(){
@@ -24,5 +24,11 @@ export default class MymapLabelService {
             }
         }) 
     }
+
+//ラベルの更新
+
+//ラベルの追加
+
+//ラベルの削除
 
 }
