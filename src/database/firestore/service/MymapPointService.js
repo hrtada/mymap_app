@@ -122,7 +122,7 @@ export default class MymapPointService {
     //   });
     // }    
       
-    //ポイントの削除
+    /* //ポイントの削除
     dell(userId,id){
       return new Promise((resolve, reject) => {
         this.db.collection(pCollectionName).doc(userId).collection(collectionName).doc(id).delete()
@@ -173,7 +173,7 @@ export default class MymapPointService {
         }
       });
     }
-
+ */
     //starageへ画像をアップロード
     uploadImage(userId,imageName,imageFile){
       return new Promise((resolve, reject) => {

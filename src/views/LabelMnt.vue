@@ -44,7 +44,7 @@
 //import  firebaseApp from '../firebase';
 import MymapLabelService from '../database/firestore/service/MymapLabelService'
 import MymapPointService from '../database/firestore/service/MymapPointService';
-import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+//import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
 import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
@@ -63,7 +63,7 @@ export default {
   computed:{
     label() {
       return this.$store.getters.label;
-    },//storeのgetterと同期する
+    },
   },
 
   mounted(){
@@ -128,7 +128,7 @@ export default {
       }
     },
 
-    edit(index){//選択ボタンを押したとき
+    edit(index){//選択ボタンを押したときの動作
       this.editLabelName = this.label[index].name;
       this.editLabelId =this.label[index].id; 
     },
@@ -160,83 +160,41 @@ export default {
         //   this.editLabelName ='';
         // }else {
         //   alert('登録できませんでした');
-        // }
-      
+        // }     
     },
 
     async del(){
-      const mymapLabelService = new MymapLabelService();
-      const mymapPointService = new MymapPointService();
+      const mymapLabelServiceMysql = new MymapLabelServiceMysql();
+      let result = confirm('このラベルを使用したポイント情報も削除します。\n実行してもよろしいですか。');
       //削除ラベルを使ったポイントを探して削除
-      const resultdelete = await mymapPointService.dellPoint(this.$store.state.userUid,this.editLabelId);
-
-      if(resultdelete == 'true'){
-        //ラベルの削除
-        await mymapLabelService.dellLabel(this.$store.state.userUid,this.editLabelId);
-        //ラベル情報を取得し、storeに渡す
-        const label = mymapLabelService.getLabel(this.$store.state.userUid);
-        this.$store.commit('setlabel',{label: label});
-        //入力内容のクリア
-        this.editLabelName ='';
+      if(result){
+        const deleteLabel = await mymapLabelServiceMysql.deleteLabel(this.editLabelId);
+        if(deleteLabel == true){
+          //ラベル情報を再取得
+          this.getLabellist();
+          //入力内容のクリア
+          this.editLabelName ='';
+        } else {
+          alert('削除できませんでした');
+        }
       }
 
-/*     del(){    
-      let posRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').where('label','==',this.editLabelId);
-      let labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label').doc(this.editLabelId);
-      let storageRef = firebaseApp.storage().ref();
-           
-      //対象データの存在チェック
-      let doc_id = [];
-      posRef.get().then((qs)=> {
-          qs.forEach((doc)=> {
-            doc_id.push([doc.id]);//削除対象データのdocIdを取得し、配列作成
-          });
-      }).then(() => {
 
-        if(doc_id.length>0){//ポイント情報が存在するときはアラートを出して削除
-            let result = confirm('このラベルを使用したポイント情報が存在します。\n削除してもよろしいですか。');
-            if(result){
-              posRef.get().then((qs)=> {
-                qs.forEach((doc)=> {//選択ラベルを使用したpointデータ取得
-                  const delPosRef = db.collection('mymap').doc(this.$store.state.userUid).collection('point').doc(doc.id);
-                  delPosRef.delete();//pointデータ削除
-                  const delImageRef = storageRef.child(`images/${doc.get('imageName')}`);//画像データ取得
-                  delImageRef.delete();//画像データ削除
-                });
-                labelRef.delete();//labelデータ削除
-              }).then(() => {
-                this.editLabelName ='';//入力内容のクリア
-                //ラベル情報を取得しstoreに渡す※1他でも使ってるので共通化したい
-                const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-                let label =[];
-                labelRef.get().then((querySnapshot) => {
-                  querySnapshot.forEach((doc) => {
-                    const data = doc.data();
-                    label.push({id:doc.id, name:data.name});
-                    this.$store.commit('setlabel',{label: label});
-                  })
-                }); 
-              });
-            } else{
-              return
-            }
-        }else{
-          labelRef.delete().then(() => {
-            this.editLabelName ='';//入力内容のクリア
-            //ラベル情報を取得しstoreに渡す※1他でも使ってるので共通化したい
-            const labelRef = db.collection('mymap').doc(this.$store.state.userUid).collection('label');
-            let label =[];
-            labelRef.get().then((querySnapshot) => {
-              querySnapshot.forEach((doc) => {
-                const data = doc.data();
-                label.push({id:doc.id, name:data.name});
-                this.$store.commit('setlabel',{label: label});
-              })
-            }); 
-          });
-        }
-      })
-    }, */
+      // const mymapLabelService = new MymapLabelService();
+      // const mymapPointService = new MymapPointService();
+      // //削除ラベルを使ったポイントを探して削除
+      // const resultdelete = await mymapPointService.dellPoint(this.$store.state.userUid,this.editLabelId);
+
+      // if(resultdelete == 'true'){
+      //   //ラベルの削除
+      //   await mymapLabelService.dellLabel(this.$store.state.userUid,this.editLabelId);
+      //   //ラベル情報を取得し、storeに渡す
+      //   const label = mymapLabelService.getLabel(this.$store.state.userUid);
+      //   this.$store.commit('setlabel',{label: label});
+      //   //入力内容のクリア
+      //   this.editLabelName ='';
+      // }
+
     },
 
     chancel(){

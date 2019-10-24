@@ -76,5 +76,28 @@ addLabel(labelName,userId){
 }
 
 //ラベルの削除
+deleteLabel(labelId){
+    return new Promise((resolve, reject) => {
+        const options = {
+            url: "http://192.168.56.1:8000/labeldelete",
+            method: "POST",
+            timeout: 5000,
+            form: {
+                labelId : labelId,
+            }
+        }
+        try{
+            request(options, (error, response, body) => {
+              console.log(error);
+              console.log(response);
+              console.log(body);
+              resolve(true);
+          });
+          }catch(error){
+            reject();
+          }
+    })
+
+}
 
 }

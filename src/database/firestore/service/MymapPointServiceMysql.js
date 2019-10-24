@@ -94,7 +94,7 @@ update(userId, point)  {
             console.log(error);
             console.log(response);
             console.log(body);
-            resolve('ok');
+            resolve();
         });
         }catch(error){
           reject();
@@ -192,10 +192,6 @@ update(userId, point)  {
         })
       })  
     }
-
-
-
-//ラベル削除時のポイント削除
 
 
 }
