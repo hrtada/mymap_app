@@ -1,8 +1,12 @@
 /* eslint-disable no-console */
 //import  MymapPoint from '../model/MymapPoint';
+import  firebaseApp from '../../../firebase';
 const request = require('request');
 
 export default class MymapPointServiceMysql {
+  constructor(){  
+    this.storage = firebaseApp.storage();
+  }
 
 //ポイントの新規登録
 create(userId, point)  {
@@ -193,5 +197,39 @@ update(userId, point)  {
       })  
     }
 
+    //starageへ画像をアップロード
+    uploadImage(userId,imageName,imageFile){
+      return new Promise((resolve, reject) => {
+        const storageRef = firebaseApp.storage().ref();
+        const mountainsRef = storageRef.child(`${userId}/${imageName}`);
+        let imageUrl = '';
+      
+      // ファイルを適用してファイルアップロード開始
+        mountainsRef.put(imageFile).then(snapshot => {
+          snapshot.ref.getDownloadURL().then(downloadURL => {
+            imageUrl = downloadURL
+            }).then(()=> {
+            console.log('success upload image');
+            resolve(imageUrl);
+            }).catch(() =>{
+            console.error('Error upload image');
+            reject();
+          });
+        });     
+      })
+    }
+
+    //画像の削除
+    deleteImage(userId,imageName){
+      try {
+        const storageRef = firebaseApp.storage().ref();
+        const delRef = storageRef.child(`${userId}/${imageName}`);
+        delRef.delete();
+        console.log('Success Delete image');
+      } catch(error){
+        console.log('Error Delete Image');
+      }
+
+    }
 
 }

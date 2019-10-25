@@ -56,7 +56,7 @@
 <script>
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
-import MymapPointService from '../database/firestore/service/MymapPointService'
+//import MymapPointService from '../database/firestore/service/MymapPointService'
 import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
@@ -80,10 +80,6 @@ export default {
       label(){
         return this.$store.getters.label
         }
-/*     label(){return this.$store.getters.label.filter((e) => {
-      return e.id != "0"
-      })
-    }, */
   },
 
   mounted() {
@@ -151,17 +147,22 @@ export default {
       }
       else{
 
-         const mymapPointService = new MymapPointService();
+         const mymapPointServiceMysql = new MymapPointServiceMysql();
         
-        //画像をアップロード＆変更前画像の削除
-        if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old){
-          const getImageUrl = await mymapPointService.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
-          this.imageUrl = getImageUrl
-          mymapPointService.deleteImage(this.$store.state.userUid,this.imageName_old)
-        }
+        //画像をアップロード
+          //登録済の画像がある場合（前回画像を削除）
+          if(this.imageUrl.length>0 && this.imageUrl != this.imageUrl_old && this.imageUrl_old != ''){
+            const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
+            this.imageUrl = getImageUrl
+            mymapPointServiceMysql.deleteImage(this.$store.state.userUid,this.imageName_old)
+            
+          //登録済の画像がない場合
+          } else if(this.imageUrl.length>0 && this.imageUrl_old ==''){
+            const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
+            this.imageUrl = getImageUrl
+          }
 
         //ポイント情報をSQLiteに登録
-        const mymapPointServiceMysql = new MymapPointServiceMysql();
         const mapPoint = new MymapPoint(this.id, this.lat, this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.update(this.$store.state.userUid, mapPoint);
         this.$router.push({ path: "/map" });//前画面に戻る 
@@ -180,7 +181,8 @@ export default {
 
     async dell(){
       const mymapPointServiceMysql = new MymapPointServiceMysql();
-      await mymapPointServiceMysql.delete(this.id);
+      mymapPointServiceMysql.delete(this.id);
+      mymapPointServiceMysql.deleteImage(this.$store.state.userUid,this.imageName);//画像の削除
       this.$router.push({ path: "/map" });//前画面に戻る 
 
       //const mymapPointService = new MymapPointService();

@@ -1,7 +1,11 @@
 /* eslint-disable no-console */
+import  firebaseApp from '../../../firebase';
 const request = require('request');
 
 export default class MymapLabelServiceMysql{
+    constructor(){  
+        this.storage = firebaseApp.storage();
+    }
 
 //ラベルの取得
     getLabel(){
@@ -76,28 +80,90 @@ addLabel(labelName,userId){
 }
 
 //ラベルの削除
-deleteLabel(labelId){
-    return new Promise((resolve, reject) => {
-        const options = {
-            url: "http://192.168.56.1:8000/labeldelete",
-            method: "POST",
-            timeout: 5000,
-            form: {
-                labelId : labelId,
+    //削除対象のlabelIdを送る
+    getdelLabel(labelId){
+        return new Promise((resolve, reject) => {
+            const options = {
+                url: "http://192.168.56.1:8000/labeldelete",
+                method: "POST",
+                timeout: 5000,
+                form: {
+                    labelId : labelId,
+                }
             }
-        }
-        try{
-            request(options, (error, response, body) => {
-              console.log(error);
-              console.log(response);
-              console.log(body);
-              resolve(true);
-          });
-          }catch(error){
-            reject();
-          }
-    })
+            try{
+                request(options, (error, response, body) => {
+                console.log(error);
+                console.log(response);
+                console.log(body);
+                resolve();
+            });
+            }catch(error){
+                reject();
+            }
+        })
+    }
 
-}
+    //削除するラベルを使用したポイント情報を受け取る
+    searchByDelLabel(){
+        return new Promise((resolve, reject) => {
+            const delMapPoints = [];
+            const option = {
+                url: 'http://192.168.56.1:8000/labeldelete',
+                method: 'GET',
+                json: true
+            }
+           
+            request(option,function(error, res, body){
+                if (!error && res.statusCode == 200) {
+                for(let i=0; i<body.length; i++){
+                    delMapPoints.push({
+                        id: body[i].id, 
+                        imageUrl:  body[i].imageUrl,
+                        imageName:  body[i].imageName,
+                        userId : body[i].userId
+                    });
+                }
+                resolve(delMapPoints);
+                } else {
+                reject(error);
+                }
+            });
+        })  
+    }
+
+    //削除を実行する
+    deleteLabel(){
+        return new Promise((resolve, reject) => {
+            const options = {
+                url: "http://192.168.56.1:8000/labeldeleterun",
+                method: "POST",
+                timeout: 5000,
+            }
+            try{
+                request(options, (error, response, body) => {
+                console.log(error);
+                console.log(response);
+                console.log(body);
+                resolve(true);
+            });
+            }catch(error){
+                reject();
+            }
+        })
+    }
+
+    // //画像の削除
+    // deleteImage(userId,imageName){
+    //     try {
+    //       const storageRef = firebaseApp.storage().ref();
+    //       const delRef = storageRef.child(`${userId}/${imageName}`);
+    //       delRef.delete();
+    //       console.log('Success Delete image');
+    //     } catch(error){
+ 
+    //         console.log('Error Delete Image');
+    //     }
+    //   }    
 
 }

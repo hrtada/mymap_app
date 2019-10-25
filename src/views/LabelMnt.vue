@@ -42,10 +42,11 @@
 <script>
 /* eslint-disable no-console */
 //import  firebaseApp from '../firebase';
-import MymapLabelService from '../database/firestore/service/MymapLabelService'
-import MymapPointService from '../database/firestore/service/MymapPointService';
+//import MymapLabelService from '../database/firestore/service/MymapLabelService'
+//import MymapPointService from '../database/firestore/service/MymapPointService';
 //import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
 import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
+import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
 //let db = firebaseApp.firestore()
@@ -165,19 +166,54 @@ export default {
 
     async del(){
       const mymapLabelServiceMysql = new MymapLabelServiceMysql();
-      let result = confirm('このラベルを使用したポイント情報も削除します。\n実行してもよろしいですか。');
-      //削除ラベルを使ったポイントを探して削除
-      if(result){
-        const deleteLabel = await mymapLabelServiceMysql.deleteLabel(this.editLabelId);
-        if(deleteLabel == true){
+      const mymapPointServiceMysql = new MymapPointServiceMysql();
+      //対象のlabelIdを渡す
+      await mymapLabelServiceMysql.getdelLabel(this.editLabelId);
+      //labelを使用したpointを受け取る
+      const delMapPoint = await mymapLabelServiceMysql.searchByDelLabel();
+      console.log('delMap',delMapPoint[0].userId,delMapPoint[0].imageName);
+      
+      if(delMapPoint.length > 0){
+        let answer = confirm('このラベルを使用したポイントが存在します。\n削除してもよろしいですか。');
+        if(answer){
+          let result = await mymapLabelServiceMysql.deleteLabel();
+          if(result == true){
+            //ラベル情報を再取得
+            this.getLabellist();
+            //入力内容のクリア
+            this.editLabelName ='';
+            //画像の削除
+            for(let i=0; i<delMapPoint.length; i++){
+              if(delMapPoint[i].imageName !=''){
+              mymapPointServiceMysql.deleteImage(delMapPoint[i].userId,delMapPoint[i].imageName);
+              }
+            }
+          }
+        } 
+      } else {
+        let result = await mymapLabelServiceMysql.deleteLabel();
+        if(result == true){
           //ラベル情報を再取得
           this.getLabellist();
           //入力内容のクリア
           this.editLabelName ='';
-        } else {
-          alert('削除できませんでした');
         }
       }
+
+      // let result = confirm('このラベルを使用したポイント情報が存在します。\n実行してもよろしいですか。');
+      // //削除ラベルを使ったポイントを探して削除
+      // if(result){
+      //   const deleteLabel = await mymapLabelServiceMysql.deleteLabel(this.editLabelId);
+      //   const delMapPoint = await mymapLabelServiceMysql.searchByDelLabel();//削除対象のポイントデータ受取
+      //   if(deleteLabel == true){
+      //     //ラベル情報を再取得
+      //     this.getLabellist();
+      //     //入力内容のクリア
+      //     this.editLabelName ='';
+      //   } else {
+      //     alert('削除できませんでした');
+      //   }
+      // }
 
 
       // const mymapLabelService = new MymapLabelService();
