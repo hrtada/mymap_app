@@ -1,25 +1,26 @@
 <template>
   <div>
-    <div class="hero is-primary">
-      <div class="hero-header">
-        <div class="field is-grouped">
+    <!-- <div class="hero is-primary"> -->
+      <!-- <div class="hero-header"> -->
+        <!-- <div class="field is-grouped">
           <label @click="chancel()">前画面へ戻る</label>
-          </div>
-      </div> 
-    </div>     
+        </div> -->
+      <!-- </div>  -->
+    <!-- </div>      -->
     <div class="columns">
-      <div class="column is-5 is-offset-4">
-        <p class="title is-4">ラベルの設定</p>
+      <!-- <div class="column is-5 is-offset-1"> -->
+      <div class="column is-12">
+        <!-- <p class="title is-4">ラベルの設定</p> -->
 
           <label class="label">ラベルの追加</label>
             <div class="field is-grouped"> 
-                <input class="input" type="text" placeholder="ラベル名を入力してください" v-model="addLabelName">
+                <input class="input" type="text" placeholder="ラベルを入力してください" v-model="addLabelName">
                 <button class="button is-link" @click="add()">追加</button>
             </div>
               
             <label class="label">ラベルの編集・削除</label>
               <div class="field is-grouped">
-                <input class="input" type="text" placeholder="選択したラベル名を表示します" v-model="editLabelName">
+                <input class="input" type="text" placeholder="選択したラベルを表示" v-model="editLabelName">
                 <div class="control">
                   <button @click="entry()" class="button is-link" >変更</button>
                 </div>
@@ -35,7 +36,6 @@
                 </ul>
        </div>
     </div>
-
   </div>
 </template>
 
@@ -52,7 +52,8 @@ import 'bulma/css/bulma.css';//CSSフレームワーク
 //let db = firebaseApp.firestore()
 
 export default {
-  
+  name: 'label-mnt',
+
   data () {
     return {
       editLabelName:'',
@@ -171,7 +172,6 @@ export default {
       await mymapLabelServiceMysql.getdelLabel(this.editLabelId);
       //labelを使用したpointを受け取る
       const delMapPoint = await mymapLabelServiceMysql.searchByDelLabel();
-      console.log('delMap',delMapPoint[0].userId,delMapPoint[0].imageName);
       
       if(delMapPoint.length > 0){
         let answer = confirm('このラベルを使用したポイントが存在します。\n削除してもよろしいですか。');

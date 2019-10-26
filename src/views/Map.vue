@@ -43,10 +43,11 @@
                 <div class="accordion-body">
 
                   <div class="accordion-content">
-                    <button
+                    <!-- <button
                       class="button is-light"
                       @click="labelMnt()"
-                    >ラベルの設定</button>
+                    >ラベルの設定</button> -->
+                    <label-mnt ref = "child"></label-mnt>
                   </div>
                 </div>
               </article>
@@ -79,6 +80,7 @@ import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accor
 import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+import LabelMnt from "./LabelMnt.vue";
 
 export default {
   data() {
@@ -89,6 +91,10 @@ export default {
       accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null //条件設定のラジオボタンの値
     };
+  },
+
+    components: {
+    LabelMnt
   },
 
   computed: {
