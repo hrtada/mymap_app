@@ -4,16 +4,11 @@
       <div class="hero-header">
         <div class="field is-grouped">
           <div class="control">
-            <!-- <button @click="test()">test</button> -->
-            <section class="accordions">
-              <article class="accordion">
-                <div class="accordion-header toggle">
-                  <label>条件指定</label>
-                </div>
-                <div class="accordion-body">
-                  <div class="accordion-content">
+            <ul class="menu">
+              <li class="menu__single">
+                <p class="has-text-weight-bold">条件指定</p>
+                  <ul class="menu__second-level">
                     <p class="has-text-weight-bold">ラベルの選択</p>
-                    <ul>
                       <li
                         v-for="item in label"
                         :key="item.id"
@@ -27,31 +22,20 @@
                           {{ item.name }}
                         </label>
                       </li>
-                    </ul>
-                    <button @click="show()">表示</button>
-                  </div>
-                </div>
-              </article>
-            </section>
+                     <button @click="show()">表示</button>
+                  </ul>
+              </li>
+            </ul>
           </div>
           <div class="control">
-            <section class="accordions">
-              <article class="accordion">
-                <div class="accordion-header toggle">
-                  <label>設定</label>
-                </div>
-                <div class="accordion-body">
-
-                  <div class="accordion-content">
-                    <!-- <button
-                      class="button is-light"
-                      @click="labelMnt()"
-                    >ラベルの設定</button> -->
+            <ul class="menu">
+              <li class="menu__single">
+                <p class="has-text-weight-bold">ラベル編集</p>
+                  <ul class="menu__second-level">
                     <label-mnt ref = "child"></label-mnt>
-                  </div>
-                </div>
-              </article>
-            </section>
+                    </ul>
+              </li>
+            </ul>
           </div>
         </div>
       </div>
@@ -77,7 +61,7 @@
 /*eslint-disable no-console */
 /*globals google */
 import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
-import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
+//import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
 import LabelMnt from "./LabelMnt.vue";
@@ -88,7 +72,7 @@ export default {
       map: null,
       bounds: null,
       Makers: [],
-      accordions: [], //bulmaのアコーディオンメニューを使うために必要
+      //accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null //条件設定のラジオボタンの値
     };
   },
@@ -231,5 +215,44 @@ export default {
   /*情報ウィンドウからボタンを操作するためのもの*/
   display: none;
 }
+
+/*↓折り畳みメニュー */ 
+.menu {
+    position: relative;
+    width: 300px;
+}
+
+.menu > li {
+    float: left;
+    width: 100%;
+    height: 50px;
+    line-height: 35px; 
+    background: #072A24;
+    /* background: rgb(29, 33, 19);  */
+
+}
+
+ ul.menu__second-level {
+    visibility: hidden;
+    opacity: 0;
+    z-index: 1;
+} 
+
+ li.menu__single ul.menu__second-level {
+    position: absolute;
+    top: 40px;
+    padding-left: 10px;
+    width: 100%; 
+    background: #072A24;
+    -webkit-transition: all .2s ease;
+    transition: all .2s ease;
+} 
+
+li.menu__single:hover ul.menu__second-level {
+    top: 50px;
+    visibility: visible;
+    opacity: 1;
+}
+/*↑折り畳みメニュー*/ 
 </style>
 

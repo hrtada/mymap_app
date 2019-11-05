@@ -12,13 +12,13 @@
       <div class="column is-12">
         <!-- <p class="title is-4">ラベルの設定</p> -->
 
-          <label class="label">ラベルの追加</label>
+          <p >ラベルの追加</p>
             <div class="field is-grouped"> 
                 <input class="input" type="text" placeholder="ラベルを入力してください" v-model="addLabelName">
                 <button class="button is-link" @click="add()">追加</button>
             </div>
               
-            <label class="label">ラベルの編集・削除</label>
+            <p>ラベルの編集・削除</p>
               <div class="field is-grouped">
                 <input class="input" type="text" placeholder="選択したラベルを表示" v-model="editLabelName">
                 <div class="control">
