@@ -1,31 +1,22 @@
 <template>
   <div>
-    <!-- <div class="hero is-primary"> -->
-      <!-- <div class="hero-header"> -->
-        <!-- <div class="field is-grouped">
-          <label @click="chancel()">前画面へ戻る</label>
-        </div> -->
-      <!-- </div>  -->
-    <!-- </div>      -->
-    <div class="columns">
-      <!-- <div class="column is-5 is-offset-1"> -->
-      <div class="column is-12">
-        <!-- <p class="title is-4">ラベルの設定</p> -->
+    <!-- <div class="columns">
+      <div class="column is-12"> -->
 
-          <p >ラベルの追加</p>
+          <p class="has-text-weight-bold">ラベルの追加</p>
             <div class="field is-grouped"> 
-                <input class="input" type="text" placeholder="ラベルを入力してください" v-model="addLabelName">
-                <button class="button is-link" @click="add()">追加</button>
+                <input class="input is-small" type="text" placeholder="ラベルを入力してください" v-model="addLabelName">
+                <button class="button is-link is-small" @click="add()">追加</button>
             </div>
               
-            <p>ラベルの編集・削除</p>
+            <p class="has-text-weight-bold">ラベルの編集・削除</p>
               <div class="field is-grouped">
-                <input class="input" type="text" placeholder="選択したラベルを表示" v-model="editLabelName">
+                <input class="input is-small" type="text" placeholder="選択したラベルを表示" v-model="editLabelName">
                 <div class="control">
-                  <button @click="entry()" class="button is-link" >変更</button>
+                  <button @click="entry()" class="button is-link is-small" >変更</button>
                 </div>
                 <div class="control">
-                  <button @click="del()" class="button is-link">削除</button>
+                  <button @click="del()" class="button is-link is-small">削除</button>
                 </div>
               </div>
                 <ul>
@@ -34,8 +25,8 @@
                 <button class="button is-small is-rounded is-outlined" @click="edit(index)">選択</button>
                 </li>
                 </ul>
-       </div>
-    </div>
+       <!-- </div>
+    </div> -->
   </div>
 </template>
 

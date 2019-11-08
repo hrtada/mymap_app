@@ -2,44 +2,86 @@
   <div>
     <div class="hero is-primary">
       <div class="hero-header">
-        <div class="field is-grouped">
-          <div class="control">
-            <ul class="menu">
-              <li class="menu__single">
-                <p class="has-text-weight-bold">条件指定</p>
-                  <ul class="menu__second-level">
-                    <p class="has-text-weight-bold">ラベルの選択</p>
-                      <li
-                        v-for="item in label"
-                        :key="item.id"
-                      >
-                        <label><input
-                            type="radio"
-                            name="label"
-                            :value="item.id"
-                            v-model="checked"
-                          >
-                          {{ item.name }}
-                        </label>
-                      </li>
-                     <button @click="show()">表示</button>
-                  </ul>
-              </li>
-            </ul>
           </div>
-          <div class="control">
-            <ul class="menu">
-              <li class="menu__single">
-                <p class="has-text-weight-bold">ラベル編集</p>
-                  <ul class="menu__second-level">
-                    <label-mnt ref = "child"></label-mnt>
-                    </ul>
-              </li>
+</div>
+
+  <!-- <nav class="navbar is-primary" role="navigation" aria-label="dropdown navigation">
+    <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link">
+        条件指定
+      </a>
+      <div class="navbar-dropdown">
+        <a class="navbar-item">
+          <p class="has-text-weight-bold">ラベルの選択</p>
+        </a>
+        <a class="navbar-item">
+          <ul>
+            <li
+              v-for="item in label"
+              :key="item.id"
+            >
+            <label><input
+              type="radio"
+              name="label"
+              :value="item.id"
+              v-model="checked"
+            >
+              {{ item.name }}
+            </label>
+            </li>
+            <button class="button is-link is-small" @click="show()">表示</button>
             </ul>
-          </div>
-        </div>
+        </a>
       </div>
     </div>
+  <div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">
+      ラベル編集
+    </a>
+      <div class="navbar-dropdown">
+        <a class="navbar-item">
+          <label-mnt></label-mnt>
+        </a>
+      </div>
+    </div>   
+</nav> -->
+<nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+            <li>
+              <a href="#">条件指定</a>
+                <div class="uk-navbar-dropdown">
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                    <p class="has-text-weight-bold">ラベルの選択</p>
+                    <li
+                      v-for="item in label"
+                      :key="item.id"
+                    >
+                    <label><input
+                      type="radio"
+                      name="label"
+                      :value="item.id"
+                      v-model="checked"
+                    >
+                      {{ item.name }}
+                    </label>
+                    </li>
+                    <button class="button is-link is-small" @click="show()">表示</button>
+                  </ul>
+                </div>
+            </li>
+            <li>
+              <a href="#">ラベル編集</a>
+              <div class="uk-navbar-dropdown uk-navbar-dropdown-width-2">
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                      <label-mnt></label-mnt>
+                  </ul>
+              </div>
+            </li>
+        </ul>
+
+    </div>
+    </nav>
 
     <div id='map'></div>
 
@@ -60,8 +102,13 @@
 <script>
 /*eslint-disable no-console */
 /*globals google */
-import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
+//import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
 //import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
+import UIkit from 'uikit'
+import Icons from 'uikit/dist/js/uikit-icons'
+import 'uikit/dist/css/uikit.css'
+import 'uikit/dist/css/uikit.min.css'
+UIkit.use(Icons)
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
 import LabelMnt from "./LabelMnt.vue";
@@ -94,7 +141,7 @@ export default {
   },
 
   mounted() {
-    this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
+    //this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -217,7 +264,7 @@ export default {
 }
 
 /*↓折り畳みメニュー */ 
-.menu {
+/* .menu {
     position: relative;
     width: 300px;
 }
@@ -228,7 +275,7 @@ export default {
     height: 50px;
     line-height: 35px; 
     background: #072A24;
-    /* background: rgb(29, 33, 19);  */
+     background: rgb(29, 33, 19);  
 
 }
 
@@ -252,7 +299,7 @@ li.menu__single:hover ul.menu__second-level {
     top: 50px;
     visibility: visible;
     opacity: 1;
-}
+} */
 /*↑折り畳みメニュー*/ 
 </style>
 
