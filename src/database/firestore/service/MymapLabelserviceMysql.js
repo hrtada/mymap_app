@@ -1,6 +1,7 @@
 /* eslint-disable no-console */
 import  firebaseApp from '../../../firebase';
 const request = require('request');
+const doRequest = require('../../../interface/asyncRequest');
 
 export default class MymapLabelServiceMysql{
     constructor(){  
@@ -55,7 +56,24 @@ updateLabel(labelId,labelName){
 }
 
 //ラベルの追加
-addLabel(labelName,userId){
+async addLabel(labelName, userId) {
+    const options = {
+      url: 'http://192.168.56.1:8000/labeladd',
+      method: 'POST',
+      timeout: 5000,
+      form: {
+        userId: userId,
+        labelName: labelName
+      }
+    };
+    try {
+      const tokenResult = await doRequest(options);
+      return tokenResult;
+    } catch (error) {
+      throw error;
+    }
+  }
+/* addLabel(labelName,userId){
     return new Promise((resolve, reject) => {
         const options = {
             url: "http://192.168.56.1:8000/labeladd",
@@ -77,7 +95,7 @@ addLabel(labelName,userId){
             reject();
           }
     })
-}
+} */
 
 //ラベルの削除
     //削除対象のlabelIdを送る
