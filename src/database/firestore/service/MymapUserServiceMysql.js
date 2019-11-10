@@ -1,19 +1,22 @@
 /* eslint-disable no-console */
-const request = require('request');
+//const request = require('request');
+const doRequest = require('../../../interface/asyncRequest');
+const svUrl = 'http://192.168.56.1:8000/';
 
 export default class MymapUserServiceMysql {
-  sendtoUser(userUid) {
+  async sendtoUser(userUid) {
     const options = {
-      url: "http://192.168.56.1:8000/",
+      url: svUrl,
       method: "POST",
       timeout: 5000,
       form: { userUid: userUid }
     };
-    request(options, (error, response, body) => {
-      console.log(error);
-      console.log(response);
-      console.log(body);
-    });
+    try {
+      await doRequest.doRequest(options);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
 }

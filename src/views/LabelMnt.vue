@@ -19,7 +19,7 @@
                   <button @click="del()" class="button is-link is-small">削除</button>
                 </div>
               </div>
-                <ul>
+                <ul class="uk-list">
                 <li v-for="(item,index) in label" :key="item.id">
                  {{ item.name}}
                 <button class="button is-small is-rounded is-outlined" @click="edit(index)">選択</button>
@@ -36,6 +36,11 @@
 //import MymapLabelService from '../database/firestore/service/MymapLabelService'
 //import MymapPointService from '../database/firestore/service/MymapPointService';
 //import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+import UIkit from 'uikit'
+import Icons from 'uikit/dist/js/uikit-icons'
+import 'uikit/dist/css/uikit.css'
+import 'uikit/dist/css/uikit.min.css'
+UIkit.use(Icons)
 import MymapLabelServiceMysql from "../database/firestore/service/MymapLabelserviceMysql";
 import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク

@@ -51,7 +51,7 @@
             <li>
               <a href="#">条件指定</a>
                 <div class="uk-navbar-dropdown">
-                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                  <ul class="uk-nav uk-navbar-dropdown-nav uk-list">
                     <p class="has-text-weight-bold">ラベルの選択</p>
                     <li
                       v-for="item in label"
@@ -79,9 +79,8 @@
               </div>
             </li>
         </ul>
-
-    </div>
-    </nav>
+  </div>
+</nav>
 
     <div id='map'></div>
 

@@ -1,7 +1,9 @@
 /* eslint-disable no-console */
 //import  MymapPoint from '../model/MymapPoint';
 import  firebaseApp from '../../../firebase';
-const request = require('request');
+//const request = require('request');
+const doRequest = require('../../../interface/asyncRequest');
+const svUrl = 'http://192.168.56.1:8000/';
 
 export default class MymapPointServiceMysql {
   constructor(){  
@@ -9,9 +11,9 @@ export default class MymapPointServiceMysql {
   }
 
 //ポイントの新規登録
-create(userId, point)  {
+async create(userId, point)  {
     const options = {
-      url: "http://192.168.56.1:8000/pointcreate",
+      url: svUrl + "pointcreate",
       method: "POST",
       timeout: 5000,
       form: {
@@ -26,17 +28,18 @@ create(userId, point)  {
         userId: userId    
       }
     };
-    request(options, (error, response, body) => {
-      console.log(error);
-      console.log(response);
-      console.log(body);
-    });
+    try {
+      const tokenResult = await doRequest.doRequest(options);
+      return tokenResult;
+      } catch (error) {
+      throw error;
+      }
 }
 
 //ポイントの修正登録
-update(userId, point)  {
+async update(userId, point)  {
   const options = {
-    url: "http://192.168.56.1:8000/pointupdate",
+    url: svUrl + 'pointupdate',
     method: "POST",
     timeout: 5000,
     form: {
@@ -51,41 +54,36 @@ update(userId, point)  {
       userId: userId    
     }
   };
-  request(options, (error, response, body) => {
-    console.log(error);
-    console.log(response);
-    console.log(body);
-  });
+  try {
+    const tokenResult = await doRequest.doRequest(options);
+    return tokenResult;
+    } catch (error) {
+    throw error;
+    }
 }
 
 //ポイントの削除
- delete(id){
-  return new Promise((resolve, reject) => {
+async delete(id){
     const options = {
-      url: "http://192.168.56.1:8000/pointdelete",
+      url: svUrl + 'pointdelete',
       method: "POST",
       timeout: 5000,
       form: { id : id}
     }
-    try{
-      request(options, (error, response, body) => {
-        console.log(error);
-        console.log(response);
-        console.log(body);
-        resolve();
-    });
-    }catch(error){
-      reject();
-    }
-  })
+    try {
+      const tokenResult = await doRequest.doRequest(options);
+      return tokenResult;
+      } catch (error) {
+      throw error;
+      }
+
 }
 
 //ポイントの検索
     //選択したラベル情報を送る
-     sendtoLabel(checkedLabel,userId) {
-      return new Promise((resolve, reject) => {
+    async sendtoLabel(checkedLabel,userId) {
         const options = {
-          url: "http://192.168.56.1:8000/pointserch",
+          url: svUrl + 'pointserch',
           method: "POST",
           timeout: 5000,
           form: {
@@ -93,57 +91,47 @@ update(userId, point)  {
             userId: userId
           }
         };
-        try{
-          request(options, (error, response, body) => {
-            console.log(error);
-            console.log(response);
-            console.log(body);
-            resolve();
-        });
-        }catch(error){
-          reject();
-        }
-      })
+        try {
+          const tokenResult = await doRequest.doRequest(options);
+          return tokenResult;
+          } catch (error) {
+          throw error;
+          }
     }
 
-     searchByLabel(){
-      return new Promise((resolve, reject) => {
+    async searchByLabel(){
         const mapPoints = [];
-        const option = {
-            url: 'http://192.168.56.1:8000/pointserch',
+        const options = {
+            url: svUrl + 'pointserch',
             method: 'GET',
             json: true
         }
-        
-        request(option,function(error, res, body){
-          if (!error && res.statusCode == 200) {
-            for(let i=0; i<body.length; i++){
+
+        try {
+        const tokenResult = await doRequest.doRequest(options);
+            for(let i=0; i<tokenResult.length; i++){
                 mapPoints.push({
-                    id: body[i].id, 
-                    lat:  body[i].lat,
-                    lng:  body[i].lng,
-                    label:  body[i].labelId,
-                    date: body[i].date,
-                    memo:  body[i].memo,
-                    imageUrl:  body[i].imageUrl,
-                    imageName:  body[i].imageName
+                    id: tokenResult[i].id, 
+                    lat:  tokenResult[i].lat,
+                    lng:  tokenResult[i].lng,
+                    label:  tokenResult[i].labelId,
+                    date: tokenResult[i].date,
+                    memo:  tokenResult[i].memo,
+                    imageUrl:  tokenResult[i].imageUrl,
+                    imageName:  tokenResult[i].imageName
                 });
             }
-            resolve(mapPoints);
-          } else {
-            reject(error);
-          }
-        });
-        //console.log( 'mapPoints', mapPoints );
-      })  
+            return(mapPoints);
+        } catch (error) {
+        throw error;
+        }
     }
 
 //クリックしたマーカーの詳細の表示
     //クリックしたマーカーの緯度経度を送る
-      sendtoLatlng(userId,lat,lng){
-        return new Promise((resolve, reject) => {
+      async sendtoLatlng(userId,lat,lng){
           const options = {
-            url: "http://192.168.56.1:8000/pointdetail",
+            url: svUrl + 'pointdetail',
             method: "POST",
             timeout: 5000,
             form: { 
@@ -152,49 +140,42 @@ update(userId, point)  {
               lng: lng
             }
           };
-          try{
-          request(options, (error, response, body) => {
-            console.log(error);
-            console.log(response);
-            console.log(body);
-            resolve();
-          });
-        } catch(error){
-          reject();
-        }
-        })
+          try {
+            const tokenResult = await doRequest.doRequest(options);
+            return tokenResult;
+            } catch (error) {
+            throw error;
+            }
+
       }
 
     //ポイントの詳細情報を受け取る
-    showPointDetail(){
-      return new Promise((resolve, reject) => {
+    async showPointDetail(){
         const mapPoints = [];
-        const option = {
-            url: 'http://192.168.56.1:8000/pointdetail',
+        const options = {
+            url: svUrl + 'pointdetail',
             method: 'GET',
             json: true
         }
-      
-        request(option,function(error, res, body){
-          if (!error && res.statusCode == 200) {
-            for(let i=0; i<body.length; i++){
-                mapPoints.push({
-                    id: body[i].id, 
-                    lat:  body[i].lat,
-                    lng:  body[i].lng,
-                    label:  body[i].labelId,
-                    date: body[i].date,
-                    memo:  body[i].memo,
-                    imageUrl:  body[i].imageUrl,
-                    imageName:  body[i].imageName
-                });
-            }
-            resolve(mapPoints);
-          } else {
-            reject(error);
-          }    
-        })
-      })  
+        try {
+          const tokenResult = await doRequest.doRequest(options);
+          for(let i=0; i<tokenResult.length; i++){
+              mapPoints.push({
+                  id: tokenResult[i].id, 
+                  lat:  tokenResult[i].lat,
+                  lng:  tokenResult[i].lng,
+                  label:  tokenResult[i].labelId,
+                  date: tokenResult[i].date,
+                  memo:  tokenResult[i].memo,
+                  imageUrl:  tokenResult[i].imageUrl,
+                  imageName:  tokenResult[i].imageName
+              });
+          }
+            return(mapPoints);
+        } catch (error) {
+        throw error;
+        }
+    
     }
 
     //starageへ画像をアップロード
