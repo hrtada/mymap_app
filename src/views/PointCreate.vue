@@ -18,7 +18,7 @@
         <div class="field">
           <label class="label">日付<span class="has-text-danger is-size-7"> 必須</span></label>
             <div class="control">
-              <input class="input" type="date" required v-model="date">
+              <input class="input" type="date" v-model="date">
             </div>
         </div>
 

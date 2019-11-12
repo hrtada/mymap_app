@@ -66,6 +66,10 @@
                       {{ item.name }}
                     </label>
                     </li>
+                    <p class="has-text-weight-bold">日付</p>
+                    <input class="input is-small" type="date" v-model="startDate">
+                     ～
+                    <input class="input is-small" type="date" v-model="endDate">
                     <button class="button is-link is-small" @click="show()">表示</button>
                   </ul>
                 </div>
@@ -119,7 +123,9 @@ export default {
       bounds: null,
       Makers: [],
       //accordions: [], //bulmaのアコーディオンメニューを使うために必要
-      checked: null //条件設定のラジオボタンの値
+      checked: null, //条件設定のラジオボタンの値
+      startDate: null,
+      endDate: null,
     };
   },
 
@@ -183,11 +189,10 @@ export default {
     async show() {
       if (this.checked == null) {
         alert("ラベルを選択してください。");
-        return false;
-      } else {
+      }else {
         //DBからポイント情報を取得する
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid); //チェックしたラベルを渡す
+        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid,this.startDate,this.endDate); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel();//queryした結果を受け取る
 
         //表示データの有無をチェック
@@ -262,43 +267,5 @@ export default {
   display: none;
 }
 
-/*↓折り畳みメニュー */ 
-/* .menu {
-    position: relative;
-    width: 300px;
-}
-
-.menu > li {
-    float: left;
-    width: 100%;
-    height: 50px;
-    line-height: 35px; 
-    background: #072A24;
-     background: rgb(29, 33, 19);  
-
-}
-
- ul.menu__second-level {
-    visibility: hidden;
-    opacity: 0;
-    z-index: 1;
-} 
-
- li.menu__single ul.menu__second-level {
-    position: absolute;
-    top: 40px;
-    padding-left: 10px;
-    width: 100%; 
-    background: #072A24;
-    -webkit-transition: all .2s ease;
-    transition: all .2s ease;
-} 
-
-li.menu__single:hover ul.menu__second-level {
-    top: 50px;
-    visibility: visible;
-    opacity: 1;
-} */
-/*↑折り畳みメニュー*/ 
 </style>
 

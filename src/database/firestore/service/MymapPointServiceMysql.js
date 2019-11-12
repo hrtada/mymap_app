@@ -81,14 +81,16 @@ async delete(id){
 
 //ポイントの検索
     //選択したラベル情報を送る
-    async sendtoLabel(checkedLabel,userId) {
+    async sendtoLabel(checkedLabel,userId,startDate,endDate) {
         const options = {
           url: svUrl + 'pointserch',
           method: "POST",
           timeout: 5000,
           form: {
             checkedLabel: checkedLabel,
-            userId: userId
+            userId: userId,
+            startDate: startDate,
+            endDate: endDate
           }
         };
         try {
