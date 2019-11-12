@@ -87,7 +87,7 @@ export default {
     },
 
     chancel(){
-      this.$router.push({ path: "/map" }); 
+      this.$router.push({ path: "/" }); 
 
     },
    onFileChange(e){//ファイル選択の画面を開く
@@ -129,14 +129,14 @@ export default {
         //const mymapPointServiceMysql = new MymapPointServiceMysql();
         const mapPoint = new MymapPoint(0,this.$store.state.lat, this.$store.state.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
-        this.$router.push({ path: "/map" });//前画面に戻る 
+        this.$router.push({ path: "/" });//前画面に戻る 
 
 /*      //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         const createMapPoint = await mymapPointService.create(this.$store.state.userUid, mapPoint);
 
         if(createMapPoint == 'true'){
-          this.$router.push({ path: "/map" });//前画面に戻る 
+          this.$router.push({ path: "/" });//前画面に戻る 
         }else{
           alert('登録できませんでした');
         } */

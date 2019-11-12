@@ -2,10 +2,10 @@
   <div>
     <div class="hero is-primary">
       <div class="hero-header">
-          </div>
-</div>
+      </div>
+    </div>
 
-  <!-- <nav class="navbar is-primary" role="navigation" aria-label="dropdown navigation">
+    <!-- <nav class="navbar is-primary" role="navigation" aria-label="dropdown navigation">
     <div class="navbar-item has-dropdown is-hoverable">
       <a class="navbar-link">
         条件指定
@@ -45,46 +45,60 @@
       </div>
     </div>   
 </nav> -->
-<nav class="uk-navbar-container" uk-navbar>
-    <div class="uk-navbar-left">
+    <nav
+      class="uk-navbar-container"
+      uk-navbar
+    >
+      <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
-            <li>
-              <a href="#">条件指定</a>
-                <div class="uk-navbar-dropdown">
-                  <ul class="uk-nav uk-navbar-dropdown-nav uk-list">
-                    <p class="has-text-weight-bold">ラベルの選択</p>
-                    <li
-                      v-for="item in label"
-                      :key="item.id"
-                    >
-                    <label><input
+          <li>
+            <a href="#">条件指定</a>
+            <div class="uk-navbar-dropdown">
+              <ul class="uk-nav uk-navbar-dropdown-nav uk-list">
+                <p class="has-text-weight-bold">ラベルの選択</p>
+                <li
+                  v-for="item in label"
+                  :key="item.id"
+                >
+                  <label><input
                       type="radio"
                       name="label"
                       :value="item.id"
                       v-model="checked"
                     >
-                      {{ item.name }}
-                    </label>
-                    </li>
-                    <p class="has-text-weight-bold">日付</p>
-                    <input class="input is-small" type="date" v-model="startDate">
-                     ～
-                    <input class="input is-small" type="date" v-model="endDate">
-                    <button class="button is-link is-small" @click="show()">表示</button>
-                  </ul>
-                </div>
-            </li>
-            <li>
-              <a href="#">ラベル編集</a>
-              <div class="uk-navbar-dropdown uk-navbar-dropdown-width-2">
-                  <ul class="uk-nav uk-navbar-dropdown-nav">
-                      <label-mnt></label-mnt>
-                  </ul>
-              </div>
-            </li>
+                    {{ item.name }}
+                  </label>
+                </li>
+                <p class="has-text-weight-bold">日付</p>
+                <input
+                  class="input is-small"
+                  type="date"
+                  v-model="startDate"
+                >
+                ～
+                <input
+                  class="input is-small"
+                  type="date"
+                  v-model="endDate"
+                >
+                <button
+                  class="button is-link is-small"
+                  @click="show()"
+                >表示</button>
+              </ul>
+            </div>
+          </li>
+          <li>
+            <a href="#">ラベル編集</a>
+            <div class="uk-navbar-dropdown uk-navbar-dropdown-width-2">
+              <ul class="uk-nav uk-navbar-dropdown-nav">
+                <label-mnt></label-mnt>
+              </ul>
+            </div>
+          </li>
         </ul>
-  </div>
-</nav>
+      </div>
+    </nav>
 
     <div id='map'></div>
 
@@ -98,7 +112,6 @@
       </div>
     </div>
 
-    
   </div>
 </template>
 
@@ -107,11 +120,11 @@
 /*globals google */
 //import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
 //import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
-import UIkit from 'uikit'
-import Icons from 'uikit/dist/js/uikit-icons'
-import 'uikit/dist/css/uikit.css'
-import 'uikit/dist/css/uikit.min.css'
-UIkit.use(Icons)
+import UIkit from "uikit";
+import Icons from "uikit/dist/js/uikit-icons";
+import "uikit/dist/css/uikit.css";
+import "uikit/dist/css/uikit.min.css";
+UIkit.use(Icons);
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
 import LabelMnt from "./LabelMnt.vue";
@@ -125,11 +138,11 @@ export default {
       //accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null, //条件設定のラジオボタンの値
       startDate: null,
-      endDate: null,
+      endDate: null
     };
   },
 
-    components: {
+  components: {
     LabelMnt
   },
 
@@ -144,7 +157,10 @@ export default {
       return this.$store.getters.label;
     }
   },
+  created() {
 
+      console.log(this.$store.state.userUid);
+  },
   mounted() {
     //this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
 
@@ -172,8 +188,11 @@ export default {
     //マップをクリック時、マーカー表示する
     this.map.addListener("click", e => {
       //マーカーを表示する
-      const newMaker = this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
-      this.markerClick(newMaker,'infowindw_new');
+      const newMaker = this.makeMaker({
+        lat: e.latLng.lat(),
+        lng: e.latLng.lng()
+      });
+      this.markerClick(newMaker, "infowindw_new");
     });
   },
 
@@ -181,43 +200,51 @@ export default {
     create() {
       this.$router.push({ path: "/pointcreate" });
     },
-    
-    edit(){
-      this.$router.push({ path: "/pointedit"});
+
+    edit() {
+      this.$router.push({ path: "/pointedit" });
     },
 
     async show() {
       if (this.checked == null) {
         alert("ラベルを選択してください。");
-      }else {
+      } else {
         //DBからポイント情報を取得する
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid,this.startDate,this.endDate); //チェックしたラベルを渡す
-        const lists = await mymapPointServiceMysql.searchByLabel();//queryした結果を受け取る
+        await mymapPointServiceMysql.sendtoLabel(
+          this.checked,
+          this.$store.state.userUid,
+          this.startDate,
+          this.endDate
+        ); //チェックしたラベルを渡す
+        const lists = await mymapPointServiceMysql.searchByLabel(); //queryした結果を受け取る
 
         //表示データの有無をチェック
-        if(lists.length == 0){
-          alert('表示するデータがありません');
+        if (lists.length == 0) {
+          alert("表示するデータがありません");
           //this.$router.push({ path: "/map" });
-        }else{
+        } else {
           //マーカーをクリア
-          if(this.Makers.length > 0){
-            for(let i=0; i < this.Makers.length; i++){
-               this.Makers[i].setMap(null);
-            } 
+          if (this.Makers.length > 0) {
+            for (let i = 0; i < this.Makers.length; i++) {
+              this.Makers[i].setMap(null);
+            }
             this.Makers = [];
           }
 
           //マーカーを表示
-          for(let i=0; i<lists.length; i++){
-            const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
-            this.markerClick (getMaker,'infowindw_get');
+          for (let i = 0; i < lists.length; i++) {
+            const getMaker = this.makeMaker({
+              lat: lists[i].lat,
+              lng: lists[i].lng
+            });
+            this.markerClick(getMaker, "infowindw_get");
             //マーカークリアのため保存
             this.Makers.push(getMaker);
             //全マーカーが表示されるように調整
-            this.map.fitBounds (this.bounds);
+            this.map.fitBounds(this.bounds);
           }
-        }       
+        }
       }
     },
 
@@ -230,15 +257,15 @@ export default {
         animation: google.maps.Animation.DROP
       });
       //マーカーの表示領域を調整のための位置座標を取得
-      this.bounds.extend (marker.position);
+      this.bounds.extend(marker.position);
       return marker;
     },
 
     //マーカークリック時の関数を作成
-    markerClick(marker,infowindw){
+    markerClick(marker, infowindw) {
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
-      content: document.getElementById(infowindw)
+        content: document.getElementById(infowindw)
       });
 
       marker.addListener("click", () => {
@@ -252,8 +279,7 @@ export default {
 
     labelMnt() {
       this.$router.push({ path: "/labelmnt" });
-    },
-
+    }
   }
 };
 </script>
@@ -266,6 +292,5 @@ export default {
   /*情報ウィンドウからボタンを操作するためのもの*/
   display: none;
 }
-
 </style>
 

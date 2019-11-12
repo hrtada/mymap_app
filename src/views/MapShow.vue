@@ -104,7 +104,7 @@ export default {
         //表示データの有無をチェック
         if(lists.length == 0){
           alert('表示するデータがありません');
-          this.$router.push({ path: "/map" });
+          this.$router.push({ path: "/" });
         }else{
         //全マーカーが表示されるように調整
         map.fitBounds (bounds);
@@ -116,7 +116,7 @@ export default {
 
   methods: {
     mapNew(){
-      this.$router.push({ path: "/map" });     
+      this.$router.push({ path: "/" });     
     },
     edit(){
       this.$router.push({ path: "/pointedit"});

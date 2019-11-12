@@ -230,7 +230,7 @@ export default {
     },
 
     chancel(){
-      this.$router.push({ path: "/map" });  
+      this.$router.push({ path: "/" });  
     }
   }
 }
