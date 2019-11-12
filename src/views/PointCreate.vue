@@ -18,7 +18,7 @@
         <div class="field">
           <label class="label">日付<span class="has-text-danger is-size-7"> 必須</span></label>
             <div class="control">
-              <input class="input" type="date" required v-model="date">
+              <input class="input" type="date" v-model="date">
             </div>
         </div>
 
@@ -54,7 +54,7 @@
 <script>
 /* eslint-disable no-console */
 import  MymapPoint from '../database/firestore/model/MymapPoint';
-import  MymapPointService from '../database/firestore/service/MymapPointService';
+//import  MymapPointService from '../database/firestore/service/MymapPointService';
 import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
 import 'bulma/css/bulma.css';//CSSフレームワーク
 
@@ -118,15 +118,15 @@ export default {
         alert('必須項目が未入力です');
       }
       else{
-        const mymapPointService = new MymapPointService();
+        const mymapPointServiceMysql = new MymapPointServiceMysql();
         //画像をアップロード
         if(this.imageUrl.length>0){
-          const getImageUrl = await mymapPointService.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
+          const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
           this.imageUrl = getImageUrl
         }      
 
         //ポイント情報をMysqlに登録
-        const mymapPointServiceMysql = new MymapPointServiceMysql();
+        //const mymapPointServiceMysql = new MymapPointServiceMysql();
         const mapPoint = new MymapPoint(0,this.$store.state.lat, this.$store.state.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
         this.$router.push({ path: "/map" });//前画面に戻る 

@@ -2,59 +2,89 @@
   <div>
     <div class="hero is-primary">
       <div class="hero-header">
-        <div class="field is-grouped">
-          <div class="control">
-            <!-- <button @click="test()">test</button> -->
-            <section class="accordions">
-              <article class="accordion">
-                <div class="accordion-header toggle">
-                  <label>条件指定</label>
-                </div>
-                <div class="accordion-body">
-                  <div class="accordion-content">
-                    <p class="has-text-weight-bold">ラベルの選択</p>
-                    <ul>
-                      <li
-                        v-for="item in label"
-                        :key="item.id"
-                      >
-                        <label><input
-                            type="radio"
-                            name="label"
-                            :value="item.id"
-                            v-model="checked"
-                          >
-                          {{ item.name }}
-                        </label>
-                      </li>
-                    </ul>
-                    <button @click="show()">表示</button>
-                  </div>
-                </div>
-              </article>
-            </section>
           </div>
-          <div class="control">
-            <section class="accordions">
-              <article class="accordion">
-                <div class="accordion-header toggle">
-                  <label>設定</label>
-                </div>
-                <div class="accordion-body">
+</div>
 
-                  <div class="accordion-content">
-                    <button
-                      class="button is-light"
-                      @click="labelMnt()"
-                    >ラベルの設定</button>
-                  </div>
-                </div>
-              </article>
-            </section>
-          </div>
-        </div>
+  <!-- <nav class="navbar is-primary" role="navigation" aria-label="dropdown navigation">
+    <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link">
+        条件指定
+      </a>
+      <div class="navbar-dropdown">
+        <a class="navbar-item">
+          <p class="has-text-weight-bold">ラベルの選択</p>
+        </a>
+        <a class="navbar-item">
+          <ul>
+            <li
+              v-for="item in label"
+              :key="item.id"
+            >
+            <label><input
+              type="radio"
+              name="label"
+              :value="item.id"
+              v-model="checked"
+            >
+              {{ item.name }}
+            </label>
+            </li>
+            <button class="button is-link is-small" @click="show()">表示</button>
+            </ul>
+        </a>
       </div>
     </div>
+  <div class="navbar-item has-dropdown is-hoverable">
+    <a class="navbar-link">
+      ラベル編集
+    </a>
+      <div class="navbar-dropdown">
+        <a class="navbar-item">
+          <label-mnt></label-mnt>
+        </a>
+      </div>
+    </div>   
+</nav> -->
+<nav class="uk-navbar-container" uk-navbar>
+    <div class="uk-navbar-left">
+        <ul class="uk-navbar-nav">
+            <li>
+              <a href="#">条件指定</a>
+                <div class="uk-navbar-dropdown">
+                  <ul class="uk-nav uk-navbar-dropdown-nav uk-list">
+                    <p class="has-text-weight-bold">ラベルの選択</p>
+                    <li
+                      v-for="item in label"
+                      :key="item.id"
+                    >
+                    <label><input
+                      type="radio"
+                      name="label"
+                      :value="item.id"
+                      v-model="checked"
+                    >
+                      {{ item.name }}
+                    </label>
+                    </li>
+                    <p class="has-text-weight-bold">日付</p>
+                    <input class="input is-small" type="date" v-model="startDate">
+                     ～
+                    <input class="input is-small" type="date" v-model="endDate">
+                    <button class="button is-link is-small" @click="show()">表示</button>
+                  </ul>
+                </div>
+            </li>
+            <li>
+              <a href="#">ラベル編集</a>
+              <div class="uk-navbar-dropdown uk-navbar-dropdown-width-2">
+                  <ul class="uk-nav uk-navbar-dropdown-nav">
+                      <label-mnt></label-mnt>
+                  </ul>
+              </div>
+            </li>
+        </ul>
+  </div>
+</nav>
 
     <div id='map'></div>
 
@@ -75,20 +105,32 @@
 <script>
 /*eslint-disable no-console */
 /*globals google */
-import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
-import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
+//import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
+//import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
+import UIkit from 'uikit'
+import Icons from 'uikit/dist/js/uikit-icons'
+import 'uikit/dist/css/uikit.css'
+import 'uikit/dist/css/uikit.min.css'
+UIkit.use(Icons)
 import "bulma/css/bulma.css"; //CSSフレームワーク
 import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+import LabelMnt from "./LabelMnt.vue";
 
 export default {
   data() {
     return {
       map: null,
       bounds: null,
-      //marker: null,
-      accordions: [], //bulmaのアコーディオンメニューを使うために必要
-      checked: null //条件設定のラジオボタンの値
+      Makers: [],
+      //accordions: [], //bulmaのアコーディオンメニューを使うために必要
+      checked: null, //条件設定のラジオボタンの値
+      startDate: null,
+      endDate: null,
     };
+  },
+
+    components: {
+    LabelMnt
   },
 
   computed: {
@@ -104,7 +146,7 @@ export default {
   },
 
   mounted() {
-    this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
+    //this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
 
     //地図を表示（下のforEach内にいれないこと）
     const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
@@ -117,9 +159,6 @@ export default {
       fullscreenControl: false
     });
     this.bounds = new google.maps.LatLngBounds();
-    // this.maker = new google.maps.Marker({
-    //   map: this.map
-    // });
 
     //現在地を取得し、地図中央で再表示
     navigator.geolocation.getCurrentPosition(position => {
@@ -135,7 +174,6 @@ export default {
       //マーカーを表示する
       const newMaker = this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
       this.markerClick(newMaker,'infowindw_new');
-      //this.makeMaker({ lat: e.latLng.lat(), lng: e.latLng.lng() });
     });
   },
 
@@ -151,13 +189,11 @@ export default {
     async show() {
       if (this.checked == null) {
         alert("ラベルを選択してください。");
-        return false;
-      } else {
+      }else {
         //DBからポイント情報を取得する
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid); //チェックしたラベルを渡す
+        await mymapPointServiceMysql.sendtoLabel(this.checked,this.$store.state.userUid,this.startDate,this.endDate); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel();//queryした結果を受け取る
-        //console.log('ポイント情報',lists);
 
         //表示データの有無をチェック
         if(lists.length == 0){
@@ -165,14 +201,22 @@ export default {
           //this.$router.push({ path: "/map" });
         }else{
           //マーカーをクリア
+          if(this.Makers.length > 0){
+            for(let i=0; i < this.Makers.length; i++){
+               this.Makers[i].setMap(null);
+            } 
+            this.Makers = [];
+          }
 
           //マーカーを表示
           for(let i=0; i<lists.length; i++){
-          const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
-          this.markerClick (getMaker,'infowindw_get');
+            const getMaker = this.makeMaker({lat: lists[i].lat,lng: lists[i].lng});
+            this.markerClick (getMaker,'infowindw_get');
+            //マーカークリアのため保存
+            this.Makers.push(getMaker);
+            //全マーカーが表示されるように調整
+            this.map.fitBounds (this.bounds);
           }
-          //全マーカーが表示されるように調整
-          this.map.fitBounds (this.bounds);
         }       
       }
     },
@@ -189,9 +233,6 @@ export default {
       this.bounds.extend (marker.position);
       return marker;
     },
-
-    //マーカーを画面から削除
-
 
     //マーカークリック時の関数を作成
     markerClick(marker,infowindw){
@@ -213,12 +254,6 @@ export default {
       this.$router.push({ path: "/labelmnt" });
     },
 
-    test() {
-      /*         const mymapPointService = new MymapPointServiceMysql();
-        const mapPoints = await mymapPointService.searchByLabel();
-        await console.log(mapPoints); */
-      this.$router.push({ path: "/mapshow" });
-    }
   }
 };
 </script>
@@ -231,5 +266,6 @@ export default {
   /*情報ウィンドウからボタンを操作するためのもの*/
   display: none;
 }
+
 </style>
 

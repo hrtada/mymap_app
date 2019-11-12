@@ -1,3 +1,5 @@
+//2019/10/25 SQLiteに移行したため使用しない//
+
 /* eslint-disable no-console */
 
 import  firebaseApp from '../../../firebase';

@@ -1,3 +1,4 @@
+<!--2019/10/25 Mapに統合したため使用しない-->
 <template>
 <div>
   <div class="hero is-primary">
