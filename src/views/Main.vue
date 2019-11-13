@@ -4,47 +4,6 @@
       <div class="hero-header">
       </div>
     </div>
-
-    <!-- <nav class="navbar is-primary" role="navigation" aria-label="dropdown navigation">
-    <div class="navbar-item has-dropdown is-hoverable">
-      <a class="navbar-link">
-        条件指定
-      </a>
-      <div class="navbar-dropdown">
-        <a class="navbar-item">
-          <p class="has-text-weight-bold">ラベルの選択</p>
-        </a>
-        <a class="navbar-item">
-          <ul>
-            <li
-              v-for="item in label"
-              :key="item.id"
-            >
-            <label><input
-              type="radio"
-              name="label"
-              :value="item.id"
-              v-model="checked"
-            >
-              {{ item.name }}
-            </label>
-            </li>
-            <button class="button is-link is-small" @click="show()">表示</button>
-            </ul>
-        </a>
-      </div>
-    </div>
-  <div class="navbar-item has-dropdown is-hoverable">
-    <a class="navbar-link">
-      ラベル編集
-    </a>
-      <div class="navbar-dropdown">
-        <a class="navbar-item">
-          <label-mnt></label-mnt>
-        </a>
-      </div>
-    </div>   
-</nav> -->
     <nav
       class="uk-navbar-container"
       uk-navbar
@@ -118,8 +77,7 @@
 <script>
 /*eslint-disable no-console */
 /*globals google */
-//import bulmaAccordion from "bulma-extensions/bulma-accordion/dist/js/bulma-accordion.js"; //blumaのextenionをimport
-//import "bulma-extensions/bulma-accordion/dist/css/bulma-accordion.min.css";
+import MyGoogleMap from "../interface/myGoogleMap";
 import UIkit from "uikit";
 import Icons from "uikit/dist/js/uikit-icons";
 import "uikit/dist/css/uikit.css";
@@ -132,6 +90,7 @@ import LabelMnt from "./LabelMnt.vue";
 export default {
   data() {
     return {
+      myGoogleMap: null,
       map: null,
       bounds: null,
       Makers: [],
@@ -158,41 +117,26 @@ export default {
     }
   },
   created() {
-
-      console.log(this.$store.state.userUid);
+    console.log(this.$store.state.userUid);
   },
-  mounted() {
+  async mounted() {
     //this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
 
     //地図を表示（下のforEach内にいれないこと）
-    const initiallatLng = new google.maps.LatLng(35.708194, 139.808565);
-    this.map = new google.maps.Map(document.getElementById("map"), {
-      center: initiallatLng,
-      zoom: 15,
-      maxZoom: 15,
-      streetViewControl: false,
-      mapTypeControl: false,
-      fullscreenControl: false
-    });
-    this.bounds = new google.maps.LatLngBounds();
+    this.myGoogleMap = new MyGoogleMap(document.getElementById("map"));
+    this.map = await this.myGoogleMap.getMapInstance();
 
     //現在地を取得し、地図中央で再表示
-    navigator.geolocation.getCurrentPosition(position => {
-      const pos = {
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      };
-      this.map.setCenter(pos);
-    });
+    this.myGoogleMap.setCurrentPosition();
 
     //マップをクリック時、マーカー表示する
     this.map.addListener("click", e => {
       //マーカーを表示する
-      const newMaker = this.makeMaker({
+      this.myGoogleMap.makeMaker({
         lat: e.latLng.lat(),
-        lng: e.latLng.lng()
+        lng: e.latLng.lng(),
+        clickFunction: this.markerClick
       });
-      this.markerClick(newMaker, "infowindw_new");
     });
   },
 
@@ -234,11 +178,12 @@ export default {
 
           //マーカーを表示
           for (let i = 0; i < lists.length; i++) {
-            const getMaker = this.makeMaker({
+            const getMaker = this.myGoogleMap.makeMaker({
               lat: lists[i].lat,
-              lng: lists[i].lng
+              lng: lists[i].lng,
+              clickFunction: this.markerClick
             });
-            this.markerClick(getMaker, "infowindw_get");
+
             //マーカークリアのため保存
             this.Makers.push(getMaker);
             //全マーカーが表示されるように調整
@@ -248,33 +193,18 @@ export default {
       }
     },
 
-    //マーカーを表示する関数を作成
-    makeMaker({ lat, lng }) {
-      const latLng = new google.maps.LatLng(lat, lng);
-      const marker = new google.maps.Marker({
-        position: latLng,
-        map: this.map,
-        animation: google.maps.Animation.DROP
-      });
-      //マーカーの表示領域を調整のための位置座標を取得
-      this.bounds.extend(marker.position);
-      return marker;
-    },
-
-    //マーカークリック時の関数を作成
-    markerClick(marker, infowindw) {
+    //マーカークリック時の関数
+    markerClick(marker) {
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
-        content: document.getElementById(infowindw)
+        content: document.getElementById("infowindw_get")
       });
 
-      marker.addListener("click", () => {
-        info.open(this.map, marker);
-        const mLat = marker.getPosition().lat(); //緯度情報を渡す
-        const mLng = marker.getPosition().lng();
-        this.$store.commit("setlat", { lat: mLat }); //store.stateに渡す
-        this.$store.commit("setlng", { lng: mLng });
-      });
+      info.open(this.map, marker);
+      const mLat = marker.getPosition().lat(); //緯度情報を渡す
+      const mLng = marker.getPosition().lng();
+      this.$store.commit("setlat", { lat: mLat }); //store.stateに渡す
+      this.$store.commit("setlng", { lng: mLng });
     },
 
     labelMnt() {
