@@ -75,7 +75,7 @@ export default {
           this.getLabellist();
 
           //map画面に移動
-          this.$router.push({ path: "/map" });
+          this.$router.push({ path: "/" });
         })
         .catch(function(error) {
           const errorCode = error.code;

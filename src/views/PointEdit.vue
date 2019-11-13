@@ -115,7 +115,7 @@ export default {
       this.$router.push({ path: "/picture" });     
     },
     chancel(){
-      this.$router.push({ path: "/map" });  
+      this.$router.push({ path: "/" });  
     },
 
     onFileChange(e){
@@ -165,7 +165,7 @@ export default {
         //ポイント情報をSQLiteに登録
         const mapPoint = new MymapPoint(this.id, this.lat, this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.update(this.$store.state.userUid, mapPoint);
-        this.$router.push({ path: "/map" });//前画面に戻る 
+        this.$router.push({ path: "/" });//前画面に戻る 
 
         // const mapPoint = new MymapPoint(this.id, this.lat,this.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         // const editMapPoint = await mymapPointService.edit(this.$store.state.userUid, mapPoint);
@@ -183,7 +183,7 @@ export default {
       const mymapPointServiceMysql = new MymapPointServiceMysql();
       mymapPointServiceMysql.delete(this.id);
       mymapPointServiceMysql.deleteImage(this.$store.state.userUid,this.imageName);//画像の削除
-      this.$router.push({ path: "/map" });//前画面に戻る 
+      this.$router.push({ path: "/" });//前画面に戻る 
 
       //const mymapPointService = new MymapPointService();
       //mymapPointService.deleteImage(this.$store.state.userUid,this.imageName);//★画像の削除。エラーが起こるので一時的にコメントアウト。
