@@ -1,13 +1,9 @@
 <template>
   <div>
     <div class="hero is-primary">
-      <div class="hero-header">
-      </div>
+      <div class="hero-header"></div>
     </div>
-    <nav
-      class="uk-navbar-container"
-      uk-navbar
-    >
+    <nav class="uk-navbar-container" uk-navbar>
       <div class="uk-navbar-left">
         <ul class="uk-navbar-nav">
           <li>
@@ -15,35 +11,17 @@
             <div class="uk-navbar-dropdown">
               <ul class="uk-nav uk-navbar-dropdown-nav uk-list">
                 <p class="has-text-weight-bold">ラベルの選択</p>
-                <li
-                  v-for="item in label"
-                  :key="item.id"
-                >
-                  <label><input
-                      type="radio"
-                      name="label"
-                      :value="item.id"
-                      v-model="checked"
-                    >
+                <li v-for="item in label" :key="item.id">
+                  <label>
+                    <input type="radio" name="label" :value="item.id" v-model="checked" />
                     {{ item.name }}
                   </label>
                 </li>
                 <p class="has-text-weight-bold">日付</p>
-                <input
-                  class="input is-small"
-                  type="date"
-                  v-model="startDate"
-                >
+                <input class="input is-small" type="date" v-model="startDate" />
                 ～
-                <input
-                  class="input is-small"
-                  type="date"
-                  v-model="endDate"
-                >
-                <button
-                  class="button is-link is-small"
-                  @click="show()"
-                >表示</button>
+                <input class="input is-small" type="date" v-model="endDate" />
+                <button class="button is-link is-small" @click="show()">表示</button>
               </ul>
             </div>
           </li>
@@ -59,7 +37,7 @@
       </div>
     </nav>
 
-    <div id='map'></div>
+    <div id="map"></div>
 
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
@@ -70,7 +48,6 @@
         <button @click="edit()">詳細表示</button>
       </div>
     </div>
-
   </div>
 </template>
 
@@ -94,7 +71,6 @@ export default {
       map: null,
       bounds: null,
       Makers: [],
-      //accordions: [], //bulmaのアコーディオンメニューを使うために必要
       checked: null, //条件設定のラジオボタンの値
       startDate: null,
       endDate: null
@@ -120,11 +96,10 @@ export default {
     console.log(this.$store.state.userUid);
   },
   async mounted() {
-    //this.accordions = bulmaAccordion.attach(); //bulmaのアコーディオンメニューを使うために必要
-
     //地図を表示（下のforEach内にいれないこと）
     this.myGoogleMap = new MyGoogleMap(document.getElementById("map"));
     this.map = await this.myGoogleMap.getMapInstance();
+    this.bounds = await this.myGoogleMap.getMapInstance2();
 
     //現在地を取得し、地図中央で再表示
     this.myGoogleMap.setCurrentPosition();
@@ -135,7 +110,7 @@ export default {
       this.myGoogleMap.makeMaker({
         lat: e.latLng.lat(),
         lng: e.latLng.lng(),
-        clickFunction: this.markerClick
+        clickFunction: this.newMarkerClick
       });
     });
   },
@@ -162,6 +137,7 @@ export default {
           this.endDate
         ); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel(); //queryした結果を受け取る
+        console.log(lists);
 
         //表示データの有無をチェック
         if (lists.length == 0) {
@@ -198,6 +174,19 @@ export default {
       // マーカークリックで情報ウィンドウを表示
       let info = new google.maps.InfoWindow({
         content: document.getElementById("infowindw_get")
+      });
+
+      info.open(this.map, marker);
+      const mLat = marker.getPosition().lat(); //緯度情報を渡す
+      const mLng = marker.getPosition().lng();
+      this.$store.commit("setlat", { lat: mLat }); //store.stateに渡す
+      this.$store.commit("setlng", { lng: mLng });
+    },
+
+    newMarkerClick(marker) {
+      // マーカークリックで情報ウィンドウを表示
+      let info = new google.maps.InfoWindow({
+        content: document.getElementById("infowindw_new")
       });
 
       info.open(this.map, marker);

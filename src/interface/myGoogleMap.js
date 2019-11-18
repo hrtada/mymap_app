@@ -18,6 +18,10 @@ export default class MyGoogleMap {
     return this.map;
   }
 
+  async getMapInstance2() {
+    return this.bounds;
+  }
+  //現在地を取得し、地図中央で再表示
   async setCurrentPosition() {
     navigator.geolocation.getCurrentPosition(position => {
       const pos = {
@@ -36,9 +40,9 @@ export default class MyGoogleMap {
       map: this.map,
       animation: google.maps.Animation.DROP
     });
-    //マーカーの表示領域を調整のための位置座標を取得
-    this.bounds.extend( marker.position );
-    
+    //マーカーの表示領域調整のための位置座標を取得
+    this.bounds.extend(marker.position);
+
     //マーカークリック時イベント
     marker.addListener("click", () => {
       clickFunction(marker);

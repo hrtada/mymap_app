@@ -18,7 +18,7 @@
       </div>
     </header>
     <div id='content'>
-      <router-view />
+      <router-view/>
     </div>
   </div>
 </template>
@@ -36,6 +36,9 @@ export default {
   mounted() {
     console.log("app mounted");
     console.log(this.$store.state.userUid);
+    if(!this.$store.state.userUid){
+    this.$router.push({ path: "/login" });
+    }
   },
   methods: {
     logout() {
