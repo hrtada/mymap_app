@@ -4,21 +4,19 @@
       <div class="hero-header">
         <div class="container">
           <div class="level">
-            <h1 class="title">MyMapアプリ</h1>
-            <div class=level-right>
-              <p class="navbar-item">{{this.$store.state.userName}}</p>
-              <button
-                class="button is-outlined"
-                id='logout'
-                @click="logout()"
-              >logout</button>
+            <h1 class="title">MyMap</h1>
+            <div class="level-right">
+              <p class="navbar-item">{{ this.$store.state.userName }}</p>
+              <button class="button is-outlined" id="logout" @click="logout()">
+                logout
+              </button>
             </div>
           </div>
         </div>
       </div>
     </header>
-    <div id='content'>
-      <router-view/>
+    <div id="content">
+      <router-view />
     </div>
   </div>
 </template>
@@ -36,8 +34,8 @@ export default {
   mounted() {
     console.log("app mounted");
     console.log(this.$store.state.userUid);
-    if(!this.$store.state.userUid){
-    this.$router.push({ path: "/login" });
+    if (!this.$store.state.userUid) {
+      this.$router.push({ path: "/login" });
     }
   },
   methods: {
@@ -57,7 +55,7 @@ export default {
       if (to.path !== from.path) {
         console.log("login check");
         console.log(this.$store.state.userUid);
-        if(!this.$store.state.userUid){
+        if (!this.$store.state.userUid) {
           this.$router.push({ path: "/login" });
         }
       }
@@ -66,5 +64,4 @@ export default {
 };
 </script>
 
-<style>
-</style>
+<style></style>

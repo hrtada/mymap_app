@@ -1,68 +1,55 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from "vue";
+import Vuex from "vuex";
+import createPersistedState from "vuex-persistedstate"; //リロード時に値を保持する
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 const store = new Vuex.Store({
-state:{
-    label:null,
-    // newLat:0,
-    // newLng:0,
-    // editLat:0,
-    // editLng:0,
-    lat:0,
-    lng:0,
-    checked:null,
-    userUid:null,
-    userName:null,
- },
-
-getters:{
-  //  newLat(state){return state.newLat},
-  //  newLng(state){return state.newLng},
-  //  editLat(state){return state.editLat},
-  //  editLng(state){return state.editLng},
-   lat(state){return state.lat},
-   lng(state){return state.lng},
-   label(state){return state.label},
- },
-
-mutations:{
-  // setnewLat(state,payload){
-  //        state.newLat = payload.newLat
-  // },
-  // setnewLng(state,payload){
-  //   state.newLng = payload.newLng
-  // },
-  // seteditLat(state,payload){
-  //   state.editLat = payload.editLat
-  // },
-  // seteditLng(state,payload){
-  //   state.editLng = payload.editLng
-  // },
-  setlat(state,payload){
-    state.lat = payload.lat
+  state: {
+    label: null,
+    lat: 0,
+    lng: 0,
+    checked: null,
+    userUid: null,
+    userName: null
   },
-  setlng(state,payload){
-  state.lng = payload.lng
-  },
-  setlabel(state,payload){
-   state.label = payload.label
-  },
-  setchecked(state,payload){
-    state.checked = payload.checked
-  },
-  setuserUid(state,payload){
-  state.userUid = payload.userUid
-  },
-  setuserName(state,payload){
-  state.userName = payload.userName
-  }
-},
 
-actions:{
-}
+  getters: {
+    lat(state) {
+      return state.lat;
+    },
+    lng(state) {
+      return state.lng;
+    },
+    label(state) {
+      return state.label;
+    }
+  },
 
- })
+  mutations: {
+    setlat(state, payload) {
+      state.lat = payload.lat;
+    },
+    setlng(state, payload) {
+      state.lng = payload.lng;
+    },
+    setlabel(state, payload) {
+      state.label = payload.label;
+    },
+    setchecked(state, payload) {
+      state.checked = payload.checked;
+    },
+    setuserUid(state, payload) {
+      state.userUid = payload.userUid;
+    },
+    setuserName(state, payload) {
+      state.userName = payload.userName;
+    }
+  },
 
-export default store
+  actions: {},
+
+  plugins: [createPersistedState({ storage: window.sessionStorage })] //リロード時に値を保持する
+});
+
+export default store;
