@@ -13,7 +13,8 @@
                 <p class="has-text-weight-bold">ラベルの選択</p>
                 <li v-for="item in label" :key="item.id">
                   <label>
-                    <input type="radio" name="label" :value="item.id" v-model="checked" />
+                    <!-- <input type="radio" name="label" :value="item.id" v-model="checked" /> -->
+                    <input type="checkbox" name="label" :value="item.id" v-model="checked" />
                     {{ item.name }}
                   </label>
                 </li>
@@ -71,7 +72,8 @@ export default {
       map: null,
       bounds: null,
       Makers: [],
-      checked: null, //条件設定のラジオボタンの値
+      //checked: null, //条件設定のラジオボタンの値
+      checked: [], //条件設定のラジオボタンの値
       startDate: null,
       endDate: null
     };
@@ -92,9 +94,8 @@ export default {
       return this.$store.getters.label;
     }
   },
-  created() {
-    console.log(this.$store.state.userUid);
-  },
+  created() {},
+
   async mounted() {
     //地図を表示（下のforEach内にいれないこと）
     this.myGoogleMap = new MyGoogleMap(document.getElementById("map"));
@@ -125,17 +126,13 @@ export default {
     },
 
     async show() {
-      if (this.checked == null) {
+      //if (this.checked == null) {
+      if (this.checked.length == 0) {
         alert("ラベルを選択してください。");
       } else {
         //DBからポイント情報を取得する
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        await mymapPointServiceMysql.sendtoLabel(
-          this.checked,
-          this.$store.state.userUid,
-          this.startDate,
-          this.endDate
-        ); //チェックしたラベルを渡す
+        await mymapPointServiceMysql.sendtoLabel(this.checked, this.$store.state.userUid, this.startDate, this.endDate); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel(); //queryした結果を受け取る
         console.log(lists);
 
@@ -212,4 +209,3 @@ export default {
   display: none;
 }
 </style>
-

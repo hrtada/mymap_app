@@ -2,8 +2,8 @@
 import firebaseApp from "../../../firebase";
 //const request = require('request');
 const doRequest = require("../../../interface/asyncRequest");
-//const svUrl = "http://192.168.56.1:8000/";
-const svUrl = "https://achieved-property.glitch.me/";
+const svUrl = "http://192.168.56.1:8000/";
+//const svUrl = "https://achieved-property.glitch.me/";
 
 export default class MymapLabelServiceMysql {
   constructor() {
