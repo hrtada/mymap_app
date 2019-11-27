@@ -5,36 +5,40 @@
         <p class="title is-4">新しいポイントの作成</p>
         <div class="field">
           <label class="label">ラベル<span class="has-text-danger is-size-7"> 必須</span></label>
-            <div class="control">
-              <div class="select">
-                <select v-model="setLabel">
-                  <option v-for="item in label" :key="item.id" v-bind:value="item.id"> {{item.name}}
-                  </option>
-                </select>
-              </div>
+          <div class="control">
+            <div class="select">
+              <select v-model="setLabel">
+                <option v-for="item in label" :key="item.id" v-bind:value="item.id"> {{ item.name }} </option>
+              </select>
             </div>
+          </div>
         </div>
-        
+
         <div class="field">
           <label class="label">日付<span class="has-text-danger is-size-7"> 必須</span></label>
-            <div class="control">
-              <input class="input" type="date" v-model="date">
-            </div>
+          <div class="control">
+            <input class="input" type="date" v-model="date" />
+          </div>
         </div>
 
         <div class="field">
           <label class="label">メモ</label>
-            <div class="control">
-              <textarea class="textarea" placeholder="メモ" v-model="memo"></textarea>
-            </div>
+          <div class="control">
+            <textarea class="textarea" placeholder="メモ" v-model="memo"></textarea>
+          </div>
         </div>
 
         <div class="field">
           <label class="label">写真</label>
-            <div class="control">
-              <input type="file" accept="image/*" @change="onFileChange($event)">
-              <img :src="imageUrl" v-if="imageUrl">
-            </div>
+          <div class="control">
+            <input type="file" accept="image/*" @change="onFileChange($event)" multiple />
+            <!-- <img :src="imageUrl" v-if="imageUrl" /> -->
+            <ul style="list-style:none;">
+              <li v-for="image in imageUrl" :key="image.id">
+                <img :src="image" />
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div class="field is-grouped">
@@ -47,91 +51,103 @@
         </div>
       </div>
     </div>
- 
   </div>
 </template>
 
 <script>
 /* eslint-disable no-console */
-import  MymapPoint from '../database/firestore/model/MymapPoint';
+import MymapPoint from "../database/firestore/model/MymapPoint";
 //import  MymapPointService from '../database/firestore/service/MymapPointService';
-import MymapPointServiceMysql from '../database/firestore/service/MymapPointServiceMysql'
-import 'bulma/css/bulma.css';//CSSフレームワーク
+import MymapPointServiceMysql from "../database/firestore/service/MymapPointServiceMysql";
+import "bulma/css/bulma.css"; //CSSフレームワーク
 
 export default {
-  
-  data () {
+  data() {
     return {
-      setLabel: '',
-      date: '',
-      memo: '',
-      imageName:'',
-      imageUrl:'',
-      imageFile:''
-    }
+      setLabel: "",
+      date: "",
+      memo: "",
+      imageName: [],
+      //imageUrl: "",
+      imageUrl: [],
+      //imageFile: "",
+      imageFile: []
+    };
   },
-  computed:{
-    label(){
-      return this.$store.getters.label
-      }
-    // label(){return this.$store.getters.label.filter((e) => {
-    //   return e.id != "0"
-    //   })
-    // },
+  computed: {
+    label() {
+      return this.$store.getters.label;
+    }
   },
 
   methods: {
-    open(){
-      this.$router.push({ path: "/picture" });     
-
+    open() {
+      this.$router.push({ path: "/picture" });
     },
 
-    chancel(){
-      this.$router.push({ path: "/" }); 
-
+    chancel() {
+      this.$router.push({ path: "/" });
     },
-   onFileChange(e){//ファイル選択の画面を開く
+    onFileChange(e) {
+      //ファイル選択の画面を開く
       const date = new Date();
-      const ISO = date.toISOString();//ファイル名を日付にするために取得
-      const files = e.target.files;   
-        if(files.length > 0) {//ファイルが選択されたかチェック
-          this.imageFile = files[0];
-          this.imageName = ISO;
-          const reader = new FileReader();//
-          reader.onload = (e) => {//imageUrlに画像情報をセット 
-            this.imageUrl = e.target.result;
-        };
-        reader.readAsDataURL(this.imageFile);//画像を読み込み
-        }else{          
-          this.imageName = '';
-          this.imageUrl = '';
-          this.imageFile = '';
+      const ISO = date.toISOString(); //ファイル名を日付にするために取得
+      const files = e.target.files;
+      if (files.length > 0) {
+        //ファイルが選択されたかチェック
+        //this.imageFile = files[0];
+        this.imageFile = files;
+        //this.imageName = ISO + this.imageFile.name;
+        for (let i = 0; i < this.imageFile.length; i++) {
+          this.imageName.push(ISO + i);
+          const reader = new FileReader(); //
+          reader.onload = e => {
+            //imageUrlに画像情報をセット※これをhtmlにセットする
+            this.imageUrl.push(e.target.result);
+          };
+          reader.readAsDataURL(this.imageFile[i]); //画像を読み込み
         }
+        // const reader = new FileReader(); //
+        // reader.onload = e => {
+        //   //imageUrlに画像情報をセット
+        //   this.imageUrl = e.target.result;
+        // };
+        // reader.readAsDataURL(this.imageFile); //画像を読み込み
+        //console.log("imageFile", this.imageFile);
+        //console.log("url", this.imageUrl2);
+        //console.log("name", this.imageName);
+      } else {
+        this.imageName = "";
+        this.imageUrl = "";
+        this.imageFile = "";
+      }
     },
 
-    async entry(){
+    async entry() {
       //必須項目の未入力チェックを付ける
-      if(this.setLabel==''){
-        alert('必須項目が未入力です');
-      }
-      else if(this.date==''){
-        alert('必須項目が未入力です');
-      }
-      else{
+      if (this.setLabel == "") {
+        alert("必須項目が未入力です");
+      } else if (this.date == "") {
+        alert("必須項目が未入力です");
+      } else {
         const mymapPointServiceMysql = new MymapPointServiceMysql();
         //画像をアップロード
-        if(this.imageUrl.length>0){
-          const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid,this.imageName,this.imageFile)
-          this.imageUrl = getImageUrl
-        }      
+        if (this.imageUrl.length > 0) {
+          for (let i = 0; i < this.imageUrl.length; i++) {
+            const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid, this.imageName[i], this.imageFile[i]);
+            this.imageUrl = getImageUrl;
+          }
+          // const getImageUrl = await mymapPointServiceMysql.uploadImage(this.$store.state.userUid, this.imageName, this.imageFile);
+          // this.imageUrl = getImageUrl;
+        }
 
         //ポイント情報をMysqlに登録
         //const mymapPointServiceMysql = new MymapPointServiceMysql();
-        const mapPoint = new MymapPoint(0,this.$store.state.lat, this.$store.state.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
+        const mapPoint = new MymapPoint(0, this.$store.state.lat, this.$store.state.lng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         mymapPointServiceMysql.create(this.$store.state.userUid, mapPoint);
-        this.$router.push({ path: "/" });//前画面に戻る 
+        this.$router.push({ path: "/" }); //前画面に戻る
 
-/*      //ポイント情報をFirestoreに登録
+        /*      //ポイント情報をFirestoreに登録
         const mapPoint = new MymapPoint(0,this.$store.state.newLat, this.$store.state.newLng, this.setLabel, this.date, this.memo, this.imageUrl, this.imageName);
         const createMapPoint = await mymapPointService.create(this.$store.state.userUid, mapPoint);
 
@@ -140,16 +156,10 @@ export default {
         }else{
           alert('登録できませんでした');
         } */
-
-        }
-      
       }
     }
-
   }
-
+};
 </script>
 
-<style>
-
-</style>
+<style></style>
