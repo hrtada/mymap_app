@@ -14,7 +14,12 @@
                 <li v-for="item in label" :key="item.id">
                   <label>
                     <!-- <input type="radio" name="label" :value="item.id" v-model="checked" /> -->
-                    <input type="checkbox" name="label" :value="item.id" v-model="checked" />
+                    <input
+                      type="checkbox"
+                      name="label"
+                      :value="item.id"
+                      v-model="checked"
+                    />
                     {{ item.name }}
                   </label>
                 </li>
@@ -22,7 +27,9 @@
                 <input class="input is-small" type="date" v-model="startDate" />
                 ～
                 <input class="input is-small" type="date" v-model="endDate" />
-                <button class="button is-link is-small" @click="show()">表示</button>
+                <button class="button is-link is-small" @click="show()">
+                  表示
+                </button>
               </ul>
             </div>
           </li>
@@ -40,6 +47,7 @@
 
     <div id="map"></div>
 
+    <div id="picoverlay" v-bind:class="[pictureOverlay, overlayDisp]">test</div>
     <!--情報ウィンドウ※-->
     <div id="iw_wrapper">
       <div id="infowindw_new">
@@ -75,7 +83,9 @@ export default {
       //checked: null, //条件設定のラジオボタンの値
       checked: [], //条件設定のラジオボタンの値
       startDate: null,
-      endDate: null
+      endDate: null,
+      pictureOverlay: "picture_overlay",
+      overlayDisp: "display_none"
     };
   },
 
@@ -132,7 +142,12 @@ export default {
       } else {
         //DBからポイント情報を取得する
         const mymapPointServiceMysql = new MymapPointServiceMysql();
-        await mymapPointServiceMysql.sendtoLabel(this.checked, this.$store.state.userUid, this.startDate, this.endDate); //チェックしたラベルを渡す
+        await mymapPointServiceMysql.sendtoLabel(
+          this.checked,
+          this.$store.state.userUid,
+          this.startDate,
+          this.endDate
+        ); //チェックしたラベルを渡す
         const lists = await mymapPointServiceMysql.searchByLabel(); //queryした結果を受け取る
         console.log(lists);
 
@@ -191,6 +206,9 @@ export default {
       const mLng = marker.getPosition().lng();
       this.$store.commit("setlat", { lat: mLat }); //store.stateに渡す
       this.$store.commit("setlng", { lng: mLng });
+
+
+      this.overlayDisp = "display_inline";
     },
 
     labelMnt() {
@@ -207,5 +225,19 @@ export default {
 #iw_wrapper {
   /*情報ウィンドウからボタンを操作するためのもの*/
   display: none;
+}
+.picture_overlay {
+  width: 300px;
+  height: 200px;
+  background: blue;
+  position: absolute;
+  top: 200px;
+  left: 50px;
+}
+.display_none {
+  display: none;
+}
+.display_inline {
+  display: inline-block;
 }
 </style>
